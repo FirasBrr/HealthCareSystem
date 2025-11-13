@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Doctor;
+use App\Entity\Patient;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +26,7 @@ class RegistrationController extends AbstractController
             // Set the roles based on the selected role
             $selectedRole = $form->get('role')->getData();
             $user->setRoles([$selectedRole]);
-            $user->setRole($selectedRole); // Also set the role field
+            $user->setRole($selectedRole);
 
             // encode the plain password
             $user->setPassword(
@@ -34,7 +36,22 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            // Dates are automatically set by lifecycle callbacks in User entity
+            // Create role-specific profile
+            if ($selectedRole === 'ROLE_DOCTOR') {
+                $doctor = new Doctor();
+                $doctor->setClient($user);
+                $doctor->setSpecialty($form->get('specialty')->getData());
+                $doctor->setPhone($form->get('phone')->getData());
+                $doctor->setBio($form->get('bio')->getData() ?? '');
+                $doctor->setRating(0.0); // Default rating
+                $entityManager->persist($doctor);
+            } elseif ($selectedRole === 'ROLE_PATIENT') {
+                $patient = new Patient();
+                $patient->setClient($user);
+                $patient->setPhone($form->get('phone')->getData());
+                $patient->setAddress($form->get('address')->getData());
+                $entityManager->persist($patient);
+            }
 
             $entityManager->persist($user);
             $entityManager->flush();

@@ -168,6 +168,21 @@
             font-size: 0.9rem;
         }
 
+        .dynamic-fields-container {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+            border: 2px dashed var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-fields-container h6 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .register-section {
                 padding: 40px 0;
@@ -219,6 +234,11 @@
                                 </div>
 
                                 <div class="form-group-custom">
+                                    {{ form_label(registrationForm.phone, 'Phone Number', {'label_attr': {'class': 'form-label-custom'}}) }}
+                                    {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control form-control-custom', 'placeholder': 'Enter your phone number'}}) }}
+                                </div>
+
+                                <div class="form-group-custom">
                                     {{ form_label(registrationForm.role, 'Account Type', {'label_attr': {'class': 'form-label-custom'}}) }}
                                     {{ form_widget(registrationForm.role, {'attr': {'class': 'form-control form-control-custom'}}) }}
 
@@ -231,6 +251,12 @@
                                         <h6><i class="fas fa-user-md me-2"></i>Doctor</h6>
                                         <p>Manage your schedule, see patients, and provide medical care through our platform.</p>
                                     </div>
+                                </div>
+
+                                <!-- Dynamic Fields Container -->
+                                <div id="role-specific-fields" class="dynamic-fields-container">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Select an account type to see additional required fields</h6>
+                                    <p class="text-muted mb-0">Choose between Patient or Doctor above to continue with registration.</p>
                                 </div>
 
                                 <div class="form-group-custom">
@@ -273,6 +299,28 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Role Requirements Info -->
+                                <div class="mt-4 p-3" style="background: var(--light); border-radius: 12px;">
+                                    <h6 style="color: var(--dark); margin-bottom: 15px;">
+                                        <i class="fas fa-clipboard-list me-2"></i>What You'll Need
+                                    </h6>
+                                    <div class="mb-3">
+                                        <strong class="text-primary">For Patients:</strong>
+                                        <ul class="benefits-list mt-2">
+                                            <li><i class="fas fa-phone text-primary"></i> Phone number</li>
+                                            <li><i class="fas fa-home text-primary"></i> Address</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong class="text-primary">For Doctors:</strong>
+                                        <ul class="benefits-list mt-2">
+                                            <li><i class="fas fa-phone text-primary"></i> Phone number</li>
+                                            <li><i class="fas fa-stethoscope text-primary"></i> Medical specialty</li>
+                                            <li><i class="fas fa-file-alt text-primary"></i> Professional bio</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -286,7 +334,52 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add real-time password strength check
+            const roleSelect = document.querySelector('#registration_form_role');
+            const dynamicFieldsContainer = document.getElementById('role-specific-fields');
+
+            // Function to update dynamic fields based on role selection
+            function updateRoleSpecificFields() {
+                const selectedRole = roleSelect.value;
+
+                if (selectedRole === 'ROLE_PATIENT') {
+                    dynamicFieldsContainer.innerHTML = `
+                        <h6><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
+                        <div class="form-group-custom">
+                            <label class="form-label-custom">Address</label>
+                            <textarea name="address" class="form-control form-control-custom" placeholder="Enter your complete address for appointment reminders and correspondence" rows="3" required></textarea>
+                            <small class="text-muted">We'll use this for appointment reminders and important correspondence.</small>
+                        </div>
+                    `;
+                } else if (selectedRole === 'ROLE_DOCTOR') {
+                    dynamicFieldsContainer.innerHTML = `
+                        <h6><i class="fas fa-user-md me-2"></i>Professional Information</h6>
+                        <div class="form-group-custom">
+                            <label class="form-label-custom">Medical Specialty</label>
+                            <input type="text" name="specialty" class="form-control form-control-custom" placeholder="e.g., Cardiology, Pediatrics, Dermatology, etc." required>
+                            <small class="text-muted">Your primary medical specialty area.</small>
+                        </div>
+                        <div class="form-group-custom">
+                            <label class="form-label-custom">Professional Bio</label>
+                            <textarea name="bio" class="form-control form-control-custom" placeholder="Tell patients about your experience, qualifications, and approach to care..." rows="4"></textarea>
+                            <small class="text-muted">This will be visible to patients when they book appointments.</small>
+                        </div>
+                    `;
+                } else {
+                    dynamicFieldsContainer.innerHTML = `
+                        <h6><i class="fas fa-info-circle me-2"></i>Select an account type to see additional required fields</h6>
+                        <p class="text-muted mb-0">Choose between Patient or Doctor above to continue with registration.</p>
+                    `;
+                }
+            }
+
+            // Add event listener for role change
+            if (roleSelect) {
+                roleSelect.addEventListener('change', updateRoleSpecificFields);
+                // Initialize fields on page load
+                updateRoleSpecificFields();
+            }
+
+            // Password strength indicator
             const passwordInput = document.querySelector('#registration_form_plainPassword');
             if (passwordInput) {
                 passwordInput.addEventListener('input', function() {
@@ -319,20 +412,25 @@
             }
 
             // Show role descriptions based on selection
-            const roleSelect = document.querySelector('#registration_form_role');
             if (roleSelect) {
                 roleSelect.addEventListener('change', function() {
                     const roleDescriptions = document.querySelectorAll('.role-description');
                     roleDescriptions.forEach(desc => {
                         desc.style.opacity = '0.6';
+                        desc.style.borderLeftColor = '#e3ebf6';
                     });
 
                     if (this.value === 'ROLE_PATIENT') {
                         roleDescriptions[0].style.opacity = '1';
+                        roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
                     } else if (this.value === 'ROLE_DOCTOR') {
                         roleDescriptions[1].style.opacity = '1';
+                        roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
                     }
                 });
+
+                // Trigger change event on page load to set initial state
+                roleSelect.dispatchEvent(new Event('change'));
             }
         });
     </script>
