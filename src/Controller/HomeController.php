@@ -8,19 +8,23 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
-    #[Route('/home', name: 'app_home')]
-    public function index(): Response
+    #[Route('/', name: 'app_home')]
+    public function home(): Response
     {
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
         ]);
     }
 
-    // Add this new route
+    #[Route('/home', name: 'app_home_alt')]
+    public function index(): Response
+    {
+        return $this->redirectToRoute('app_home');
+    }
+
     #[Route('/doctors', name: 'app_doctors')]
     public function doctors(): Response
     {
-        // You'll need to create this template or redirect to another page
         return $this->render('doctors/index.html.twig');
     }
 }

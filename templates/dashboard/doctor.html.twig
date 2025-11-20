@@ -238,8 +238,11 @@
                             <p class="mb-0 opacity-90">Here's your daily overview and upcoming appointments</p>
                         </div>
                         <div class="col-md-4 text-md-end">
-                            <div class="d-inline-block  bg-opacity-20 px-4 py-3 rounded-pill">
-                            </div>
+                            <form action="{{ path('app_logout') }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-light btn-sm px-3 py-2 rounded-pill">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

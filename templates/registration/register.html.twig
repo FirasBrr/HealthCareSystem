@@ -329,39 +329,37 @@
         </div>
     </section>
 {% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const roleSelect = document.querySelector('#registration_form_role');
+            const roleSelect = document.getElementById('{{ registrationForm.role.vars.id }}');
             const dynamicFieldsContainer = document.getElementById('role-specific-fields');
 
-            // Function to update dynamic fields based on role selection
             function updateRoleSpecificFields() {
                 const selectedRole = roleSelect.value;
+                dynamicFieldsContainer.innerHTML = '';
 
                 if (selectedRole === 'ROLE_PATIENT') {
                     dynamicFieldsContainer.innerHTML = `
                         <h6><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
                         <div class="form-group-custom">
-                            <label class="form-label-custom">Address</label>
-                            <textarea name="address" class="form-control form-control-custom" placeholder="Enter your complete address for appointment reminders and correspondence" rows="3" required></textarea>
-                            <small class="text-muted">We'll use this for appointment reminders and important correspondence.</small>
+                            <label class="form-label-custom">Address *</label>
+                            <textarea name="registration_form[address]" class="form-control form-control-custom" placeholder="Enter your complete address" rows="3" required></textarea>
+                            <small class="form-text text-muted">We need your address for appointment purposes.</small>
                         </div>
                     `;
                 } else if (selectedRole === 'ROLE_DOCTOR') {
                     dynamicFieldsContainer.innerHTML = `
-                        <h6><i class="fas fa-user-md me-2"></i>Professional Information</h6>
+                        <h6><i class="fas fa-user-md me-2"></i>Doctor Information</h6>
                         <div class="form-group-custom">
-                            <label class="form-label-custom">Medical Specialty</label>
-                            <input type="text" name="specialty" class="form-control form-control-custom" placeholder="e.g., Cardiology, Pediatrics, Dermatology, etc." required>
-                            <small class="text-muted">Your primary medical specialty area.</small>
+                            <label class="form-label-custom">Medical Specialty *</label>
+                            <input type="text" name="registration_form[specialty]" class="form-control form-control-custom" placeholder="e.g., Cardiology, Pediatrics, etc." required>
                         </div>
                         <div class="form-group-custom">
                             <label class="form-label-custom">Professional Bio</label>
-                            <textarea name="bio" class="form-control form-control-custom" placeholder="Tell patients about your experience, qualifications, and approach to care..." rows="4"></textarea>
-                            <small class="text-muted">This will be visible to patients when they book appointments.</small>
+                            <textarea name="registration_form[bio]" class="form-control form-control-custom" placeholder="Tell patients about your experience and qualifications..." rows="4"></textarea>
+                            <small class="form-text text-muted">This will be visible to patients.</small>
                         </div>
                     `;
                 } else {
@@ -372,66 +370,11 @@
                 }
             }
 
-            // Add event listener for role change
-            if (roleSelect) {
-                roleSelect.addEventListener('change', updateRoleSpecificFields);
-                // Initialize fields on page load
-                updateRoleSpecificFields();
-            }
+            // Initial update
+            updateRoleSpecificFields();
 
-            // Password strength indicator
-            const passwordInput = document.querySelector('#registration_form_plainPassword');
-            if (passwordInput) {
-                passwordInput.addEventListener('input', function() {
-                    const password = this.value;
-                    const strengthIndicator = document.createElement('div');
-                    strengthIndicator.className = 'password-strength mt-2';
-
-                    let strength = 0;
-                    if (password.length >= 8) strength++;
-                    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
-                    if (password.match(/\d/)) strength++;
-                    if (password.match(/[^a-zA-Z\d]/)) strength++;
-
-                    const strengthText = ['Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'][strength];
-                    const strengthColors = ['#dc3545', '#ffc107', '#fd7e14', '#20c997', '#198754'];
-
-                    strengthIndicator.innerHTML = `
-                        <div class="progress" style="height: 5px;">
-                            <div class="progress-bar" style="width: ${strength * 25}%; background-color: ${strengthColors[strength]};"></div>
-                        </div>
-                        <small style="color: ${strengthColors[strength]};">${strengthText}</small>
-                    `;
-
-                    const existingIndicator = this.parentNode.querySelector('.password-strength');
-                    if (existingIndicator) {
-                        existingIndicator.remove();
-                    }
-                    this.parentNode.appendChild(strengthIndicator);
-                });
-            }
-
-            // Show role descriptions based on selection
-            if (roleSelect) {
-                roleSelect.addEventListener('change', function() {
-                    const roleDescriptions = document.querySelectorAll('.role-description');
-                    roleDescriptions.forEach(desc => {
-                        desc.style.opacity = '0.6';
-                        desc.style.borderLeftColor = '#e3ebf6';
-                    });
-
-                    if (this.value === 'ROLE_PATIENT') {
-                        roleDescriptions[0].style.opacity = '1';
-                        roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
-                    } else if (this.value === 'ROLE_DOCTOR') {
-                        roleDescriptions[1].style.opacity = '1';
-                        roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
-                    }
-                });
-
-                // Trigger change event on page load to set initial state
-                roleSelect.dispatchEvent(new Event('change'));
-            }
+            // Update on role change
+            roleSelect.addEventListener('change', updateRoleSpecificFields);
         });
     </script>
 {% endblock %}

@@ -44,7 +44,7 @@ class DashboardController extends AbstractController
                 $todayAppointments = [];
                 $upcomingAppointments = [];
             } else {
-                // Real doctor with profile
+                // Real doctor with profile - USE CORRECT METHOD NAMES
                 $stats = [
                     'todayAppointments' => $appointmentRepo->countTodaysAppointments($doctor),
                     'totalAppointments' => $appointmentRepo->count(['doctor' => $doctor]),
@@ -52,8 +52,20 @@ class DashboardController extends AbstractController
                     'confirmedAppointments' => $appointmentRepo->count(['doctor' => $doctor, 'status' => 'Confirmed']),
                 ];
 
-                $todayAppointments = $appointmentRepo->findTodaysAppointments($doctor);
-                $upcomingAppointments = $appointmentRepo->findUpcomingAppointments($doctor);
+                // Use findByDoctorAndToday instead of findTodaysAppointments
+                $todayAppointments = $appointmentRepo->findByDoctorAndToday($doctor);
+
+                // For upcoming appointments, use findByDoctor and filter by date
+                $allDoctorAppointments = $appointmentRepo->findByDoctor($doctor);
+                $upcomingAppointments = array_filter($allDoctorAppointments, function($appointment) {
+                    return $appointment->getStartDateTime() > new \DateTimeImmutable()
+                        && in_array($appointment->getStatus(), ['Pending', 'Confirmed']);
+                });
+
+                // Sort upcoming appointments by date
+                usort($upcomingAppointments, function($a, $b) {
+                    return $a->getStartDateTime() <=> $b->getStartDateTime();
+                });
             }
 
             return $this->render('dashboard/doctor.html.twig', [
@@ -69,15 +81,41 @@ class DashboardController extends AbstractController
         if ($this->isGranted('ROLE_PATIENT')) {
             $patient = $user->getPatient();
 
+            // Add patient-specific data
+            if ($patient) {
+                $patientAppointments = $appointmentRepo->findByPatient($patient);
+                $upcomingPatientAppointments = array_filter($patientAppointments, function($appointment) {
+                    return $appointment->getStartDateTime() > new \DateTimeImmutable()
+                        && in_array($appointment->getStatus(), ['Pending', 'Confirmed']);
+                });
+
+                // Sort patient appointments
+                usort($upcomingPatientAppointments, function($a, $b) {
+                    return $a->getStartDateTime() <=> $b->getStartDateTime();
+                });
+            } else {
+                $upcomingPatientAppointments = [];
+            }
+
             return $this->render('dashboard/patient.html.twig', [
                 'patient' => $patient,
                 'user' => $user,
+                'upcomingAppointments' => $upcomingPatientAppointments,
             ]);
         }
 
         // Admin dashboard
         if ($this->isGranted('ROLE_ADMIN')) {
-            return $this->render('dashboard/admin.html.twig');
+            // Add admin stats
+            $totalAppointments = $appointmentRepo->count([]);
+            $pendingAppointments = $appointmentRepo->count(['status' => 'Pending']);
+            $confirmedAppointments = $appointmentRepo->count(['status' => 'Confirmed']);
+
+            return $this->render('dashboard/admin.html.twig', [
+                'totalAppointments' => $totalAppointments,
+                'pendingAppointments' => $pendingAppointments,
+                'confirmedAppointments' => $confirmedAppointments,
+            ]);
         }
 
         return $this->redirectToRoute('app_home');

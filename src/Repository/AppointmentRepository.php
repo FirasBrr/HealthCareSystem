@@ -18,6 +18,86 @@ class AppointmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Appointment::class);
     }
 
+    // ADD THESE MISSING METHODS:
+
+    /**
+     * Count today's appointments for a specific doctor
+     */
+    public function countTodaysAppointments(Doctor $doctor): int
+    {
+        $today = new \DateTimeImmutable();
+        $startOfDay = $today->setTime(0, 0, 0);
+        $endOfDay = $today->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.doctor = :doctor')
+            ->andWhere('a.startDateTime BETWEEN :start AND :end')
+            ->setParameter('doctor', $doctor)
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Find today's appointments for a doctor
+     */
+    public function findTodaysAppointments(Doctor $doctor): array
+    {
+        $today = new \DateTimeImmutable();
+        $startOfDay = $today->setTime(0, 0, 0);
+        $endOfDay = $today->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->where('a.doctor = :doctor')
+            ->andWhere('a.startDateTime BETWEEN :start AND :end')
+            ->orderBy('a.startDateTime', 'ASC')
+            ->setParameter('doctor', $doctor)
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find today's appointments for a patient
+     */
+    public function findTodaysAppointmentsForPatient(Patient $patient): array
+    {
+        $today = new \DateTimeImmutable();
+        $startOfDay = $today->setTime(0, 0, 0);
+        $endOfDay = $today->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->where('a.patient = :patient')
+            ->andWhere('a.startDateTime BETWEEN :start AND :end')
+            ->orderBy('a.startDateTime', 'ASC')
+            ->setParameter('patient', $patient)
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Alternative method following Symfony naming convention
+     */
+    public function countByDoctorAndToday(Doctor $doctor): int
+    {
+        return $this->countTodaysAppointments($doctor);
+    }
+
+    /**
+     * Alternative method following Symfony naming convention
+     */
+    public function findByDoctorAndToday(Doctor $doctor): array
+    {
+        return $this->findTodaysAppointments($doctor);
+    }
+
+    // ... your existing methods remain below
+
     // Find appointments by doctor
     public function findByDoctor(Doctor $doctor): array
     {
