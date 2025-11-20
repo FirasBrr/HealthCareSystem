@@ -1,0 +1,293 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Login{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+        }
+
+        .login-section {
+            background: var(--gradient);
+            color: white;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group-custom {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label-custom {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control-custom {
+            border: 2px solid #e3ebf6;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fbfd;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
+            background: white;
+        }
+
+        .btn-login {
+            background: var(--primary);
+            color: white !important;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 123, 229, 0.3);
+            color: white !important;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--secondary);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .feature-icon-small {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefits-list li {
+            padding: 0.5rem 0;
+            color: var(--secondary);
+        }
+
+        .benefits-list li i {
+            color: var(--success);
+            margin-right: 0.5rem;
+        }
+
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 2rem;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .login-section {
+                padding: 40px 0;
+            }
+
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="login-card">
+                        <div class="row align-items-center">
+                            <!-- Login Form -->
+                            <div class="col-lg-6">
+                                <h1 class="login-title">Welcome Back</h1>
+                                <p class="login-subtitle">Sign in to your MedicalApp account</p>
+
+                                {% if error %}
+                                    <div class="alert alert-danger alert-custom">
+                                        <i class="fas fa-exclamation-circle me-2"></i>{{ error.messageKey|trans(error.messageData, 'security') }}
+                                    </div>
+                                {% endif %}
+
+                                {% for flash_success in app.flashes('success') %}
+                                    <div class="alert alert-success alert-custom">
+                                        <i class="fas fa-check-circle me-2"></i>{{ flash_success }}
+                                    </div>
+                                {% endfor %}
+
+                                <form method="post">
+                                    <div class="form-group-custom">
+                                        <label for="email" class="form-label-custom">Email Address</label>
+                                        <input type="email" value="{{ last_username }}" name="email" id="email" class="form-control form-control-custom" placeholder="Enter your email" autocomplete="email" required autofocus>
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <label for="password" class="form-label-custom">Password</label>
+                                        <input type="password" name="password" id="password" class="form-control form-control-custom" placeholder="Enter your password" autocomplete="current-password" required>
+                                    </div>
+
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                    <div class="form-group-custom">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                                            <label class="form-check-label" for="remember_me" style="color: var(--secondary);">
+                                                Remember me
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-login">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                                    </button>
+
+                                    <div class="forgot-password">
+                                        <a href="#">Forgot your password?</a>
+                                    </div>
+                                </form>
+
+                                <div class="register-link">
+                                    Don't have an account? <a href="{{ path('app_register') }}">Create one here</a>
+                                </div>
+                            </div>
+
+                            <!-- Benefits Sidebar -->
+                            <div class="col-lg-5 offset-lg-1 mt-5 mt-lg-0">
+                                <div class="feature-icon-small">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                                <h4 style="color: var(--dark); margin-bottom: 1.5rem;">Welcome to MedicalApp</h4>
+
+                                <ul class="benefits-list">
+                                    <li><i class="fas fa-check-circle"></i> Manage your appointments</li>
+                                    <li><i class="fas fa-check-circle"></i> Access your health records</li>
+                                    <li><i class="fas fa-check-circle"></i> Connect with healthcare providers</li>
+                                    <li><i class="fas fa-check-circle"></i> Secure messaging</li>
+                                    <li><i class="fas fa-check-circle"></i> Prescription management</li>
+                                    <li><i class="fas fa-check-circle"></i> 24/7 access to your health data</li>
+                                </ul>
+
+                                <div class="mt-4 p-3" style="background: var(--light); border-radius: 12px;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-shield-alt text-success me-3" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <h6 class="mb-1" style="color: var(--dark);">Your Data is Secure</h6>
+                                            <p class="mb-0 small" style="color: var(--secondary);">We use industry-standard encryption to protect your health information</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 p-3" style="background: var(--light); border-radius: 12px;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-mobile-alt text-primary me-3" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <h6 class="mb-1" style="color: var(--dark);">Access Anywhere</h6>
+                                            <p class="mb-0 small" style="color: var(--secondary);">Use MedicalApp on any device - desktop, tablet, or mobile</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
