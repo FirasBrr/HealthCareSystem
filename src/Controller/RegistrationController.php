@@ -16,50 +16,42 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Set the roles based on the selected role
-            $selectedRole = $form->get('role')->getData();
-            $user->setRoles([$selectedRole]);
-            $user->setRole($selectedRole);
+            // Extract role safely
+            $role = $form->get('roles')->getData();
+            $role = is_array($role) ? ($role[0] ?? 'ROLE_USER') : $role;
 
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+            $user->setRoles([$role]);
+            $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
 
-            // Create role-specific profile
-            if ($selectedRole === 'ROLE_DOCTOR') {
+            if ($role === 'ROLE_DOCTOR') {
                 $doctor = new Doctor();
                 $doctor->setClient($user);
-                $doctor->setSpecialty($form->get('specialty')->getData());
                 $doctor->setPhone($form->get('phone')->getData());
+                $doctor->setSpecialty($form->get('specialty')->getData());
                 $doctor->setBio($form->get('bio')->getData() ?? '');
-                $doctor->setRating(0.0); // Default rating
-                $entityManager->persist($doctor);
-            } elseif ($selectedRole === 'ROLE_PATIENT') {
+                $doctor->setRating(0.0);
+                $em->persist($doctor);
+            }
+
+            if ($role === 'ROLE_PATIENT') {
                 $patient = new Patient();
                 $patient->setClient($user);
                 $patient->setPhone($form->get('phone')->getData());
                 $patient->setAddress($form->get('address')->getData());
-                $entityManager->persist($patient);
+                $em->persist($patient);
             }
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $em->persist($user);
+            $em->flush();
 
-            // Add success message
-            $this->addFlash('success', 'Registration successful! Please login with your credentials.');
-
-            // Redirect to login page after registration
+            $this->addFlash('success', 'Registration successful!');
             return $this->redirectToRoute('app_login');
         }
 

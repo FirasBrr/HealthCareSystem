@@ -23,135 +23,84 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Email Address',
-                'attr' => [
-                    'placeholder' => 'Enter your email address',
-                    'class' => 'form-control form-control-custom'
-                ]
+                'attr'  => ['placeholder' => 'you@example.com', 'class' => 'form-control'],
             ])
             ->add('firstName', TextType::class, [
-                'label' => 'First Name',
-                'attr' => [
-                    'placeholder' => 'Enter your first name',
-                    'class' => 'form-control form-control-custom'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter your first name',
-                    ]),
-                ],
+                'label'       => 'First Name',
+                'attr'        => ['placeholder' => 'John', 'class' => 'form-control'],
+                'constraints' => [new NotBlank(['message' => 'First name required'])],
             ])
             ->add('lastName', TextType::class, [
-                'label' => 'Last Name',
-                'attr' => [
-                    'placeholder' => 'Enter your last name',
-                    'class' => 'form-control form-control-custom'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter your last name',
-                    ]),
-                ],
+                'label'       => 'Last Name',
+                'attr'        => ['placeholder' => 'Doe', 'class' => 'form-control'],
+                'constraints' => [new NotBlank(['message' => 'Last name required'])],
             ])
-            ->add('role', ChoiceType::class, [
-                'label' => 'I want to register as:',
-                'choices' => [
+
+            ->add('roles', ChoiceType::class, [
+                'label'    => 'I want to register as:',
+                'choices'  => [
                     'Patient' => 'ROLE_PATIENT',
-                    'Doctor' => 'ROLE_DOCTOR',
+                    'Doctor'  => 'ROLE_DOCTOR',
                 ],
-                'attr' => [
-                    'class' => 'form-control form-control-custom'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please select your account type',
-                    ]),
-                ],
+                'expanded' => true,
+                'multiple' => false,
+                'mapped'   => false,
+
+                'constraints' => [new NotBlank(['message' => 'Please select account type'])],
             ])
+
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'Password',
                 'mapped' => false,
-                'attr' => [
-                    'autocomplete' => 'new-password',
-                    'placeholder' => 'Create a secure password',
-                    'class' => 'form-control form-control-custom'
-                ],
+                'label'  => 'Password',
+                'attr'   => ['class' => 'form-control', 'placeholder' => '••••••••'],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        'max' => 4096,
-                    ]),
+                    new NotBlank(['message' => 'Password required']),
+                    new Length(['min' => 6, 'minMessage' => 'Minimum 6 characters']),
                 ],
-            ])
-        ;
+            ]);
 
-        // Add dynamic fields based on selected role
+        // Common field: phone
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $form = $event->getForm();
-
-            // Add phone field for both roles
-            $form->add('phone', TextType::class, [
-                'label' => 'Phone Number',
-                'mapped' => false, // This field is not mapped to the User entity
-                'attr' => [
-                    'placeholder' => 'Enter your phone number',
-                    'class' => 'form-control form-control-custom'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter your phone number',
-                    ]),
-                ],
+            $event->getForm()->add('phone', TextType::class, [
+                'mapped'      => false,
+                'label'       => 'Phone Number',
+                'attr'        => ['placeholder' => '+1234567890', 'class' => 'form-control'],
+                'constraints' => [new NotBlank()],
             ]);
         });
 
-        // Add role-specific fields after role is selected
+        // Dynamic fields
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $data = $event->getData();
             $form = $event->getForm();
 
-            $role = $data['role'] ?? null;
+            $roleValue = $data['roles'] ?? null;
+            $role = is_array($roleValue) ? ($roleValue[0] ?? null) : $roleValue;
 
             if ($role === 'ROLE_PATIENT') {
                 $form->add('address', TextareaType::class, [
-                    'label' => 'Address',
-                    'mapped' => false,
-                    'attr' => [
-                        'placeholder' => 'Enter your complete address',
-                        'class' => 'form-control form-control-custom',
-                        'rows' => 3
-                    ],
-                    'constraints' => [
-                        new NotBlank([
-                            'message' => 'Please enter your address',
-                        ]),
-                    ],
+                    'mapped'      => false,
+                    'required'    => true,
+                    'label'       => 'Home Address',
+                    'attr'        => ['rows' => 3, 'class' => 'form-control'],
+                    'constraints' => [new NotBlank()],
                 ]);
-            } elseif ($role === 'ROLE_DOCTOR') {
+            }
+
+            if ($role === 'ROLE_DOCTOR') {
                 $form->add('specialty', TextType::class, [
-                    'label' => 'Medical Specialty',
-                    'mapped' => false,
-                    'attr' => [
-                        'placeholder' => 'e.g., Cardiology, Pediatrics, etc.',
-                        'class' => 'form-control form-control-custom'
-                    ],
-                    'constraints' => [
-                        new NotBlank([
-                            'message' => 'Please enter your medical specialty',
-                        ]),
-                    ],
-                ])->add('bio', TextareaType::class, [
-                    'label' => 'Professional Bio',
-                    'mapped' => false,
+                    'mapped'      => false,
+                    'required'    => true,
+                    'label'       => 'Medical Specialty',
+                    'attr'        => ['placeholder' => 'e.g. Cardiology', 'class' => 'form-control'],
+                    'constraints' => [new NotBlank()],
+                ]);
+
+                $form->add('bio', TextareaType::class, [
+                    'mapped'   => false,
                     'required' => false,
-                    'attr' => [
-                        'placeholder' => 'Tell patients about your experience and qualifications...',
-                        'class' => 'form-control form-control-custom',
-                        'rows' => 4
-                    ],
+                    'label'    => 'Professional Bio (optional)',
+                    'attr'     => ['rows' => 5, 'class' => 'form-control'],
                 ]);
             }
         });

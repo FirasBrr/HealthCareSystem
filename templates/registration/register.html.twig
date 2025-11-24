@@ -85,6 +85,89 @@
             background: white;
         }
 
+        /* Custom Radio Button Styles */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--light);
+            border: 2px solid #e3ebf6;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .radio-label:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 123, 229, 0.1);
+        }
+
+        .radio-input:checked + .radio-label {
+            border-color: var(--primary);
+            background: rgba(44, 123, 229, 0.05);
+            box-shadow: 0 5px 15px rgba(44, 123, 229, 0.1);
+        }
+
+        .radio-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6e84a3;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .radio-input:checked + .radio-label .radio-icon {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .radio-input:checked + .radio-label .radio-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .role-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .role-patient .role-icon {
+            color: var(--success);
+        }
+
+        .role-doctor .role-icon {
+            color: var(--primary);
+        }
+
         .btn-register {
             background: var(--primary);
             color: white !important;
@@ -195,6 +278,11 @@
             .register-title {
                 font-size: 2rem;
             }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 {% endblock %}
@@ -239,8 +327,25 @@
                                 </div>
 
                                 <div class="form-group-custom">
-                                    {{ form_label(registrationForm.role, 'Account Type', {'label_attr': {'class': 'form-label-custom'}}) }}
-                                    {{ form_widget(registrationForm.role, {'attr': {'class': 'form-control form-control-custom'}}) }}
+                                    <label class="form-label-custom">Account Type</label>
+                                    <div class="radio-group">
+                                        <div class="radio-option">
+                                            <input type="radio" id="role_patient" name="registration_form[roles]" value="ROLE_PATIENT" class="radio-input" required>
+                                            <label for="role_patient" class="radio-label role-patient">
+                                                <span class="radio-icon"></span>
+                                                <i class="fas fa-user-injured role-icon"></i>
+                                                Patient
+                                            </label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="role_doctor" name="registration_form[roles]" value="ROLE_DOCTOR" class="radio-input" required>
+                                            <label for="role_doctor" class="radio-label role-doctor">
+                                                <span class="radio-icon"></span>
+                                                <i class="fas fa-user-md role-icon"></i>
+                                                Doctor
+                                            </label>
+                                        </div>
+                                    </div>
 
                                     <!-- Role Descriptions -->
                                     <div class="role-description">
@@ -334,12 +439,12 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const roleSelect = document.querySelector('#registration_form_role');
+            const roleRadios = document.querySelectorAll('input[name="registration_form[roles]"]');
             const dynamicFieldsContainer = document.getElementById('role-specific-fields');
 
             // Function to update dynamic fields based on role selection
             function updateRoleSpecificFields() {
-                const selectedRole = roleSelect.value;
+                const selectedRole = document.querySelector('input[name="registration_form[roles]"]:checked')?.value;
 
                 if (selectedRole === 'ROLE_PATIENT') {
                     dynamicFieldsContainer.innerHTML = `
@@ -372,12 +477,10 @@
                 }
             }
 
-            // Add event listener for role change
-            if (roleSelect) {
-                roleSelect.addEventListener('change', updateRoleSpecificFields);
-                // Initialize fields on page load
-                updateRoleSpecificFields();
-            }
+            // Add event listeners for radio buttons
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', updateRoleSpecificFields);
+            });
 
             // Password strength indicator
             const passwordInput = document.querySelector('#registration_form_plainPassword');
@@ -412,26 +515,28 @@
             }
 
             // Show role descriptions based on selection
-            if (roleSelect) {
-                roleSelect.addEventListener('change', function() {
-                    const roleDescriptions = document.querySelectorAll('.role-description');
-                    roleDescriptions.forEach(desc => {
-                        desc.style.opacity = '0.6';
-                        desc.style.borderLeftColor = '#e3ebf6';
-                    });
+            function updateRoleDescriptions() {
+                const roleDescriptions = document.querySelectorAll('.role-description');
+                const selectedRole = document.querySelector('input[name="registration_form[roles]"]:checked')?.value;
 
-                    if (this.value === 'ROLE_PATIENT') {
-                        roleDescriptions[0].style.opacity = '1';
-                        roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
-                    } else if (this.value === 'ROLE_DOCTOR') {
-                        roleDescriptions[1].style.opacity = '1';
-                        roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
-                    }
+                roleDescriptions.forEach(desc => {
+                    desc.style.opacity = '0.6';
+                    desc.style.borderLeftColor = '#e3ebf6';
                 });
 
-                // Trigger change event on page load to set initial state
-                roleSelect.dispatchEvent(new Event('change'));
+                if (selectedRole === 'ROLE_PATIENT') {
+                    roleDescriptions[0].style.opacity = '1';
+                    roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
+                } else if (selectedRole === 'ROLE_DOCTOR') {
+                    roleDescriptions[1].style.opacity = '1';
+                    roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
+                }
             }
+
+            // Add event listeners for role descriptions
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', updateRoleDescriptions);
+            });
         });
     </script>
 {% endblock %}

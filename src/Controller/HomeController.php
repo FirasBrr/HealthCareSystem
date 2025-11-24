@@ -16,7 +16,6 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    // Add this new route
     #[Route('/doctors', name: 'app_doctors')]
     public function doctors(): Response
     {

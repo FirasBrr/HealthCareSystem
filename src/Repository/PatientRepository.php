@@ -1,4 +1,5 @@
 <?php
+// src/Repository/PatientRepository.php
 
 namespace App\Repository;
 
@@ -6,9 +7,6 @@ use App\Entity\Patient;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Patient>
- */
 class PatientRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +14,46 @@ class PatientRepository extends ServiceEntityRepository
         parent::__construct($registry, Patient::class);
     }
 
-    //    /**
-    //     * @return Patient[] Returns an array of Patient objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Find latest patients with pagination
+     */
+    public function findLatest(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.client', 'c')
+            ->addSelect('c')
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Patient
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Count total patients
+     */
+    public function countAll(): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Find patients by search term
+     */
+    public function findBySearchTerm(string $term): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.client', 'c')
+            ->addSelect('c')
+            ->where('c.firstName LIKE :term')
+            ->orWhere('c.lastName LIKE :term')
+            ->orWhere('c.email LIKE :term')
+            ->orWhere('p.phone LIKE :term')
+            ->setParameter('term', '%' . $term . '%')
+            ->orderBy('c.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

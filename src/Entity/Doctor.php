@@ -44,131 +44,45 @@ class Doctor
     #[ORM\OneToMany(targetEntity: Prescription::class, mappedBy: 'doctor')]
     private Collection $prescriptions;
 
+    /**
+     * @var Collection<int, Appointment>
+     */
+    #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'doctor')]
+    private Collection $appointments;
+
     public function __construct()
     {
         $this->availabilities = new ArrayCollection();
         $this->prescriptions = new ArrayCollection();
+        $this->appointments = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getSpecialty(): ?string
-    {
-        return $this->specialty;
-    }
-
-    public function setSpecialty(string $specialty): static
-    {
-        $this->specialty = $specialty;
-
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(string $phone): static
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    public function getBio(): ?string
-    {
-        return $this->bio;
-    }
-
-    public function setBio(string $bio): static
-    {
-        $this->bio = $bio;
-
-        return $this;
-    }
-
-    public function getRating(): ?float
-    {
-        return $this->rating;
-    }
-
-    public function setRating(float $rating): static
-    {
-        $this->rating = $rating;
-
-        return $this;
-    }
-
-    public function getClient(): ?User
-    {
-        return $this->client;
-    }
-
-    public function setClient(User $client): static
-    {
-        $this->client = $client;
-
-        return $this;
-    }
+    // ... your existing getters and setters ...
 
     /**
-     * @return Collection<int, Availability>
+     * @return Collection<int, Appointment>
      */
-    public function getAvailabilities(): Collection
+    public function getAppointments(): Collection
     {
-        return $this->availabilities;
+        return $this->appointments;
     }
 
-    public function addAvailability(Availability $availability): static
+    public function addAppointment(Appointment $appointment): static
     {
-        if (!$this->availabilities->contains($availability)) {
-            $this->availabilities->add($availability);
-            $availability->setDoctor($this);
+        if (!$this->appointments->contains($appointment)) {
+            $this->appointments->add($appointment);
+            $appointment->setDoctor($this);
         }
 
         return $this;
     }
 
-    public function removeAvailability(Availability $availability): static
+    public function removeAppointment(Appointment $appointment): static
     {
-        if ($this->availabilities->removeElement($availability)) {
+        if ($this->appointments->removeElement($appointment)) {
             // set the owning side to null (unless already changed)
-            if ($availability->getDoctor() === $this) {
-                $availability->setDoctor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Prescription>
-     */
-    public function getPrescriptions(): Collection
-    {
-        return $this->prescriptions;
-    }
-
-    public function addPrescription(Prescription $prescription): static
-    {
-        if (!$this->prescriptions->contains($prescription)) {
-            $this->prescriptions->add($prescription);
-            $prescription->setDoctor($this);
-        }
-
-        return $this;
-    }
-
-    public function removePrescription(Prescription $prescription): static
-    {
-        if ($this->prescriptions->removeElement($prescription)) {
-            // set the owning side to null (unless already changed)
-            if ($prescription->getDoctor() === $this) {
-                $prescription->setDoctor(null);
+            if ($appointment->getDoctor() === $this) {
+                $appointment->setDoctor(null);
             }
         }
 

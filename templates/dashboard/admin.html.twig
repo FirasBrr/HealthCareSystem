@@ -1,0 +1,773 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Admin Dashboard{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --warning: #f6c343;
+            --danger: #e63757;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+        }
+
+        .dashboard-section {
+            background: #f5f7fb;
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        .welcome-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: block;
+            line-height: 1;
+        }
+
+        .stats-label {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between; /* Fixed: was 'between' */
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 120px;
+            width: 100%;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .appointment-time {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 10px 15px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .appointment-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(246, 195, 67, 0.1);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background: rgba(0, 217, 126, 0.1);
+            color: var(--success);
+        }
+
+        .status-cancelled {
+            background: rgba(230, 55, 87, 0.1);
+            color: var(--danger);
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: rgba(44, 123, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .btn-view:hover {
+            background: rgba(44, 123, 229, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .action-item:hover {
+            background: var(--light);
+            transform: translateX(5px);
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .doctor-card, .patient-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .doctor-card:hover, .patient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .chart-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .chart-label {
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 20px;
+            }
+
+            .stats-card, .chart-card {
+                margin-bottom: 20px;
+            }
+
+            .appointment-card {
+                padding: 15px;
+            }
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-1px);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-6 fw-bold mb-3">Welcome, {{ app.user.firstName }} </h1>
+                            <p class="mb-0 opacity-90">Here's your complete system overview and recent activities</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-inline-block  bg-opacity-20 px-4 py-3 rounded-pill">
+                                <i class="fas fa-shield-alt me-2"></i>Administrator
+                            </div>
+                            <a href="{{ path('app_logout') }}" class="btn-logout">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-5">
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: rgba(44, 123, 229, 0.1); color: var(--primary);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="stats-number">{{ stats.totalUsers|default(0) }}</span>
+                        <span class="stats-label">Total Users</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: rgba(0, 217, 126, 0.1); color: var(--success);">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <span class="stats-number">{{ stats.totalDoctors|default(0) }}</span>
+                        <span class="stats-label">Doctors</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: rgba(246, 195, 67, 0.1); color: var(--warning);">
+                            <i class="fas fa-procedures"></i>
+                        </div>
+                        <span class="stats-number">{{ stats.totalPatients|default(0) }}</span>
+                        <span class="stats-label">Patients</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: rgba(230, 55, 87, 0.1); color: var(--danger);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span class="stats-number">{{ stats.totalAppointments|default(0) }}</span>
+                        <span class="stats-label">Total Appointments</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Cards -->
+            <div class="row mb-5">
+                <div class="col-md-4 col-12">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">Today's Appointments</h4>
+                            <i class="fas fa-calendar-day text-primary"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="todayChart"></canvas>
+                        </div>
+                        <div class="chart-value text-primary">{{ stats.todayAppointments|default(0) }}</div>
+                        <div class="chart-label">Scheduled for today</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">This Month</h4>
+                            <i class="fas fa-calendar-week text-info"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="monthChart"></canvas>
+                        </div>
+                        <div class="chart-value text-info">{{ stats.monthAppointments|default(0) }}</div>
+                        <div class="chart-label">Monthly appointments</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">Appointment Status</h4>
+                            <i class="fas fa-chart-pie text-warning"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                        <div class="chart-value">
+                            <span class="text-success">{{ stats.confirmedAppointments|default(0) }}</span> /
+                            <span class="text-warning">{{ stats.pendingAppointments|default(0) }}</span>
+                        </div>
+                        <div class="chart-label">Confirmed / Pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Recent Appointments & Top Doctors -->
+                <div class="col-lg-8">
+                    <!-- Recent Appointments -->
+                    <div class="mb-4">
+                        <h3 class="section-title">
+                            <i class="fas fa-clock me-2"></i>Recent Appointments
+                        </h3>
+
+                        {% if recentAppointments|length > 0 %}
+                            {% for appointment in recentAppointments %}
+                                <div class="appointment-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <div class="appointment-time">
+                                                <div class="fw-bold text-primary">{{ appointment.startDateTime|date('h:i A') }}</div>
+                                                <small class="text-muted">{{ appointment.startDateTime|date('M j, Y') }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="mb-1">{{ appointment.patient.client.fullName ?? 'N/A' }}</h6>
+                                            <small class="text-muted">Patient</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="mb-1">{{ appointment.doctor.client.fullName ?? 'N/A' }}</h6>
+                                            <small class="text-muted">Doctor</small>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span class="appointment-status status-{{ appointment.status|lower }}">
+                                                {{ appointment.status }}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <h5>No recent appointments</h5>
+                                <p>No appointments have been scheduled yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Top Doctors -->
+                    <div class="mb-4">
+                        <h3 class="section-title">
+                            <i class="fas fa-star me-2"></i>Top Doctors
+                        </h3>
+
+                        {% if topDoctors|length > 0 %}
+                            {% for doctor in topDoctors %}
+                                <div class="doctor-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1">
+                                            <div class="avatar">
+                                                {{ (doctor.firstName ?? 'D')|first }}{{ (doctor.lastName ?? 'R')|first }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6 class="mb-1">Dr. {{ doctor.firstName ?? 'Unknown' }} {{ doctor.lastName ?? 'Doctor' }}</h6>
+                                            <small class="text-muted">{{ doctor.specialty ?? 'General Medicine' }}</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar-check text-primary me-2"></i>
+                                                <span>{{ doctor.appointmentCount ?? 0 }} appointments</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 text-end">
+                                            <span class="badge bg-primary">Rating: {{ doctor.rating ?? '4.8' }}/5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-user-md"></i>
+                                <h5>No doctor data</h5>
+                                <p>No doctors are currently registered.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions & Recent Patients Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mb-4">
+                        <h5 class="mb-4">Quick Actions</h5>
+
+                        <a href="#" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Manage Doctors</h6>
+                                <small class="text-muted">View and manage medical staff</small>
+                            </div>
+                        </a>
+
+                        <a href="#" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-procedures"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Manage Patients</h6>
+                                <small class="text-muted">Patient records and profiles</small>
+                            </div>
+                        </a>
+
+                        <a href="#" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Appointments</h6>
+                                <small class="text-muted">Schedule and manage bookings</small>
+                            </div>
+                        </a>
+                    </div>
+
+
+
+                    <!-- Recent Patients -->
+                    <div class="quick-actions">
+                        <h5 class="mb-4">Recent Patients</h5>
+
+                        {% if recentPatients|length > 0 %}
+                            {% for patient in recentPatients %}
+                                <div class="patient-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-2">
+                                            <div class="avatar" style="background: rgba(0, 217, 126, 0.2); color: var(--success);">
+                                                {{ (patient.client.firstName ?? 'P')|first }}{{ (patient.client.lastName ?? 'T')|first }}
+                                            </div>
+                                        </div>
+                                        <div class="col-7">
+                                            <h6 class="mb-1">{{ patient.client.fullName ?? 'Unknown Patient' }}</h6>
+                                            <small class="text-muted">{{ patient.phone ?? 'No phone' }}</small>
+                                        </div>
+                                        <div class="col-3 text-end">
+                                            <small class="text-muted">New</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state py-3">
+                                <i class="fas fa-users"></i>
+                                <h6>No recent patients</h6>
+                                <small>No new patient registrations</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart data from your stats
+            const todayAppointments = {{ stats.todayAppointments|default(0) }};
+            const monthAppointments = {{ stats.monthAppointments|default(0) }};
+            const pendingAppointments = {{ stats.pendingAppointments|default(0) }};
+            const confirmedAppointments = {{ stats.confirmedAppointments|default(0) }};
+
+            // Today's Appointments Chart (Progress Bar)
+            const todayCtx = document.getElementById('todayChart').getContext('2d');
+            const todayChart = new Chart(todayCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Today'],
+                    datasets: [{
+                        data: [todayAppointments],
+                        backgroundColor: 'rgba(44, 123, 229, 0.8)',
+                        borderColor: 'rgba(44, 123, 229, 1)',
+                        borderWidth: 0,
+                        borderRadius: 10,
+                        barPercentage: 0.3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Appointments: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: Math.max(todayAppointments, 10),
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Monthly Appointments Chart (Line Chart)
+            const monthCtx = document.getElementById('monthChart').getContext('2d');
+            const monthChart = new Chart(monthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        data: [
+                            Math.round(monthAppointments * 0.2),
+                            Math.round(monthAppointments * 0.3),
+                            Math.round(monthAppointments * 0.35),
+                            Math.round(monthAppointments * 0.15)
+                        ],
+                        backgroundColor: 'rgba(102, 16, 242, 0.1)',
+                        borderColor: 'rgba(102, 16, 242, 1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: 'rgba(102, 16, 242, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Appointment Status Chart (Doughnut)
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Confirmed', 'Pending'],
+                    datasets: [{
+                        data: [confirmedAppointments, pendingAppointments],
+                        backgroundColor: [
+                            'rgba(0, 217, 126, 0.8)',
+                            'rgba(246, 195, 67, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 217, 126, 1)',
+                            'rgba(246, 195, 67, 1)'
+                        ],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add loading animation to stats cards
+            const statsCards = document.querySelectorAll('.stats-card, .chart-card');
+            statsCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Add click handlers for action buttons
+            document.querySelectorAll('.btn-view').forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('View details clicked');
+                });
+            });
+        });
+    </script>
+{% endblock %}

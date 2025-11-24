@@ -1,8 +1,12 @@
 <?php
+// src/Controller/DashboardController.php
 
 namespace App\Controller;
 
 use App\Repository\AppointmentRepository;
+use App\Repository\DoctorRepository;
+use App\Repository\PatientRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,76 +14,94 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(AppointmentRepository $appointmentRepo): Response
-    {
+    public function index(
+        AppointmentRepository $appointmentRepo,
+        UserRepository $userRepo,
+        DoctorRepository $doctorRepo,
+        PatientRepository $patientRepo
+    ): Response {
         $user = $this->getUser();
-
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
 
-        // Doctor dashboard
+        // ========== ADMIN DASHBOARD ==========
+        // Dans ta méthode du dashboard admin
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $today = new \DateTimeImmutable('today');
+
+            $stats = [
+                'totalUsers'           => $userRepo->count([]),
+                'totalDoctors'         => $doctorRepo->count([]),
+                'totalPatients'        => $patientRepo->count([]),
+                'totalAppointments'    => $appointmentRepo->count([]),
+                'todayAppointments'    => $appointmentRepo->countByDate($today),
+                'monthAppointments'    => $appointmentRepo->countByMonth(new \DateTimeImmutable()),
+                'pendingAppointments'  => $appointmentRepo->count(['status' => 'Pending']),
+                'confirmedAppointments'=> $appointmentRepo->count(['status' => 'Confirmed']),
+            ];
+
+            return $this->render('dashboard/admin.html.twig', [
+                'stats'              => $stats,
+                'recentAppointments' => $appointmentRepo->findRecent(10),
+                'topDoctors'         => $doctorRepo->findTopByAppointments(5),
+                'recentPatients'     => $patientRepo->findLatest(8),
+            ]);
+        }
+
+        // ========== DOCTOR DASHBOARD (your existing code improved) ==========
         if ($this->isGranted('ROLE_DOCTOR')) {
             $doctor = $user->getDoctor();
 
-            // Create demo data for testing
-            if (!$doctor) {
-                // Create a temporary doctor object with demo data
-                $doctor = new \stdClass();
-                $doctor->client = new \stdClass();
-                $doctor->client->firstName = $user->getFirstName();
-                $doctor->client->lastName = $user->getLastName();
-                $doctor->specialty = 'General Practitioner';
-                $doctor->rating = 4.8;
-                $doctor->phone = 'Not set';
-                $doctor->bio = 'Complete your profile to add a bio';
+            $todayAppointments = $doctor
+                ? $appointmentRepo->findTodaysAppointments($doctor)
+                : [];
 
-                $stats = [
-                    'todayAppointments' => 0,
-                    'totalAppointments' => 0,
-                    'pendingAppointments' => 0,
-                    'confirmedAppointments' => 0,
-                ];
-
-                $todayAppointments = [];
-                $upcomingAppointments = [];
-            } else {
-                // Real doctor with profile
-                $stats = [
-                    'todayAppointments' => $appointmentRepo->countTodaysAppointments($doctor),
-                    'totalAppointments' => $appointmentRepo->count(['doctor' => $doctor]),
-                    'pendingAppointments' => $appointmentRepo->count(['doctor' => $doctor, 'status' => 'Pending']),
-                    'confirmedAppointments' => $appointmentRepo->count(['doctor' => $doctor, 'status' => 'Confirmed']),
-                ];
-
-                $todayAppointments = $appointmentRepo->findTodaysAppointments($doctor);
-                $upcomingAppointments = $appointmentRepo->findUpcomingAppointments($doctor);
-            }
+            $upcomingAppointments = $doctor
+                ? $appointmentRepo->findUpcomingAppointments($doctor)
+                : [];
 
             return $this->render('dashboard/doctor.html.twig', [
-                'doctor' => $doctor,
-                'stats' => $stats,
-                'todayAppointments' => $todayAppointments,
-                'upcomingAppointments' => $upcomingAppointments,
-                'today' => new \DateTime(),
+                'doctor'              => $doctor ?? $this->createDemoDoctor($user),
+                'todayAppointments'   => $todayAppointments,
+                'upcomingAppointments'=> $upcomingAppointments,
+                'stats'               => $this->getDoctorStats($appointmentRepo, $doctor),
             ]);
         }
 
-        // Patient dashboard
+        // ========== PATIENT DASHBOARD ==========
         if ($this->isGranted('ROLE_PATIENT')) {
-            $patient = $user->getPatient();
-
             return $this->render('dashboard/patient.html.twig', [
-                'patient' => $patient,
-                'user' => $user,
+                'patient' => $user->getPatient(),
+                'appointments' => $appointmentRepo->findBy(['patient' => $user->getPatient()], ['start' => 'DESC'], 10),
             ]);
-        }
-
-        // Admin dashboard
-        if ($this->isGranted('ROLE_ADMIN')) {
-            return $this->render('dashboard/admin.html.twig');
         }
 
         return $this->redirectToRoute('app_home');
+    }
+
+    private function createDemoDoctor($user): object
+    {
+        $demo = new \stdClass();
+        $demo->client = $user;
+        $demo->specialty = 'General Medicine';
+        $demo->phone = 'Not set';
+        $demo->bio = 'Complete your profile to appear in searches';
+        $demo->rating = null;
+        return $demo;
+    }
+
+    private function getDoctorStats(AppointmentRepository $repo, $doctor): array
+    {
+        if (!$doctor) {
+            return array_fill_keys(['today', 'total', 'pending', 'confirmed'], 0);
+        }
+
+        return [
+            'today'     => $repo->countTodaysAppointments($doctor),
+            'total'     => $repo->count(['doctor' => $doctor]),
+            'pending'   => $repo->count(['doctor' => $doctor, 'status' => 'Pending']),
+            'confirmed' => $repo->count(['doctor' => $doctor, 'status' => 'Confirmed']),
+        ];
     }
 }

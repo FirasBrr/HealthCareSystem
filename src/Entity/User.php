@@ -23,7 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     /**
@@ -32,9 +32,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -44,33 +41,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $role = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    // Relations
     #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
     private ?Doctor $doctor = null;
 
     #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
     private ?Patient $patient = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Admin $admin = null;
+
     /**
      * @var Collection<int, Report>
      */
     #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'client')]
-    private Collection $report;
-
-    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?Admin $admin = null;
+    private Collection $reports;
 
     public function __construct()
     {
-        $this->report = new ArrayCollection();
+        $this->reports = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
@@ -88,6 +83,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedAt = new \DateTime();
     }
 
+    // -----------------------------
+    // Getters & Setters
+    // -----------------------------
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,15 +100,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
@@ -121,25 +114,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        // Guarantee every user has at least ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+        return $this;
+    }
+
+    /**
+     * Helper: Get the main role (e.g. ROLE_DOCTOR, ROLE_PATIENT) without ROLE_USER
+     */
+    public function getMainRole(): ?string
+    {
+        $roles = $this->getRoles();
+        $filtered = array_filter($roles, fn($role) => $role !== 'ROLE_USER');
+        return $filtered ? reset($filtered) : null;
+    }
+
+    /**
+     * Helper: Set a single main role (convenient for forms/fixtures)
+     */
+    public function setMainRole(string $role): static
+    {
+        $role = strtoupper($role);
+        if (!str_starts_with($role, 'ROLE_')) {
+            $role = 'ROLE_' . $role;
+        }
+
+        $this->roles = [$role];
 
         return $this;
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
+     * Check if user has a specific role
      */
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles(), true);
+    }
+
     public function getPassword(): ?string
     {
         return $this->password;
@@ -148,14 +167,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getFirstName(): ?string
@@ -166,7 +184,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
-
         return $this;
     }
 
@@ -178,22 +195,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
-
         return $this;
     }
 
-    public function getRole(): ?string
+    public function getFullName(): string
     {
-        return $this->role;
-    }
-
-    public function setRole(string $role): static
-    {
-        $this->role = $role;
-        // Also set the roles array for Symfony security
-        $this->roles = [$role];
-
-        return $this;
+        return trim($this->firstName . ' ' . $this->lastName);
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -204,7 +211,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -216,24 +222,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
+
+    // -----------------------------
+    // Relation Methods
+    // -----------------------------
 
     public function getDoctor(): ?Doctor
     {
         return $this->doctor;
     }
 
-    public function setDoctor(Doctor $doctor): static
+    public function setDoctor(?Doctor $doctor): static
     {
-        // set the owning side of the relation if necessary
-        if ($doctor->getClient() !== $this) {
+        // Unset the owning side of the relation if necessary
+        if ($doctor === null && $this->doctor !== null) {
+            $this->doctor->setClient(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($doctor !== null && $doctor->getClient() !== $this) {
             $doctor->setClient($this);
         }
 
         $this->doctor = $doctor;
-
         return $this;
     }
 
@@ -242,45 +255,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->patient;
     }
 
-    public function setPatient(Patient $patient): static
+    public function setPatient(?Patient $patient): static
     {
-        // set the owning side of the relation if necessary
-        if ($patient->getClient() !== $this) {
+        // Unset the owning side of the relation if necessary
+        if ($patient === null && $this->patient !== null) {
+            $this->patient->setClient(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($patient !== null && $patient->getClient() !== $this) {
             $patient->setClient($this);
         }
 
         $this->patient = $patient;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Report>
-     */
-    public function getReport(): Collection
-    {
-        return $this->report;
-    }
-
-    public function addReport(Report $report): static
-    {
-        if (!$this->report->contains($report)) {
-            $this->report->add($report);
-            $report->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReport(Report $report): static
-    {
-        if ($this->report->removeElement($report)) {
-            // set the owning side to null (unless already changed)
-            if ($report->getClient() === $this) {
-                $report->setClient(null);
-            }
-        }
-
         return $this;
     }
 
@@ -289,15 +276,91 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->admin;
     }
 
-    public function setAdmin(Admin $admin): static
+    public function setAdmin(?Admin $admin): static
     {
-        // set the owning side of the relation if necessary
-        if ($admin->getUser() !== $this) {
+        // Unset the owning side of the relation if necessary
+        if ($admin === null && $this->admin !== null) {
+            $this->admin->setUser(null);
+        }
+
+        // Set the owning side of the relation if necessary
+        if ($admin !== null && $admin->getUser() !== $this) {
             $admin->setUser($this);
         }
 
         $this->admin = $admin;
-
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Report>
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Report $report): static
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports->add($report);
+            $report->setClient($this);
+        }
+        return $this;
+    }
+
+    public function removeReport(Report $report): static
+    {
+        if ($this->reports->removeElement($report)) {
+            // set the owning side to null (unless already changed)
+            if ($report->getClient() === $this) {
+                $report->setClient(null);
+            }
+        }
+        return $this;
+    }
+
+    // -----------------------------
+    // Business Logic Methods
+    // -----------------------------
+
+    /**
+     * Get the associated profile (Doctor, Patient, or Admin)
+     */
+    public function getProfile(): Doctor|Patient|Admin|null
+    {
+        return $this->doctor ?? $this->patient ?? $this->admin;
+    }
+
+    /**
+     * Get the profile type
+     */
+    public function getProfileType(): ?string
+    {
+        if ($this->doctor !== null) return 'doctor';
+        if ($this->patient !== null) return 'patient';
+        if ($this->admin !== null) return 'admin';
+        return null;
+    }
+
+    /**
+     * Check if user has a complete profile
+     */
+    public function hasCompleteProfile(): bool
+    {
+        return $this->getProfile() !== null;
+    }
+
+    /**
+     * Check if user is activated (has roles beyond ROLE_USER)
+     */
+    public function isActivated(): bool
+    {
+        return count($this->roles) > 0;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName() ?: $this->email ?? 'New User';
     }
 }
