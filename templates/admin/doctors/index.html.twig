@@ -1,3 +1,4 @@
+{# templates/admin/doctors/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Manage Doctors • Admin{% endblock %}
@@ -238,26 +239,95 @@
             color: var(--danger);
             font-size: 0.9rem;
         }
-
-        /* Back to Dashboard Button */
         .btn-back {
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 20px;
-            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 12px;
             text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
-            margin-right: 15px;
+            margin-right: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow:
+                    0 4px 15px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+            );
+            transition: left 0.6s ease;
         }
 
         .btn-back:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
             color: white;
-            transform: translateY(-1px);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow:
+                    0 8px 25px rgba(0, 0, 0, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-back:hover::before {
+            left: 100%;
+        }
+
+        .btn-back:active {
+            transform: translateY(0) scale(1);
+            box-shadow:
+                    0 2px 10px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back i {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Optional: Add a subtle pulse animation for attention */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn-back:focus {
+            animation: subtlePulse 2s infinite;
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .btn-back {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                margin-right: 15px;
+                margin-bottom: 10px;
+            }
         }
     </style>
 {% endblock %}
@@ -291,16 +361,10 @@
                 </div>
             </div>
 
+
             <!-- Flash Messages -->
             {% for message in app.flashes('success') %}
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -315,14 +379,14 @@
                                 <!-- Avatar -->
                                 <div class="flex-shrink-0 me-4">
                                     <div class="doctor-avatar">
-                                        {{ doctor.client.firstName|first|upper }}{{ doctor.client.lastName|first|upper }}
+                                        {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
                                     </div>
                                 </div>
 
                                 <!-- Doctor Info -->
                                 <div class="flex-grow-1">
                                     <h5 class="mb-2 fw-bold text-dark">
-                                        Dr. {{ doctor.client.getFullName() }}
+                                        Dr. {{ doctor.client.getFullName }}
                                     </h5>
                                     <div class="mb-3">
                                         <span class="specialty-badge">
@@ -356,10 +420,10 @@
                                         <i class="fas fa-edit me-1"></i>Edit
                                     </button>
                                     <form method="post" action="{{ path('admin_doctors_delete', {id: doctor.id}) }}"
-                                          class="d-inline delete-form flex-fill"
-                                          onsubmit="return confirm('Are you sure you want to delete this doctor?')">
+                                          class="d-inline delete-form flex-fill">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
-                                        <button type="submit" class="btn btn-outline-danger action-btn w-100">
+                                        <button type="button" class="btn btn-outline-danger action-btn w-100 delete-doctor"
+                                                data-id="{{ doctor.id }}" data-name="{{ doctor.client.getFullName }}">
                                             <i class="fas fa-trash me-1"></i>Delete
                                         </button>
                                     </form>
@@ -408,6 +472,7 @@
             const modal = new bootstrap.Modal(document.getElementById('doctorModal'));
             const modalBody = document.getElementById('modal-body-content');
             const modalTitle = document.getElementById('doctorModalLabel');
+            const doctorsContainer = document.getElementById('doctors-container');
 
             // Show toast notification
             function showToast(message, type = 'success') {
@@ -443,16 +508,20 @@
                         throw new Error('Network response was not ok');
                     }
 
-                    const data = await response.text();
-                    modalBody.innerHTML = data;
-                    modal.show();
+                    const data = await response.json();
 
-                    // Initialize form submission handler
-                    const form = modalBody.querySelector('form');
-                    if (form) {
-                        form.addEventListener('submit', handleFormSubmit);
+                    if (data.html) {
+                        modalBody.innerHTML = data.html;
+                        modal.show();
+
+                        // Initialize form submission handler
+                        const form = modalBody.querySelector('form');
+                        if (form) {
+                            form.addEventListener('submit', handleFormSubmit);
+                        }
+                    } else {
+                        throw new Error('No HTML content received');
                     }
-
                 } catch (error) {
                     console.error('Error loading form:', error);
                     modalBody.innerHTML = `
@@ -469,14 +538,12 @@
             async function handleFormSubmit(e) {
                 e.preventDefault();
                 const form = e.target;
-                const submitBtn = form.querySelector('.btn-submit') || form.querySelector('button[type="submit"]');
+                const submitBtn = form.querySelector('.btn-submit');
                 const formData = new FormData(form);
 
                 // Show loading state
-                if (submitBtn) {
-                    submitBtn.classList.add('btn-loading');
-                    submitBtn.disabled = true;
-                }
+                submitBtn.classList.add('btn-loading');
+                submitBtn.disabled = true;
 
                 try {
                     const response = await fetch(form.action, {
@@ -490,7 +557,7 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        showToast(data.message || 'Operation completed successfully');
+                        showToast(data.message);
                         modal.hide();
 
                         // Reload the page to show updated data
@@ -499,7 +566,7 @@
                         }, 1000);
                     } else {
                         // Update form with validation errors
-                        modalBody.innerHTML = data.html || data;
+                        modalBody.innerHTML = data.html;
 
                         // Re-initialize form submission handler
                         const newForm = modalBody.querySelector('form');
@@ -507,33 +574,80 @@
                             newForm.addEventListener('submit', handleFormSubmit);
                         }
 
-                        showToast(data.message || 'Please check the form for errors', 'error');
+                        showToast('Please check the form for errors', 'error');
                     }
                 } catch (error) {
                     console.error('Error submitting form:', error);
                     showToast('Error submitting form. Please try again.', 'error');
                 } finally {
-                    if (submitBtn) {
-                        submitBtn.classList.remove('btn-loading');
-                        submitBtn.disabled = false;
-                    }
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.disabled = false;
                 }
             }
 
             // Add new doctor
             document.querySelectorAll('[data-action="new"]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');
-                });
+                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');             });
             });
 
             // Edit doctor
             document.querySelectorAll('.edit-doctor').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const doctorId = btn.getAttribute('data-id');
-                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');
+                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');                });
+            });
+
+            // Delete doctor
+            document.querySelectorAll('.delete-doctor').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const doctorId = this.getAttribute('data-id');
+                    const doctorName = this.getAttribute('data-name');
+                    const form = this.closest('.delete-form');
+
+                    if (confirm(`Are you sure you want to delete Dr. ${doctorName}? This action cannot be undone.`)) {
+                        deleteDoctor(doctorId, form);
+                    }
                 });
             });
+
+            // Delete doctor function
+            async function deleteDoctor(doctorId, form) {
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast(data.message);
+                        // Remove doctor card from DOM
+                        const doctorCard = document.getElementById(`doctor-${doctorId}`);
+                        if (doctorCard) {
+                            doctorCard.remove();
+                        }
+
+                        // Update doctor count
+                        const doctorCount = document.querySelector('.doctors-header .rounded-pill');
+                        if (doctorCount) {
+                            const currentCount = parseInt(doctorCount.textContent) || 0;
+                            doctorCount.innerHTML = `<i class="fas fa-user-md me-2"></i>${currentCount - 1} Doctors`;
+                        }
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting doctor:', error);
+                    showToast('Error deleting doctor. Please try again.', 'error');
+                }
+            }
 
             // Add subtle animation to cards when they come into view
             const doctorCards = document.querySelectorAll('.doctor-card');
@@ -547,11 +661,6 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
-
-            // Handle successful form submissions from non-AJAX forms
-            {% if app.request.query.has('success') %}
-            showToast('Operation completed successfully');
-            {% endif %}
         });
     </script>
 {% endblock %}
