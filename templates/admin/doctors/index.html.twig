@@ -1,4 +1,3 @@
-{# templates/admin/doctors/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Manage Doctors • Admin{% endblock %}
@@ -239,6 +238,27 @@
             color: var(--danger);
             font-size: 0.9rem;
         }
+
+        /* Back to Dashboard Button */
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-1px);
+        }
     </style>
 {% endblock %}
 
@@ -251,6 +271,9 @@
                 <div class="header-content">
                     <div class="row align-items-center">
                         <div class="col-md-8">
+                            <a href="{{ path('app_dashboard') }}" class="btn-back">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
                             <h1 class="display-6 fw-bold mb-3">Manage Doctors</h1>
                             <p class="mb-0 opacity-90">View and manage all registered medical professionals</p>
                         </div>
@@ -276,6 +299,13 @@
                 </div>
             {% endfor %}
 
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
             <!-- Doctors Grid -->
             <div class="row g-4" id="doctors-container">
                 {% for doctor in doctors %}
@@ -285,14 +315,14 @@
                                 <!-- Avatar -->
                                 <div class="flex-shrink-0 me-4">
                                     <div class="doctor-avatar">
-                                        {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
+                                        {{ doctor.client.firstName|first|upper }}{{ doctor.client.lastName|first|upper }}
                                     </div>
                                 </div>
 
                                 <!-- Doctor Info -->
                                 <div class="flex-grow-1">
                                     <h5 class="mb-2 fw-bold text-dark">
-                                        Dr. {{ doctor.client.getFullName }}
+                                        Dr. {{ doctor.client.getFullName() }}
                                     </h5>
                                     <div class="mb-3">
                                         <span class="specialty-badge">
@@ -326,10 +356,10 @@
                                         <i class="fas fa-edit me-1"></i>Edit
                                     </button>
                                     <form method="post" action="{{ path('admin_doctors_delete', {id: doctor.id}) }}"
-                                          class="d-inline delete-form flex-fill">
+                                          class="d-inline delete-form flex-fill"
+                                          onsubmit="return confirm('Are you sure you want to delete this doctor?')">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
-                                        <button type="button" class="btn btn-outline-danger action-btn w-100 delete-doctor"
-                                                data-id="{{ doctor.id }}" data-name="{{ doctor.client.getFullName }}">
+                                        <button type="submit" class="btn btn-outline-danger action-btn w-100">
                                             <i class="fas fa-trash me-1"></i>Delete
                                         </button>
                                     </form>
@@ -378,7 +408,6 @@
             const modal = new bootstrap.Modal(document.getElementById('doctorModal'));
             const modalBody = document.getElementById('modal-body-content');
             const modalTitle = document.getElementById('doctorModalLabel');
-            const doctorsContainer = document.getElementById('doctors-container');
 
             // Show toast notification
             function showToast(message, type = 'success') {
@@ -414,20 +443,16 @@
                         throw new Error('Network response was not ok');
                     }
 
-                    const data = await response.json();
+                    const data = await response.text();
+                    modalBody.innerHTML = data;
+                    modal.show();
 
-                    if (data.html) {
-                        modalBody.innerHTML = data.html;
-                        modal.show();
-
-                        // Initialize form submission handler
-                        const form = modalBody.querySelector('form');
-                        if (form) {
-                            form.addEventListener('submit', handleFormSubmit);
-                        }
-                    } else {
-                        throw new Error('No HTML content received');
+                    // Initialize form submission handler
+                    const form = modalBody.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', handleFormSubmit);
                     }
+
                 } catch (error) {
                     console.error('Error loading form:', error);
                     modalBody.innerHTML = `
@@ -444,12 +469,14 @@
             async function handleFormSubmit(e) {
                 e.preventDefault();
                 const form = e.target;
-                const submitBtn = form.querySelector('.btn-submit');
+                const submitBtn = form.querySelector('.btn-submit') || form.querySelector('button[type="submit"]');
                 const formData = new FormData(form);
 
                 // Show loading state
-                submitBtn.classList.add('btn-loading');
-                submitBtn.disabled = true;
+                if (submitBtn) {
+                    submitBtn.classList.add('btn-loading');
+                    submitBtn.disabled = true;
+                }
 
                 try {
                     const response = await fetch(form.action, {
@@ -463,7 +490,7 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        showToast(data.message);
+                        showToast(data.message || 'Operation completed successfully');
                         modal.hide();
 
                         // Reload the page to show updated data
@@ -472,7 +499,7 @@
                         }, 1000);
                     } else {
                         // Update form with validation errors
-                        modalBody.innerHTML = data.html;
+                        modalBody.innerHTML = data.html || data;
 
                         // Re-initialize form submission handler
                         const newForm = modalBody.querySelector('form');
@@ -480,80 +507,33 @@
                             newForm.addEventListener('submit', handleFormSubmit);
                         }
 
-                        showToast('Please check the form for errors', 'error');
+                        showToast(data.message || 'Please check the form for errors', 'error');
                     }
                 } catch (error) {
                     console.error('Error submitting form:', error);
                     showToast('Error submitting form. Please try again.', 'error');
                 } finally {
-                    submitBtn.classList.remove('btn-loading');
-                    submitBtn.disabled = false;
+                    if (submitBtn) {
+                        submitBtn.classList.remove('btn-loading');
+                        submitBtn.disabled = false;
+                    }
                 }
             }
 
             // Add new doctor
             document.querySelectorAll('[data-action="new"]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');             });
+                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');
+                });
             });
 
             // Edit doctor
             document.querySelectorAll('.edit-doctor').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const doctorId = btn.getAttribute('data-id');
-                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');                });
-            });
-
-            // Delete doctor
-            document.querySelectorAll('.delete-doctor').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const doctorId = this.getAttribute('data-id');
-                    const doctorName = this.getAttribute('data-name');
-                    const form = this.closest('.delete-form');
-
-                    if (confirm(`Are you sure you want to delete Dr. ${doctorName}? This action cannot be undone.`)) {
-                        deleteDoctor(doctorId, form);
-                    }
+                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');
                 });
             });
-
-            // Delete doctor function
-            async function deleteDoctor(doctorId, form) {
-                const formData = new FormData(form);
-
-                try {
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        showToast(data.message);
-                        // Remove doctor card from DOM
-                        const doctorCard = document.getElementById(`doctor-${doctorId}`);
-                        if (doctorCard) {
-                            doctorCard.remove();
-                        }
-
-                        // Update doctor count
-                        const doctorCount = document.querySelector('.doctors-header .rounded-pill');
-                        if (doctorCount) {
-                            const currentCount = parseInt(doctorCount.textContent) || 0;
-                            doctorCount.innerHTML = `<i class="fas fa-user-md me-2"></i>${currentCount - 1} Doctors`;
-                        }
-                    } else {
-                        showToast(data.message, 'error');
-                    }
-                } catch (error) {
-                    console.error('Error deleting doctor:', error);
-                    showToast('Error deleting doctor. Please try again.', 'error');
-                }
-            }
 
             // Add subtle animation to cards when they come into view
             const doctorCards = document.querySelectorAll('.doctor-card');
@@ -567,6 +547,11 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Handle successful form submissions from non-AJAX forms
+            {% if app.request.query.has('success') %}
+            showToast('Operation completed successfully');
+            {% endif %}
         });
     </script>
 {% endblock %}
