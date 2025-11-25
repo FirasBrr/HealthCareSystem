@@ -1,0 +1,71 @@
+{# templates/admin/doctors/_form.html.twig #}
+<div class="modal-header border-0 pb-0">
+    <h4 class="modal-title fw-bold text-primary">
+        <i class="fas fa-user-md me-3"></i>
+        {{ modal_title|default('Add New Doctor') }}
+    </h4>
+</div>
+
+<div class="modal-body pt-4">
+    <form method="post"
+          action="{{ path(doctor.id ? 'admin_doctors_edit' : 'admin_doctors_new', doctor.id ? {id: doctor.id} : {}) }}"
+          id="doctor-form"
+          class="needs-validation"
+          novalidate>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                {{ form_label(form.firstName) }}
+                {{ form_widget(form.firstName, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.firstName) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_label(form.lastName) }}
+                {{ form_widget(form.lastName, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.lastName) }}
+            </div>
+            <div class="col-12">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_label(form.plainPassword) }}
+                {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.plainPassword) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_label(form.phone) }}
+                {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.phone) }}
+            </div>
+            <div class="col-md-8">
+                {{ form_label(form.specialty) }}
+                {{ form_widget(form.specialty, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.specialty) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_label(form.rating) }}
+                {{ form_widget(form.rating, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.rating) }}
+            </div>
+            <div class="col-12">
+                {{ form_label(form.bio) }}
+                {{ form_widget(form.bio, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+                {{ form_errors(form.bio) }}
+            </div>
+        </div>
+
+        {{ form_rest(form) }}
+
+        <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+            <button type="button" class="btn btn-outline-secondary btn-lg px-5" data-bs-dismiss="modal">
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg px-5 position-relative btn-submit">
+                <span class="loading-spinner"></span>
+                {{ doctor.id ? 'Update Doctor' : 'Create Doctor Account' }}
+            </button>
+        </div>
+    </form>
+</div>

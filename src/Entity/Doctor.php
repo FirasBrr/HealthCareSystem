@@ -1,4 +1,5 @@
 <?php
+// src/Entity/Doctor.php
 
 namespace App\Entity;
 
@@ -32,21 +33,15 @@ class Doctor
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
 
-    /**
-     * @var Collection<int, Availability>
-     */
+    /** @var Collection<int, Availability> */
     #[ORM\OneToMany(targetEntity: Availability::class, mappedBy: 'doctor')]
     private Collection $availabilities;
 
-    /**
-     * @var Collection<int, Prescription>
-     */
+    /** @var Collection<int, Prescription> */
     #[ORM\OneToMany(targetEntity: Prescription::class, mappedBy: 'doctor')]
     private Collection $prescriptions;
 
-    /**
-     * @var Collection<int, Appointment>
-     */
+    /** @var Collection<int, Appointment> */
     #[ORM\OneToMany(targetEntity: Appointment::class, mappedBy: 'doctor')]
     private Collection $appointments;
 
@@ -57,11 +52,72 @@ class Doctor
         $this->appointments = new ArrayCollection();
     }
 
-    // ... your existing getters and setters ...
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    /**
-     * @return Collection<int, Appointment>
-     */
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(User $client): static
+    {
+        $this->client = $client;
+        return $this;
+    }
+
+    public function getFullName(): string
+    {
+        return $this->client ? $this->client->getFullName() : 'Unknown Doctor';
+    }
+
+    // REQUIRED GETTERS
+    public function getSpecialty(): ?string
+    {
+        return $this->specialty;
+    }
+
+    public function setSpecialty(string $specialty): static
+    {
+        $this->specialty = $specialty;
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
+        return $this;
+    }
+
+    public function getRating(): ?float
+    {
+        return $this->rating;
+    }
+
+    public function setRating(?float $rating): static
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
     public function getAppointments(): Collection
     {
         return $this->appointments;
@@ -73,19 +129,21 @@ class Doctor
             $this->appointments->add($appointment);
             $appointment->setDoctor($this);
         }
-
         return $this;
     }
 
     public function removeAppointment(Appointment $appointment): static
     {
         if ($this->appointments->removeElement($appointment)) {
-            // set the owning side to null (unless already changed)
             if ($appointment->getDoctor() === $this) {
                 $appointment->setDoctor(null);
             }
         }
-
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
     }
 }

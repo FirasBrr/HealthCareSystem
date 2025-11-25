@@ -1,18 +1,23 @@
 <?php
+// src/Controller/AppointmentBookingController.php
 
 namespace App\Controller;
 
+use App\Repository\AppointmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
-final class AppointmentBookingController extends AbstractController
+#[Route('/admin/appointments')]
+class AppointmentBookingController extends AbstractController  // ← CHANGE THIS LINE ONLY
 {
-    #[Route('/appointment/booking', name: 'app_appointment_booking')]
-    public function index(): Response
+    #[Route('/', name: 'admin_appointments')]
+    public function index(AppointmentRepository $repo): Response
     {
-        return $this->render('appointment_booking/doctor.html.twig', [
-            'controller_name' => 'AppointmentBookingController',
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return $this->render('admin/appointments/index.html.twig', [
+            'appointments' => $repo->findBy([], ['startDateTime' => 'DESC'])
         ]);
     }
 }
