@@ -2,13 +2,13 @@
     <div class="w-100">
         <div class="d-flex align-items-center mb-3">
             <div class="modal-icon-wrapper me-3">
-                <i class="fas fa-user-md"></i>
+                <i class="fas fa-user-injured"></i>
             </div>
             <div>
                 <h4 class="modal-title fw-bold text-dark mb-1">
-                    {{ modal_title|default('Add New Doctor') }}
+                    {{ modal_title|default('Add New Patient') }}
                 </h4>
-                <p class="text-muted mb-0 small">Fill in the doctor's personal and professional information</p>
+                <p class="text-muted mb-0 small">Fill in the patient's personal and contact information</p>
             </div>
         </div>
     </div>
@@ -17,8 +17,8 @@
 
 <div class="modal-body pt-1">
     <form method="post"
-          action="{{ path(doctor.id ? 'admin_doctors_edit' : 'admin_doctors_new', doctor.id ? {id: doctor.id} : {}) }}"
-          id="doctor-form"
+          action="{{ path(patient.id ? 'admin_patients_edit' : 'admin_patients_new', patient.id ? {id: patient.id} : {}) }}"
+          id="patient-form"
           class="needs-validation"
           novalidate>
 
@@ -106,15 +106,10 @@
                         </div>
                     </div>
                     {{ form_errors(form.plainPassword) }}
-                    {% if doctor.id %}
+                    {% if patient.id %}
                         <div class="form-hint">
                             <i class="fas fa-info-circle text-muted me-1"></i>
                             <small class="text-muted">Leave blank to keep current password</small>
-                        </div>
-                    {% else %}
-                        <div class="form-hint">
-                            <i class="fas fa-info-circle text-muted me-1"></i>
-                            <small class="text-muted">Create a secure password</small>
                         </div>
                     {% endif %}
                 </div>
@@ -137,72 +132,35 @@
             </div>
         </div>
 
-        <!-- Professional Information Section -->
+        <!-- Address Section -->
         <div class="form-section">
             <div class="section-header">
                 <div class="section-icon">
-                    <i class="fas fa-stethoscope"></i>
+                    <i class="fas fa-map-marker-alt"></i>
                 </div>
-                <h6 class="section-title fw-semibold text-primary mb-0">Professional Information</h6>
+                <h6 class="section-title fw-semibold text-primary mb-0">Address Information</h6>
             </div>
-            <div class="row g-3">
-                <div class="col-md-8">
-                    <div class="form-floating">
-                        {{ form_widget(form.specialty, {'attr': {
-                            'class': 'form-control form-control-lg',
-                            'placeholder': 'Specialty',
-                            'id': 'specialty'
-                        }}) }}
-                        {{ form_label(form.specialty, null, {
-                            'label_attr': {'class': 'form-label'}
-                        }) }}
-                        <div class="input-icon">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                    </div>
-                    {{ form_errors(form.specialty) }}
+            <div class="form-floating">
+                {{ form_widget(form.address, {'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Full Address',
+                    'id': 'address',
+                    'style': 'height: 120px; resize: none;'
+                }}) }}
+                {{ form_label(form.address, null, {
+                    'label_attr': {'class': 'form-label'}
+                }) }}
+                <div class="input-icon textarea-icon">
+                    <i class="fas fa-home"></i>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-floating">
-                        {{ form_widget(form.rating, {'attr': {
-                            'class': 'form-control form-control-lg',
-                            'placeholder': 'Rating',
-                            'id': 'rating'
-                        }}) }}
-                        {{ form_label(form.rating, null, {
-                            'label_attr': {'class': 'form-label'}
-                        }) }}
-                        <div class="input-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    {{ form_errors(form.rating) }}
-                </div>
-                <div class="col-12">
-                    <div class="form-floating">
-                        {{ form_widget(form.bio, {'attr': {
-                            'class': 'form-control',
-                            'placeholder': 'Professional Bio',
-                            'id': 'bio',
-                            'style': 'height: 120px; resize: none;'
-                        }}) }}
-                        {{ form_label(form.bio, null, {
-                            'label_attr': {'class': 'form-label'}
-                        }) }}
-                        <div class="input-icon textarea-icon">
-                            <i class="fas fa-file-medical"></i>
-                        </div>
-                    </div>
-                    {{ form_errors(form.bio) }}
-                    <div class="form-hint">
-                        <i class="fas fa-info-circle text-muted me-1"></i>
-                        <small class="text-muted">Brief professional background and qualifications</small>
-                    </div>
-                </div>
+            </div>
+            {{ form_errors(form.address) }}
+            <div class="form-hint">
+                <i class="fas fa-info-circle text-muted me-1"></i>
+                <small class="text-muted">Enter the complete address including street, city, and zip code</small>
             </div>
         </div>
 
-        <!-- CSRF Token and hidden fields -->
         {{ form_rest(form) }}
 
         <!-- Form Actions -->
@@ -220,8 +178,8 @@
                     </button>
                     <button type="submit" class="btn btn-primary btn-lg px-4 py-2 position-relative btn-submit">
                         <span class="loading-spinner"></span>
-                        <i class="fas fa-{{ doctor.id ? 'save' : 'user-plus' }} me-2"></i>
-                        {{ doctor.id ? 'Update Doctor' : 'Create Doctor Account' }}
+                        <i class="fas fa-{{ patient.id ? 'save' : 'user-plus' }} me-2"></i>
+                        {{ patient.id ? 'Update Patient' : 'Create Patient Account' }}
                     </button>
                 </div>
             </div>
@@ -245,15 +203,15 @@
 
     .form-section {
         position: relative;
-        margin-bottom: 2rem !important;
+        margin-bottom: 2rem !important; /* Fixed gap between sections */
     }
 
     .section-header {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding-bottom: 8px;
-        margin-bottom: 1.25rem !important;
+        padding-bottom: 8px; /* Reduced padding */
+        margin-bottom: 1.25rem !important; /* Reduced margin */
         border-bottom: 2px solid #f1f5fd;
     }
 
@@ -280,8 +238,7 @@
         position: relative;
     }
 
-    .form-floating > .form-control,
-    .form-floating > .form-select {
+    .form-floating > .form-control {
         padding-left: 3rem;
         border: 2px solid #e9ecef;
         border-radius: 12px;
@@ -289,8 +246,7 @@
         background: #fff;
     }
 
-    .form-floating > .form-control:focus,
-    .form-floating > .form-select:focus {
+    .form-floating > .form-control:focus {
         border-color: #2c7be5;
         box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.15);
         background: #fff;
@@ -304,9 +260,7 @@
     }
 
     .form-floating > .form-control:focus ~ label,
-    .form-floating > .form-control:not(:placeholder-shown) ~ label,
-    .form-floating > .form-select:focus ~ label,
-    .form-floating > .form-select:not([value=""]):valid ~ label {
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
         color: #2c7be5;
         transform: scale(0.85) translateY(-0.9rem) translateX(-2.5rem);
     }
@@ -326,8 +280,7 @@
         transform: none;
     }
 
-    .form-floating > .form-control:focus ~ .input-icon,
-    .form-floating > .form-select:focus ~ .input-icon {
+    .form-floating > .form-control:focus ~ .input-icon {
         color: #2c7be5;
     }
 
@@ -335,14 +288,14 @@
         display: flex;
         align-items: center;
         font-size: 0.8rem;
-        margin-top: 0.5rem !important;
+        margin-top: 0.5rem !important; /* Reduced margin */
     }
 
     .form-actions {
         background: #f9fbfd;
-        margin: -1.5rem;
-        margin-top: 1rem;
-        padding: 1.5rem;
+        margin: -1.5rem; /* Reduced negative margin */
+        margin-top: 1rem; /* Added top margin */
+        padding: 1.5rem; /* Reduced padding */
         border-radius: 0 0 20px 20px;
     }
 
@@ -378,6 +331,7 @@
         background-color: #f8f9fa;
     }
 
+    /* Loading animation */
     .loading-spinner {
         display: none;
         width: 16px;
@@ -396,6 +350,30 @@
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+
+    /* Error states */
+    .is-invalid {
+        border-color: #e63757 !important;
+    }
+
+    .is-invalid ~ .input-icon {
+        color: #e63757 !important;
+    }
+
+    .invalid-feedback {
+        font-size: 0.8rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    /* Reduced gaps between form elements */
+    .modal-body {
+        padding-top: 0.5rem !important;
+    }
+
+    .form-section .row.g-3 {
+        --bs-gutter-y: 1rem; /* Reduced gutter */
     }
 
     /* Responsive adjustments */

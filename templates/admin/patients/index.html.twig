@@ -1,0 +1,611 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Patients • Admin{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --warning: #f6c343;
+            --danger: #e63757;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+        }
+
+        .dashboard-section {
+            background: #f5f7fb;
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        .patients-header {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .patients-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .patient-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .patient-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            background: var(--gradient);
+        }
+
+        .appointments-badge {
+            background: rgba(44, 123, 229, 0.1);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .contact-badge {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .action-btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: white;
+            color: var(--primary);
+            border: none;
+            box-shadow: 0 4px 15px rgba(44, 123, 229, 0.2);
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+        }
+
+        .btn-add:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.3);
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 30px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .contact-info {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Back to Dashboard Button */
+        .btn-back {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+            color: white;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-back:hover::before {
+            left: 100%;
+        }
+
+        .btn-back:active {
+            transform: translateY(0) scale(1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back i {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Optional: Add a subtle pulse animation for attention */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .btn-back:focus {
+            animation: subtlePulse 2s infinite;
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .btn-back {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                margin-right: 15px;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border: none;
+            padding: 25px 30px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .btn-submit {
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.3);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading .loading-spinner {
+            display: inline-block;
+        }
+
+        .alert-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .form-errors {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--danger);
+        }
+
+        .form-errors ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .form-errors li {
+            color: var(--danger);
+            font-size: 0.9rem;
+        }
+
+        .address-text {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            line-height: 1.4;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="dashboard-section">
+        <div class="container">
+
+            <!-- Page Header -->
+            <div class="patients-header">
+                <div class="header-content">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <a href="{{ path('app_dashboard') }}" class="btn-back">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            <h1 class="display-6 fw-bold mb-3">Manage Patients</h1>
+                            <p class="mb-0 opacity-90">View and manage all registered patients</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-inline-block bg-opacity-20 px-4 py-2 rounded-pill mb-3">
+                                <i class="fas fa-procedures me-2"></i>{{ patients|length }} Patients
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-add" data-action="new">
+                                    <i class="fas fa-plus me-2"></i>Add New Patient
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Patients Grid -->
+            <div class="row g-4" id="patients-container">
+                {% for patient in patients %}
+                    <div class="col-lg-4 col-md-6" id="patient-{{ patient.id }}">
+                        <div class="patient-card">
+                            <div class="d-flex align-items-start mb-4">
+                                <!-- Avatar -->
+                                <div class="flex-shrink-0 me-4">
+                                    <div class="patient-avatar">
+                                        {{ patient.client.firstName|first|upper }}{{ patient.client.lastName|first|upper }}
+                                    </div>
+                                </div>
+
+                                <!-- Patient Info -->
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">
+                                        {{ patient.client.getFullName() }}
+                                    </h5>
+
+                                    <div class="mb-3">
+                                        <span class="appointments-badge me-2">
+                                            <i class="fas fa-calendar-check me-1"></i>
+                                            {{ patient.appointments|length }} Appointments
+                                        </span>
+                                        {% if patient.hasUpcomingAppointments() %}
+                                            <span class="contact-badge">
+                                            <i class="fas fa-clock me-1 text-warning"></i>Upcoming
+                                        </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-2 small contact-info">
+                                        <div>
+                                            <i class="fas fa-envelope me-2"></i>{{ patient.client.email }}
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-phone me-2"></i>{{ patient.phone }}
+                                        </div>
+                                        <div class="address-text">
+                                            <i class="fas fa-map-marker-alt me-2"></i>
+                                            {{ patient.address|length > 60 ? patient.address|slice(0, 60) ~ '...' : patient.address }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary action-btn flex-fill edit-patient"
+                                            data-id="{{ patient.id }}">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                    <form method="post" action="{{ path('admin_patients_delete', {id: patient.id}) }}"
+                                          class="d-inline delete-form flex-fill"
+                                          onsubmit="return confirm('Are you sure you want to delete {{ patient.client.getFullName() }}?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ patient.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger action-btn w-100">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-procedures empty-icon"></i>
+                            <h3 class="text-muted mb-3">No patients registered yet</h3>
+                            <p class="text-muted mb-4">Start by adding your first patient to the platform.</p>
+                            <button type="button" class="btn btn-success btn-lg" data-action="new">
+                                <i class="fas fa-plus me-2"></i>Add First Patient
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Patient Modal -->
+    <div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--patient-gradient); color: white; border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title fw-bold" id="patientModalLabel">Add New Patient</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body-content">
+                    <!-- Form will be loaded here via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = new bootstrap.Modal(document.getElementById('patientModal'));
+            const modalBody = document.getElementById('modal-body-content');
+            const modalTitle = document.getElementById('patientModalLabel');
+
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show alert-toast`;
+                toast.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+
+            // Load form in modal
+            async function loadForm(url, title) {
+                try {
+                    modalTitle.textContent = title;
+                    modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted">Loading...</p></div>';
+
+                    const response = await fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const data = await response.text();
+                    modalBody.innerHTML = data;
+                    modal.show();
+
+                    // Initialize form submission handler
+                    const form = modalBody.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', handleFormSubmit);
+                    }
+
+                } catch (error) {
+                    console.error('Error loading form:', error);
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6>Error Loading Form</h6>
+                            <p class="mb-0">There was an error loading the form. Please try again.</p>
+                        </div>
+                    `;
+                    modal.show();
+                }
+            }
+
+            // Handle form submission
+            // In your existing JavaScript, update the form submission handler:
+            // In your admin/patients/index.html.twig JavaScript section
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                const form = e.target;
+                const submitBtn = form.querySelector('.btn-submit');
+                const formData = new FormData(form);
+
+                // Show loading state
+                if (submitBtn) {
+                    submitBtn.classList.add('btn-loading');
+                    submitBtn.disabled = true;
+                }
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        // Success - close modal and refresh page
+                        modal.hide();
+                        window.location.reload();
+                    } else {
+                        // Form errors - update modal content
+                        const html = await response.text();
+                        modalBody.innerHTML = html;
+                        // Re-initialize form submission handler
+                        const newForm = modalBody.querySelector('form');
+                        if (newForm) newForm.addEventListener('submit', handleFormSubmit);
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    alert('Error submitting form. Please try again.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.classList.remove('btn-loading');
+                        submitBtn.disabled = false;
+                    }
+                }
+            }
+
+            // Add new patient
+            document.querySelectorAll('[data-action="new"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    loadForm('{{ path('admin_patients_new') }}?ajax=1', 'Add New Patient');
+                });
+            });
+
+            // Edit patient
+            document.querySelectorAll('.edit-patient').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const patientId = btn.getAttribute('data-id');
+                    loadForm(`/admin/patients/${patientId}/edit?ajax=1`, 'Edit Patient');
+                });
+            });
+
+            // Add subtle animation to cards
+            const patientCards = document.querySelectorAll('.patient-card');
+            patientCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+{% endblock %}

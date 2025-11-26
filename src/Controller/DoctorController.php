@@ -45,7 +45,7 @@ class DoctorController extends AbstractController
 
         // AJAX: Load form
         if ($request->isXmlHttpRequest() && $request->isMethod('GET')) {
-            $html = $this->renderView('admin/doctors/_form.html.twig', [
+            $html = $this->renderView('admin/doctors/form.html.twig', [
                 'form' => $form->createView(),
                 'doctor' => $doctor,
                 'modal_title' => $isEdit ? 'Edit Doctor' : 'Add New Doctor'
@@ -80,7 +80,7 @@ class DoctorController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            $html = $this->renderView('admin/doctors/_form.html.twig', [
+            $html = $this->renderView('admin/doctors/form.html.twig', [
                 'form' => $form->createView(),
                 'doctor' => $doctor,
                 'modal_title' => $isEdit ? 'Edit Doctor' : 'Add New Doctor'
