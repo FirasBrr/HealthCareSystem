@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MedicalApp - Doctor Dashboard{% endblock %}
+{% block title %}MedicalApp - Patient Dashboard{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -54,24 +54,6 @@
             gap: 10px;
             align-items: center;
             justify-content: flex-end;
-        }
-
-        .btn-dashboard {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .btn-dashboard:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            transform: translateY(-1px);
         }
 
         .btn-logout {
@@ -170,36 +152,6 @@
             color: var(--danger);
         }
 
-        .btn-action {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-confirm {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-confirm:hover {
-            background: #00c571;
-            transform: translateY(-1px);
-        }
-
-        .btn-cancel {
-            background: rgba(230, 55, 87, 0.1);
-            color: var(--danger);
-        }
-
-        .btn-cancel:hover {
-            background: rgba(230, 55, 87, 0.2);
-            transform: translateY(-1px);
-        }
-
         .section-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -258,6 +210,22 @@
             margin-right: 15px;
         }
 
+        .btn-cancel {
+            background: rgba(230, 55, 87, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(230, 55, 87, 0.2);
+            transform: translateY(-1px);
+        }
+
         @media (max-width: 768px) {
             .welcome-card {
                 padding: 20px;
@@ -268,16 +236,12 @@
             .appointment-card {
                 padding: 20px;
             }
-            .header-actions {
-                flex-wrap: wrap;
-                justify-content: flex-start;
-            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <!-- Dashboard Section -->
+    <!-- Patient Dashboard Section -->
     <section class="dashboard-section">
         <div class="container">
             <!-- Welcome Card -->
@@ -285,14 +249,13 @@
                 <div class="welcome-content">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h1 class="display-6 fw-bold mb-3">Welcome, Dr. {{ app.user.firstName }} {{ app.user.lastName }}</h1>
-                            <p class="mb-0 opacity-90">Here's your daily overview and upcoming appointments</p>
+                            <h1 class="display-6 fw-bold mb-3">Welcome, {{ app.user.firstName }} {{ app.user.lastName }}</h1>
+                            <p class="mb-0 opacity-90">Manage your appointments and medical care</p>
                         </div>
                         <div class="col-md-4 text-md-end">
                             <div class="header-actions">
-
                                 <div class="d-inline-block bg-opacity-20 px-4 py-2 rounded-pill me-2">
-                                    <i class="fas fa-user-md me-2"></i>Doctor
+                                    <i class="fas fa-user me-2"></i>Patient
                                 </div>
                                 <a href="{{ path('app_logout') }}" class="btn-logout">
                                     <i class="fas fa-sign-out-alt me-1"></i>Logout
@@ -303,41 +266,15 @@
                 </div>
             </div>
 
-            <!-- Debug Information (remove this after testing) -->
-            {% if todayAppointments|length == 0 and upcomingAppointments|length == 0 %}
-                <div class="alert alert-info">
-                    <h6><i class="fas fa-info-circle me-2"></i>No Appointments Yet</h6>
-                    <p class="mb-0">When patients book appointments against your availability, they will appear here.
-                        <a href="{{ path('doctor_availability') }}" class="alert-link">Set your availability</a> to start receiving appointments.</p>
-                </div>
-            {% endif %}
-
-            <!-- Flash Messages -->
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>{{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-
             <!-- Stats Cards -->
             <div class="row mb-5">
                 <div class="col-md-3 col-6">
                     <div class="stats-card">
                         <div class="stats-icon" style="background: rgba(44, 123, 229, 0.1); color: var(--primary);">
-                            <i class="fas fa-calendar-day"></i>
+                            <i class="fas fa-calendar-check"></i>
                         </div>
-                        <span class="stats-number">{{ stats.today|default(0) }}</span>
-                        <span class="stats-label">Today's Appointments</span>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="stats-card">
-                        <div class="stats-icon" style="background: rgba(0, 217, 126, 0.1); color: var(--success);">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <span class="stats-number">{{ stats.confirmed|default(0) }}</span>
-                        <span class="stats-label">Confirmed</span>
+                        <span class="stats-number">{{ appointments|filter(a => a.status == 'Confirmed')|length }}</span>
+                        <span class="stats-label">Confirmed Appointments</span>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
@@ -345,8 +282,17 @@
                         <div class="stats-icon" style="background: rgba(246, 195, 67, 0.1); color: var(--warning);">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <span class="stats-number">{{ stats.pending|default(0) }}</span>
+                        <span class="stats-number">{{ appointments|filter(a => a.status == 'Pending')|length }}</span>
                         <span class="stats-label">Pending</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-icon" style="background: rgba(0, 217, 126, 0.1); color: var(--success);">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <span class="stats-number">{{ appointments|length }}</span>
+                        <span class="stats-label">Total Appointments</span>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
@@ -354,22 +300,27 @@
                         <div class="stats-icon" style="background: rgba(230, 55, 87, 0.1); color: var(--danger);">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <span class="stats-number">{{ stats.total|default(0) }}</span>
-                        <span class="stats-label">Total Appointments</span>
+                        <span class="stats-number">{{ appointments|filter(a => a.status == 'Cancelled')|length }}</span>
+                        <span class="stats-label">Cancelled</span>
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <!-- Today's Appointments -->
+                <!-- Appointments Section -->
                 <div class="col-lg-8">
                     <div class="mb-4">
-                        <h3 class="section-title">
-                            <i class="fas fa-calendar-day me-2"></i>Today's Appointments
-                        </h3>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="section-title mb-0">
+                                <i class="fas fa-calendar-day me-2"></i>Your Appointments
+                            </h3>
+                            <a href="{{ path('patient_doctors') }}" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Find Doctors
+                            </a>
+                        </div>
 
-                        {% if todayAppointments|length > 0 %}
-                            {% for appointment in todayAppointments %}
+                        {% if appointments|length > 0 %}
+                            {% for appointment in appointments %}
                                 <div class="appointment-card">
                                     <div class="row align-items-center">
                                         <div class="col-md-3">
@@ -379,9 +330,13 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <h6 class="mb-1">{{ appointment.patient.client.firstName ?? 'Unknown' }} {{ appointment.patient.client.lastName ?? 'Patient' }}</h6>
+                                            <h6 class="mb-1">Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</h6>
                                             <small class="text-muted">
-                                                <i class="fas fa-phone me-1"></i>{{ appointment.patient.phone ?? 'No phone' }}
+                                                <i class="fas fa-stethoscope me-1"></i>{{ appointment.doctor.specialty ?? 'General Medicine' }}
+                                            </small>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="fas fa-phone me-1"></i>{{ appointment.doctor.phone ?? 'No phone' }}
                                             </small>
                                         </div>
                                         <div class="col-md-3">
@@ -390,58 +345,9 @@
                                             </span>
                                         </div>
                                         <div class="col-md-2 text-end">
-                                            {% if appointment.status == 'Pending' %}
-                                                <button class="btn-action btn-confirm me-1" onclick="confirmAppointment({{ appointment.id }})">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            {% endif %}
-                                            <button class="btn-action btn-cancel" onclick="cancelAppointment({{ appointment.id }})">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-times"></i>
-                                <h5>No appointments today</h5>
-                                <p>You're all caught up! Enjoy your day.</p>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Upcoming Appointments -->
-                    <div>
-                        <h3 class="section-title">
-                            <i class="fas fa-calendar-check me-2"></i>Upcoming Appointments
-                        </h3>
-
-                        {% if upcomingAppointments|length > 0 %}
-                            {% for appointment in upcomingAppointments %}
-                                <div class="appointment-card">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-3">
-                                            <div class="appointment-time">
-                                                <div class="fw-bold text-primary">{{ appointment.startDateTime|date('h:i A') }}</div>
-                                                <small class="text-muted">{{ appointment.startDateTime|date('M j, Y') }}</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <h6 class="mb-1">{{ appointment.patient.client.firstName ?? 'Unknown' }} {{ appointment.patient.client.lastName ?? 'Patient' }}</h6>
-                                            <small class="text-muted">
-                                                <i class="fas fa-phone me-1"></i>{{ appointment.patient.phone ?? 'No phone' }}
-                                            </small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <span class="appointment-status status-{{ appointment.status|lower }}">
-                                                {{ appointment.status }}
-                                            </span>
-                                        </div>
-                                        <div class="col-md-2 text-end">
-                                            {% if appointment.status == 'Pending' %}
-                                                <button class="btn-action btn-confirm me-1" onclick="confirmAppointment({{ appointment.id }})">
-                                                    Confirm
+                                            {% if appointment.status == 'Pending' or appointment.status == 'Confirmed' %}
+                                                <button class="btn-cancel" onclick="cancelAppointment({{ appointment.id }})">
+                                                    <i class="fas fa-times me-1"></i>Cancel
                                                 </button>
                                             {% endif %}
                                         </div>
@@ -451,8 +357,11 @@
                         {% else %}
                             <div class="empty-state">
                                 <i class="fas fa-calendar-plus"></i>
-                                <h5>No upcoming appointments</h5>
-                                <p>Check back later for new appointment requests.</p>
+                                <h5>No appointments yet</h5>
+                                <p>Book your first appointment with a doctor to get started.</p>
+                                <a href="{{ path('patient_doctors') }}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-search me-2"></i>Find Doctors
+                                </a>
                             </div>
                         {% endif %}
                     </div>
@@ -463,53 +372,43 @@
                     <div class="quick-actions">
                         <h5 class="mb-4">Quick Actions</h5>
 
-                        <a href="{{ path('doctor_availability') }}" class="action-item">
+                        <a href="{{ path('patient_doctors') }}" class="action-item">
                             <div class="action-icon">
-                                <i class="fas fa-calendar-plus"></i>
+                                <i class="fas fa-search"></i>
                             </div>
                             <div>
-                                <h6 class="mb-1">Set Availability</h6>
-                                <small class="text-muted">Manage your working hours</small>
-                            </div>
-                        </a>
-
-                        <a href="{{ path('doctor_appointments') }}" class="action-item">
-                            <div class="action-icon">
-                                <i class="fas fa-list"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">All Appointments</h6>
-                                <small class="text-muted">View all appointments</small>
+                                <h6 class="mb-1">Find Doctors</h6>
+                                <small class="text-muted">Book new appointments</small>
                             </div>
                         </a>
 
                         <a href="#" class="action-item">
                             <div class="action-icon">
-                                <i class="fas fa-user-friends"></i>
+                                <i class="fas fa-file-medical"></i>
                             </div>
                             <div>
-                                <h6 class="mb-1">My Patients</h6>
-                                <small class="text-muted">View patient records</small>
+                                <h6 class="mb-1">Medical Records</h6>
+                                <small class="text-muted">View your health history</small>
                             </div>
                         </a>
 
                         <a href="#" class="action-item">
                             <div class="action-icon">
-                                <i class="fas fa-file-prescription"></i>
+                                <i class="fas fa-prescription"></i>
                             </div>
                             <div>
                                 <h6 class="mb-1">Prescriptions</h6>
-                                <small class="text-muted">Manage prescriptions</small>
+                                <small class="text-muted">View your medications</small>
                             </div>
                         </a>
 
                         <a href="#" class="action-item">
                             <div class="action-icon">
-                                <i class="fas fa-chart-line"></i>
+                                <i class="fas fa-user-edit"></i>
                             </div>
                             <div>
-                                <h6 class="mb-1">Reports</h6>
-                                <small class="text-muted">View practice analytics</small>
+                                <h6 class="mb-1">Profile Settings</h6>
+                                <small class="text-muted">Update your information</small>
                             </div>
                         </a>
                     </div>
@@ -520,24 +419,24 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-user-md text-primary"></i>
+                                    <i class="fas fa-user text-primary"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">Dr. {{ app.user.firstName }} {{ app.user.lastName }}</h6>
-                                <small class="text-muted">Medical Professional</small>
+                                <h6 class="mb-1">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                                <small class="text-muted">Patient</small>
                             </div>
                         </div>
                         <div class="row text-center">
                             <div class="col-6">
                                 <div class="border-end">
-                                    <div class="fw-bold text-primary">{{ doctor.rating ?? '4.8' }}</div>
-                                    <small class="text-muted">Rating</small>
+                                    <div class="fw-bold text-primary">{{ appointments|length }}</div>
+                                    <small class="text-muted">Total Visits</small>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="fw-bold text-primary">{{ stats.total|default(0) }}</div>
-                                <small class="text-muted">Total Visits</small>
+                                <div class="fw-bold text-primary">{{ patient.medicalRecord.bloodType ?? 'N/A' }}</div>
+                                <small class="text-muted">Blood Type</small>
                             </div>
                         </div>
                     </div>
@@ -550,33 +449,10 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        function confirmAppointment(appointmentId) {
-            if (confirm('Are you sure you want to confirm this appointment?')) {
-                fetch('{{ path('doctor_appointment_confirm', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', appointmentId), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error confirming appointment');
-                    });
-            }
-        }
-
         function cancelAppointment(appointmentId) {
             if (confirm('Are you sure you want to cancel this appointment?')) {
-                fetch('{{ path('doctor_appointment_cancel', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', appointmentId), {
+                // AJAX call to cancel appointment
+                fetch('/patient/appointment/' + appointmentId + '/cancel', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -588,7 +464,7 @@
                         if (data.success) {
                             location.reload();
                         } else {
-                            alert('Error: ' + data.message);
+                            alert('Error cancelling appointment');
                         }
                     })
                     .catch(error => {

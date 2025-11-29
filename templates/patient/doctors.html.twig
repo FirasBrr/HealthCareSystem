@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Find Doctors{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .doctors-section {
+            background: #f5f7fb;
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        .doctor-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+            border-left: 4px solid #2c7be5;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .specialty-badge {
+            background: rgba(44, 123, 229, 0.1);
+            color: #2c7be5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .rating-stars {
+            color: #f6c343;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="doctors-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="display-6 fw-bold">Find Doctors</h1>
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                    <p class="text-muted mb-5">Browse our medical professionals and book appointments</p>
+                </div>
+            </div>
+
+            <div class="row">
+                {% if doctors|length > 0 %}
+                    {% for doctor in doctors %}
+                        <div class="col-lg-6">
+                            <div class="doctor-card">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div class="doctor-avatar">
+                                            {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="mb-1">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h5>
+                                        <div class="mb-2">
+                                            <span class="specialty-badge">{{ doctor.specialty ?? 'General Medicine' }}</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-phone me-1"></i>{{ doctor.phone ?? 'Contact not available' }}
+                                            </small>
+                                        </div>
+                                        {% if doctor.rating %}
+                                            <div class="rating-stars mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <small class="text-muted ms-1">{{ doctor.rating }}/5</small>
+                                            </div>
+                                        {% endif %}
+                                        <p class="text-muted small mb-0">{{ doctor.bio ?? 'No bio available' }}</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="{{ path('patient_doctor_availability', {'id': doctor.id}) }}" class="btn btn-primary">
+                                            <i class="fas fa-calendar-plus me-2"></i>View Availability
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                            <h4>No doctors available</h4>
+                            <p class="text-muted">There are currently no doctors in the system.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

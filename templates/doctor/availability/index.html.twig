@@ -1,0 +1,490 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Availability Management{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --warning: #f6c343;
+            --danger: #e63757;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+        }
+
+        .availability-section {
+            background: #f5f7fb;
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        .welcome-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .calendar-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border: none;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 123, 229, 0.3);
+        }
+
+        .fc {
+            font-family: inherit;
+        }
+
+        .fc .fc-toolbar {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .fc .fc-button {
+            background: white;
+            border: 1px solid #e6e6e6;
+            color: var(--dark);
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .fc .fc-button:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .fc .fc-button-primary:not(:disabled).fc-button-active,
+        .fc .fc-button-primary:not(:disabled):active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .fc .fc-daygrid-day-number,
+        .fc .fc-col-header-cell-cushion {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .fc .fc-event {
+            border-radius: 6px;
+            border: none;
+            padding: 2px 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .fc .fc-event.availability-slot {
+            background: rgba(0, 217, 126, 0.15);
+            color: var(--success);
+            border-left: 3px solid var(--success);
+        }
+
+        .fc .fc-event.blocked-slot {
+            background: rgba(230, 55, 87, 0.15);
+            color: var(--danger);
+            border-left: 3px solid var(--danger);
+        }
+
+        .fc .fc-timegrid-slot {
+            height: 2.5em;
+        }
+
+        .fc .fc-day-today {
+            background: rgba(44, 123, 229, 0.05) !important;
+        }
+
+        .fc .fc-highlight {
+            background: rgba(44, 123, 229, 0.1);
+        }
+
+        .actions-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .action-item:hover {
+            background: var(--light);
+            transform: translateX(5px);
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c7be5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 20px;
+            }
+
+            .calendar-card {
+                padding: 15px;
+            }
+
+            .fc .fc-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .fc .fc-toolbar-chunk {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Availability Management Section -->
+    <section class="availability-section">
+        <div class="container">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-6 fw-bold mb-3">Availability Management</h1>
+                            <p class="mb-0 opacity-90">Click and drag on the calendar to add available time, or use the form for detailed settings</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="header-actions">
+                                <div class="d-inline-block bg-opacity-20 px-4 py-2 rounded-pill me-2">
+                                    <i class="fas fa-user-md me-2"></i>Doctor
+                                </div>
+                                <a href="{{ path('app_logout') }}" class="btn-logout">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <div class="row">
+                <!-- Calendar Section -->
+                <div class="col-lg-9">
+                    <div class="calendar-card">
+                        <h3 class="section-title">
+                            <i class="fas fa-calendar-alt me-2"></i>Your Schedule
+                        </h3>
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Sidebar -->
+                <div class="col-lg-3">
+                    <div class="actions-card">
+                        <h5 class="mb-4">Quick Actions</h5>
+
+                        <a href="{{ path('doctor_availability_new') }}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Add Time Slot</h6>
+                                <small class="text-muted">Create availability with details</small>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Legend Card -->
+                    <div class="actions-card mt-4">
+                        <h5 class="mb-4">Schedule Legend</h5>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="availability-indicator me-3" style="width: 15px; height: 15px; background: rgba(0, 217, 126, 0.15); border-left: 3px solid var(--success); border-radius: 3px;"></div>
+                            <div>
+                                <small class="fw-bold">Available</small>
+                                <br>
+                                <small class="text-muted">Open for appointments</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="availability-indicator me-3" style="width: 15px; height: 15px; background: rgba(230, 55, 87, 0.15); border-left: 3px solid var(--danger); border-radius: 3px;"></div>
+                            <div>
+                                <small class="fw-bold">Blocked</small>
+                                <br>
+                                <small class="text-muted">Not available</small>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var loadingOverlay = document.getElementById('loadingOverlay');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridWeek,dayGridMonth,listWeek'
+                },
+                slotMinTime: '07:00:00',
+                slotMaxTime: '21:00:00',
+                allDaySlot: false,
+                nowIndicator: true,
+                editable: true,
+                selectable: true,
+                selectMirror: true,
+                weekends: true,
+
+                eventClick: function(info) {
+                    // FIX: Use the correct Symfony route instead of hardcoded URL
+                    window.location.href = '{{ path('doctor_availability_edit', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', info.event.id);
+                },
+
+                select: function(info) {
+                    // Show loading
+                    loadingOverlay.style.display = 'flex';
+
+                    // Send AJAX request to save to database (always available when clicking)
+                    fetch('{{ path('doctor_availability_quick_add') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            start: info.start.toISOString(),
+                            end: info.end.toISOString(),
+                            isAvailable: true
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            loadingOverlay.style.display = 'none';
+
+                            if (data.success) {
+                                // Add the event to calendar
+                                calendar.addEvent({
+                                    id: data.id,
+                                    title: data.title,
+                                    start: info.start,
+                                    end: info.end,
+                                    classNames: [data.className],
+                                    extendedProps: data.extendedProps
+                                });
+
+                                // Show success message
+                                showFlashMessage('Available time slot created successfully!', 'success');
+                            } else {
+                                alert('Error creating availability slot');
+                            }
+                        })
+                        .catch(error => {
+                            loadingOverlay.style.display = 'none';
+                            console.error('Error:', error);
+                            alert('Error creating availability slot. Please try again.');
+                        })
+                        .finally(() => {
+                            calendar.unselect();
+                        });
+                },
+
+                events: {{ events|raw }},
+
+                eventDidMount: function(info) {
+                    if (info.event.extendedProps.type === 'blocked') {
+                        info.el.classList.add('blocked-slot');
+                    } else {
+                        info.el.classList.add('availability-slot');
+                    }
+                }
+            });
+
+            calendar.render();
+
+            // Flash message function
+            function showFlashMessage(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+                const flashHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                        <i class="fas ${icon} me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                // Insert after welcome card
+                const welcomeCard = document.querySelector('.welcome-card');
+                welcomeCard.insertAdjacentHTML('afterend', flashHtml);
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    const alert = document.querySelector('.alert');
+                    if (alert) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+{% endblock %}

@@ -73,8 +73,7 @@ class DashboardController extends AbstractController
         if ($this->isGranted('ROLE_PATIENT')) {
             return $this->render('dashboard/patient.html.twig', [
                 'patient' => $user->getPatient(),
-                'appointments' => $appointmentRepo->findBy(['patient' => $user->getPatient()], ['start' => 'DESC'], 10),
-            ]);
+                'appointments' => $appointmentRepo->findBy(['patient' => $user->getPatient()], ['startDateTime' => 'DESC'], 10),            ]);
         }
 
         return $this->redirectToRoute('app_home');
