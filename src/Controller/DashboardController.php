@@ -39,6 +39,7 @@ class DashboardController extends AbstractController
                 'monthAppointments'    => $appointmentRepo->countByMonth(new \DateTimeImmutable()),
                 'pendingAppointments'  => $appointmentRepo->count(['status' => 'Pending']),
                 'confirmedAppointments'=> $appointmentRepo->count(['status' => 'Confirmed']),
+                'cancelledAppointments' => $appointmentRepo->count(['status' => 'Cancelled']),
             ];
 
             return $this->render('dashboard/admin.html.twig', [

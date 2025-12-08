@@ -18,7 +18,19 @@
         .action-item { display: flex; align-items: center; padding: 15px; border-radius: 10px; margin-bottom: 10px; transition: all 0.3s ease; text-decoration: none; color: var(--dark); }
         .action-item:hover { background: var(--light); transform: translateX(5px); text-decoration: none; color: var(--dark); }
         .action-icon { width: 40px; height: 40px; background: var(--gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px; }
-        /* ... rest of your beautiful styles stay exactly the same ... */
+
+        /* Chart Styles */
+        .chart-container { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .chart-title { font-size: 1.1rem; font-weight: 600; color: var(--dark); margin: 0; }
+        .chart-subtitle { font-size: 0.9rem; color: var(--secondary); }
+        .simple-histogram-container { height: 250px; width: 100%; }
+
+        /* Status Colors */
+        .status-confirmed { background-color: var(--success); }
+        .status-pending { background-color: var(--warning); }
+        .status-cancelled { background-color: var(--danger); }
+
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .btn-logout { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 8px; text-decoration: none; transition: all 0.3s ease; font-weight: 500; }
         .btn-logout:hover { background: rgba(255, 255, 255, 0.3); color: white; transform: translateY(-1px); }
@@ -97,6 +109,16 @@
                         </h5>
 
                         <!-- REAL WORKING LINKS -->
+                        <a href="{{ path('admin_appointments') }}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Appointments</h6>
+                                <small class="text-muted">Schedule and manage bookings</small>
+                            </div>
+                        </a>
+
                         <a href="{{ path('admin_doctors') }}" class="action-item">
                             <div class="action-icon">
                                 <i class="fas fa-user-md"></i>
@@ -116,28 +138,46 @@
                                 <small class="text-muted">Patient records and profiles</small>
                             </div>
                         </a>
-
-                        <a href="{{ path('admin_appointments') }}" class="action-item">
-                            <div class="action-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Appointments</h6>
-                                <small class="text-muted">Schedule and manage bookings</small>
-                            </div>
-                        </a>
                     </div>
                 </div>
 
-                <!-- Main Content (you can keep your charts or replace later) -->
+                <!-- Main Content - Simple Histogram Chart -->
                 <div class="col-lg-8">
-                    <!-- Your existing charts and recent appointments stay 100% unchanged -->
-                    <!-- ... keep everything from your original code here ... -->
-                    <div class="bg-white rounded-3 shadow p-5 text-center">
-                        <i class="fas fa-tachometer-alt fa-4x text-primary mb-4 opacity-25"></i>
-                        <h4>System Overview</h4>
-                        <p class="text-muted">Real-time analytics and recent activity will appear here.</p>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div>
+                                <h5 class="chart-title">Appointments by Status</h5>
+                                <p class="chart-subtitle">Distribution of appointments based on their current status</p>
+                            </div>
+                        </div>
+
+                        <div class="simple-histogram-container">
+                            <canvas id="statusHistogram"></canvas>
+                        </div>
+
+                        <div class="row mt-4 text-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center mb-2">
+                                    <div class="status-confirmed rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                    <small class="text-muted">Confirmed: {{ stats.confirmedAppointments|default(0) }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center mb-2">
+                                    <div class="status-pending rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                    <small class="text-muted">Pending: {{ stats.pendingAppointments|default(0) }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-center mb-2">
+                                    <div class="status-cancelled rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                    <small class="text-muted">Cancelled: {{ stats.cancelledAppointments|default(0) }}</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -146,174 +186,112 @@
 
 {% block javascripts %}
     {{ parent() }}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Chart data from your stats
-                const todayAppointments = {{ stats.todayAppointments|default(0) }};
-                const monthAppointments = {{ stats.monthAppointments|default(0) }};
-                const pendingAppointments = {{ stats.pendingAppointments|default(0) }};
-                const confirmedAppointments = {{ stats.confirmedAppointments|default(0) }};
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get data from your stats
+            const confirmedCount = {{ stats.confirmedAppointments|default(0) }};
+            const pendingCount = {{ stats.pendingAppointments|default(0) }};
+            const cancelledCount = {{ stats.cancelledAppointments|default(0) }};
 
-                // Today's Appointments Chart (Progress Bar)
-                const todayCtx = document.getElementById('todayChart').getContext('2d');
-                const todayChart = new Chart(todayCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Today'],
-                        datasets: [{
-                            data: [todayAppointments],
-                            backgroundColor: 'rgba(44, 123, 229, 0.8)',
-                            borderColor: 'rgba(44, 123, 229, 1)',
-                            borderWidth: 0,
-                            borderRadius: 10,
-                            barPercentage: 0.3,
-                        }]
+            // Get canvas context
+            const ctx = document.getElementById('statusHistogram').getContext('2d');
+
+            // Create simple histogram chart
+            const histogramChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Confirmed', 'Pending', 'Cancelled'],
+                    datasets: [{
+                        data: [confirmedCount, pendingCount, cancelledCount],
+                        backgroundColor: [
+                            'rgba(0, 217, 126, 0.8)',   // Success - Green
+                            'rgba(246, 195, 67, 0.8)',  // Warning - Yellow
+                            'rgba(230, 55, 87, 0.8)'    // Danger - Red
+                        ],
+                        borderColor: [
+                            'rgba(0, 217, 126, 1)',
+                            'rgba(246, 195, 67, 1)',
+                            'rgba(230, 55, 87, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const status = context.label;
+                                    const count = context.raw;
+                                    const total = confirmedCount + pendingCount + cancelledCount;
+                                    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                                    return `${status}: ${count} (${percentage}%)`;
+                                }
+                            }
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
                             },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Appointments: ${context.raw}`;
-                                    }
+                            ticks: {
+                                color: '#6e84a3',
+                                font: {
+                                    size: 12,
+                                    weight: '500'
                                 }
                             }
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: Math.max(todayAppointments, 10),
-                                grid: {
-                                    display: false
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6e84a3',
+                                font: {
+                                    size: 11
                                 },
-                                ticks: {
-                                    display: false
+                                padding: 10,
+                                callback: function(value) {
+                                    return value;
                                 }
                             },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    display: false
+                            title: {
+                                display: true,
+                                text: 'Number of Appointments',
+                                color: '#6e84a3',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
                                 }
                             }
                         }
-                    }
-                });
-
-                // Monthly Appointments Chart (Line Chart)
-                const monthCtx = document.getElementById('monthChart').getContext('2d');
-                const monthChart = new Chart(monthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                        datasets: [{
-                            data: [
-                                Math.round(monthAppointments * 0.2),
-                                Math.round(monthAppointments * 0.3),
-                                Math.round(monthAppointments * 0.35),
-                                Math.round(monthAppointments * 0.15)
-                            ],
-                            backgroundColor: 'rgba(102, 16, 242, 0.1)',
-                            borderColor: 'rgba(102, 16, 242, 1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointBackgroundColor: 'rgba(102, 16, 242, 1)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                        }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    display: false
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    display: false
-                                }
-                            }
-                        }
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
                     }
-                });
-
-                // Appointment Status Chart (Doughnut)
-                const statusCtx = document.getElementById('statusChart').getContext('2d');
-                const statusChart = new Chart(statusCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Confirmed', 'Pending'],
-                        datasets: [{
-                            data: [confirmedAppointments, pendingAppointments],
-                            backgroundColor: [
-                                'rgba(0, 217, 126, 0.8)',
-                                'rgba(246, 195, 67, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgba(0, 217, 126, 1)',
-                                'rgba(246, 195, 67, 1)'
-                            ],
-                            borderWidth: 0,
-                            cutout: '70%'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        return `${label}: ${value}`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Add loading animation to stats cards
-                const statsCards = document.querySelectorAll('.stats-card, .chart-card');
-                statsCards.forEach((card, index) => {
-                    card.style.animationDelay = `${index * 0.1}s`;
-                });
-
-                // Add click handlers for action buttons
-                document.querySelectorAll('.btn-view').forEach(button => {
-                    button.addEventListener('click', function() {
-                        console.log('View details clicked');
-                    });
-                });
+                }
             });
-        </script>
-    {% endblock %}
+
+            // Add animation to stats cards
+            const statsCards = document.querySelectorAll('.stats-card');
+            statsCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+{% endblock %}

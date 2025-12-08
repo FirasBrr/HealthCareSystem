@@ -1,0 +1,970 @@
+{# templates/admin/appointments/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - Appointments Management{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --warning: #f6c343;
+            --danger: #e63757;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+        }
+
+        .appointments-section {
+            background: #f5f7fb;
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        /* Header - Matching Patients Page */
+        .appointments-header {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .appointments-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Back to Dashboard Button - Exact Same as Patients Page */
+        .btn-back {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+            color: white;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-back:hover::before {
+            left: 100%;
+        }
+
+        .btn-back:active {
+            transform: translateY(0) scale(1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back i {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Stats Counter */
+        .stats-counter {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+        }
+
+        /* NEW: Sidebar Filter Layout */
+        .appointments-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .filter-sidebar {
+            flex: 0 0 280px;
+        }
+
+        .appointments-list {
+            flex: 1;
+        }
+
+        /* Filter Card - Sidebar Style */
+        .filter-sidebar-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border: none;
+            position: sticky;
+            top: 30px;
+            margin-bottom: 0;
+        }
+
+        .filter-sidebar-card .filter-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(110, 132, 163, 0.1);
+        }
+
+        .filter-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(44, 123, 229, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Quick Stats in Sidebar */
+        .quick-stats {
+            background: rgba(44, 123, 229, 0.05);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid rgba(44, 123, 229, 0.1);
+        }
+
+        .quick-stats-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(110, 132, 163, 0.1);
+        }
+
+        .quick-stats-item:last-child {
+            border-bottom: none;
+        }
+
+        .quick-stats-label {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .quick-stats-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Appointment Cards - Updated for new layout */
+        .appointment-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left-color: var(--primary-dark);
+        }
+
+        /* Compact Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .status-pending {
+            background: rgba(246, 195, 67, 0.15);
+            color: #b38b00;
+            border: 1px solid rgba(246, 195, 67, 0.3);
+        }
+
+        .status-confirmed {
+            background: rgba(0, 217, 126, 0.15);
+            color: #00a86b;
+            border: 1px solid rgba(0, 217, 126, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(230, 55, 87, 0.15);
+            color: #d91e48;
+            border: 1px solid rgba(230, 55, 87, 0.3);
+        }
+
+        /* Compact User Avatars */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .doctor-avatar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        .patient-avatar {
+            background: linear-gradient(135deg, var(--success) 0%, #00b86b 100%);
+        }
+
+        /* Compact Time Badge */
+        .time-badge {
+            background: rgba(44, 123, 229, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        /* Compact User Info */
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-details {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            line-height: 1.4;
+        }
+
+        .user-details i {
+            width: 14px;
+            margin-right: 4px;
+        }
+
+        /* Reference Badge */
+        .reference-badge {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            background: var(--light);
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-family: monospace;
+        }
+
+        /* Action Buttons - Compact */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-action.view {
+            background: var(--primary);
+        }
+
+        .btn-action.email {
+            background: var(--secondary);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Duration Badge */
+        .duration-badge {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        /* Top Stats Cards - Smaller */
+        .top-stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: none;
+            transition: transform 0.3s ease;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .top-stats-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .top-stats-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin: 0 auto 10px;
+        }
+
+        .top-stats-icon.pending { background: rgba(246, 195, 67, 0.15); color: #b38b00; }
+        .top-stats-icon.confirmed { background: rgba(0, 217, 126, 0.15); color: #00a86b; }
+        .top-stats-icon.cancelled { background: rgba(230, 55, 87, 0.15); color: #d91e48; }
+
+        .top-stats-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: block;
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+
+        .top-stats-label {
+            color: var(--secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: white;
+            border-radius: 18px;
+            padding: 50px 25px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            margin-top: 20px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        /* Form Controls */
+        .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+            width: 100%;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.15);
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.15);
+        }
+
+        /* Filter Buttons */
+        .btn-filter-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-filter-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.2);
+            color: white;
+        }
+
+        .btn-filter-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 2px solid rgba(110, 132, 163, 0.3);
+            padding: 10px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-filter-secondary:hover {
+            background: var(--light);
+            border-color: var(--secondary);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        /* List Header */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(110, 132, 163, 0.1);
+        }
+
+        .list-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .appointments-count {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .appointments-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .filter-sidebar {
+                flex: 0 0 auto;
+            }
+
+            .filter-sidebar-card {
+                position: static;
+            }
+
+            .btn-back {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                margin-right: 15px;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .appointment-card {
+                padding: 15px;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .action-buttons {
+                margin-top: 15px;
+                justify-content: flex-start;
+            }
+        }
+
+        /* Animation for cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .appointment-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .btn-back:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+        /* Add this to your CSS */
+        .btn-clear-filters {
+            background: rgba(230, 55, 87, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 10px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-clear-filters:hover {
+            background: rgba(230, 55, 87, 0.15);
+            color: #d91e48;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 55, 87, 0.1);
+        }
+
+        /* Or if you want to keep the existing button but remove border */
+        .btn-filter-secondary-clean {
+            background: rgba(110, 132, 163, 0.08);
+            color: var(--secondary);
+            border: none;
+            padding: 10px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-filter-secondary-clean:hover {
+            background: rgba(110, 132, 163, 0.12);
+            color: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(110, 132, 163, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="appointments-section">
+        <div class="container">
+            <!-- Page Header - Matching Patients Page -->
+            <div class="appointments-header">
+                <div class="header-content">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <a href="{{ path('app_dashboard') }}" class="btn-back">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            <h1 class="display-6 fw-bold mb-3">Appointment Management</h1>
+                            <p class="mb-0 opacity-90">View and manage all patient appointments</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-inline-block stats-counter mb-3">
+                                <i class="fas fa-calendar-alt me-2"></i>{{ appointments|length }} Appointments
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Sidebar Layout with Filter on Left -->
+            <div class="appointments-container">
+                <!-- Left Sidebar with Filter -->
+                <div class="filter-sidebar">
+                    <div class="filter-sidebar-card">
+                        <div class="filter-header">
+                            <div class="filter-icon">
+                                <i class="fas fa-filter"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 fw-bold">Filter & Stats</h5>
+                                <p class="text-muted mb-0 small">Refine and monitor</p>
+                            </div>
+                        </div>
+
+                        <!-- Filter Form -->
+                        <form method="get">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small mb-2 fw-bold">STATUS</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="Pending" {% if current_filters.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Confirmed" {% if current_filters.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                    <option value="Cancelled" {% if current_filters.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-muted small mb-2 fw-bold">DATE</label>
+                                <input type="date" name="date" class="form-control" value="{{ current_filters.date }}">
+                            </div>
+
+                            <button type="submit" class="btn-filter-primary">
+                                <i class="fas fa-filter me-2"></i>Apply Filters
+                            </button>
+
+                            <div class="mt-4 pt-4 border-top">
+                                <a href="{{ path('admin_appointments') }}" class="btn-clear-filters w-100">
+                                    <i class="fas fa-times me-2"></i>Clear All Filters
+                                </a>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+
+                <!-- Right Content - Appointments List -->
+                <div class="appointments-list">
+                    <!-- List Header -->
+                    <div class="list-header">
+                        <h3>Appointments</h3>
+                        <div class="appointments-count">
+                            {{ appointments|length }} found
+                            {% if current_filters.status or current_filters.date %}
+                                <span class="text-primary">(filtered)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Top Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="top-stats-card">
+                                <div class="top-stats-icon pending">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <span class="top-stats-number">{{ appointments|filter(a => a.status == 'Pending')|length }}</span>
+                                <span class="top-stats-label">Pending</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="top-stats-card">
+                                <div class="top-stats-icon confirmed">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <span class="top-stats-number">{{ appointments|filter(a => a.status == 'Confirmed')|length }}</span>
+                                <span class="top-stats-label">Confirmed</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="top-stats-card">
+                                <div class="top-stats-icon cancelled">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                                <span class="top-stats-number">{{ appointments|filter(a => a.status == 'Cancelled')|length }}</span>
+                                <span class="top-stats-label">Cancelled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointments List -->
+                    <div class="appointments-content">
+                        {% if appointments is defined and appointments|length > 0 %}
+                            {% for appointment in appointments %}
+                                <div class="appointment-card">
+                                    <div class="row align-items-start">
+                                        <!-- Status & Reference - Left Column -->
+                                        <div class="col-lg-2 mb-3 mb-lg-0">
+                                            {% set statusClass = appointment.status|lower %}
+                                            <div class="status-badge status-{{ statusClass }}">
+                                                <i class="fas fa-circle" style="font-size: 6px;"></i>
+                                                {{ appointment.status }}
+                                            </div>
+                                            <div class="reference-badge mt-2">
+                                                <i class="fas fa-hashtag me-1"></i>{{ appointment.reference }}
+                                            </div>
+                                            <div class="time-badge mt-2">
+                                                <i class="fas fa-clock"></i>
+                                                {{ appointment.startDateTime|date('h:i A') }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Doctor Information - Middle Column -->
+                                        <div class="col-lg-4 mb-3 mb-lg-0">
+                                            <div class="d-flex align-items-start">
+                                                <div class="user-avatar doctor-avatar">
+                                                    <i class="fas fa-user-md"></i>
+                                                </div>
+                                                <div class="user-info">
+                                                    <div class="user-name">Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</div>
+                                                    <div class="user-details">
+                                                        <div><i class="fas fa-stethoscope"></i>{{ appointment.doctor.specialty }}</div>
+                                                        <div><i class="fas fa-envelope"></i>{{ appointment.doctor.client.email|slice(0, 20) }}{% if appointment.doctor.client.email|length > 20 %}...{% endif %}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Patient Information - Middle Column -->
+                                        <div class="col-lg-4 mb-3 mb-lg-0">
+                                            <div class="d-flex align-items-start">
+                                                <div class="user-avatar patient-avatar">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div class="user-info">
+                                                    <div class="user-name">{{ appointment.patient.client.firstName }} {{ appointment.patient.client.lastName }}</div>
+                                                    <div class="user-details">
+                                                        <div><i class="fas fa-envelope"></i>{{ appointment.patient.client.email|slice(0, 20) }}{% if appointment.patient.client.email|length > 20 %}...{% endif %}</div>
+                                                        <div><i class="fas fa-phone"></i>{{ appointment.patient.phone|default('No phone')|slice(0, 15) }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Actions - Right Column -->
+                                        <div class="col-lg-2">
+                                            <div class="action-buttons">
+                                                <button class="btn-action view view-details"
+                                                        data-id="{{ appointment.id }}"
+                                                        data-bs-toggle="tooltip"
+                                                        title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <a href="mailto:{{ appointment.patient.client.email }}"
+                                                   class="btn-action email"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Email Patient">
+                                                    <i class="fas fa-envelope"></i>
+                                                </a>
+                                            </div>
+                                            <div class="duration-badge">
+                                                <i class="fas fa-hourglass-half me-1"></i>
+                                                {% set duration = appointment.endDateTime.diff(appointment.startDateTime) %}
+                                                {{ duration.h }}h {{ duration.i }}min
+                                            </div>
+                                            <div class="text-muted small text-end mt-2">
+                                                {{ appointment.startDateTime|date('M d') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Empty State -->
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times empty-icon"></i>
+                                <h3 class="text-muted mb-3">No Appointments Found</h3>
+                                <p class="text-muted mb-4">Try adjusting your filters or check back later for new appointments.</p>
+                                <a href="{{ path('admin_appointments') }}" class="btn btn-primary">
+                                    <i class="fas fa-sync me-2"></i>Clear All Filters
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Footer -->
+                    {% if appointments is defined and appointments|length > 0 %}
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <p class="text-muted mb-0 small">
+                                Showing <strong class="text-primary">{{ appointments|length }}</strong> appointments
+                                {% if current_filters.status or current_filters.date %}
+                                    <span class="ms-2">(filtered results)</span>
+                                {% endif %}
+                                • Updated: {{ "now"|date("h:i A") }}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appointment Details Modal -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--gradient); color: white;">
+                    <h5 class="modal-title">Appointment Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="appointmentDetails">
+                    <!-- Content will be loaded here via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // View details button click handler
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-id');
+
+                    // Show loading state
+                    document.getElementById('appointmentDetails').innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Loading appointment details...</p>
+            </div>
+        `;
+
+                    // Fetch the show page HTML
+                    fetch(`/admin/appointments/${appointmentId}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            // Extract just the modal content from the HTML
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const modalContent = doc.querySelector('.container-fluid').innerHTML;
+
+                            // Show in modal
+                            document.getElementById('appointmentDetails').innerHTML = `
+                    <div style="max-height: 70vh; overflow-y: auto;">
+                        ${modalContent}
+                    </div>
+                `;
+                        })
+                        .catch(error => {
+                            document.getElementById('appointmentDetails').innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h5>Error Loading Details</h5>
+                        <p class="text-muted">Could not load appointment details. Please try again.</p>
+                        <a href="/admin/appointments/${appointmentId}" class="btn btn-primary mt-3">
+                            View Full Page
+                        </a>
+                    </div>
+                `;
+                        });
+
+                    const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+                    modal.show();
+                });
+            });
+
+            // Add animation to appointment cards on load
+            const appointmentCards = document.querySelectorAll('.appointment-card');
+            appointmentCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(15px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            // Add hover effect to stats cards
+            const statsCards = document.querySelectorAll('.top-stats-card');
+            statsCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-3px)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Auto-submit form when filters change (optional)
+            document.querySelector('select[name="status"]').addEventListener('change', function() {
+                this.form.submit();
+            });
+
+            document.querySelector('input[name="date"]').addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+    </script>
+{% endblock %}
