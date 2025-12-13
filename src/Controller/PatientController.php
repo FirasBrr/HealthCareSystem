@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -52,6 +53,16 @@ class PatientController extends AbstractController
             $form->get('email')->setData($user->getEmail());
         }
 
+        // AJAX: Load form (GET request with ?ajax=1 or X-Requested-With header)
+        if ($request->isXmlHttpRequest() && $request->isMethod('GET')) {
+            $html = $this->renderView('admin/patients/form.html.twig', [
+                'form' => $form->createView(),
+                'patient' => $patient,
+                'modal_title' => $isEdit ? 'Edit Patient' : 'Add New Patient'
+            ]);
+            return new JsonResponse(['html' => $html]);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -78,8 +89,11 @@ class PatientController extends AbstractController
                     $user->setLastName($form->get('lastName')->getData());
                     $user->setEmail($form->get('email')->getData());
 
-                    // Hash password
+                    // Hash password (required for new patients)
                     $plainPassword = $form->get('plainPassword')->getData();
+                    if (!$plainPassword) {
+                        throw new \Exception('Password is required for new patients');
+                    }
                     $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
                     $user->setPassword($hashedPassword);
 
@@ -97,14 +111,42 @@ class PatientController extends AbstractController
                 $em->persist($patient);
                 $em->flush();
 
+                // Handle AJAX response for form submission
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => true,
+                        'message' => 'Patient ' . ($isEdit ? 'updated' : 'created') . ' successfully!'
+                    ]);
+                }
+
                 $this->addFlash('success', 'Patient ' . ($isEdit ? 'updated' : 'created') . ' successfully!');
                 return $this->redirectToRoute('admin_patients');
 
             } catch (\Exception $e) {
-                $this->addFlash('error', 'An error occurred while saving the patient: ' . $e->getMessage());
+                $errorMessage = 'An error occurred while saving the patient: ' . $e->getMessage();
+
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $errorMessage
+                    ], 400);
+                }
+
+                $this->addFlash('error', $errorMessage);
             }
         }
 
+        // If form has errors on AJAX submission, return form with errors
+        if ($request->isXmlHttpRequest() && $form->isSubmitted()) {
+            $html = $this->renderView('admin/patients/form.html.twig', [
+                'form' => $form->createView(),
+                'patient' => $patient,
+                'modal_title' => $isEdit ? 'Edit Patient' : 'Add New Patient'
+            ]);
+            return new JsonResponse(['html' => $html, 'success' => false], 400);
+        }
+
+        // Regular (non-AJAX) form rendering
         return $this->render('admin/patients/form.html.twig', [
             'form' => $form->createView(),
             'patient' => $patient,
@@ -126,10 +168,39 @@ class PatientController extends AbstractController
                     $em->remove($user);
                 }
                 $em->flush();
+
+                // Handle AJAX response
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => true,
+                        'message' => 'Patient deleted successfully!'
+                    ]);
+                }
+
                 $this->addFlash('success', 'Patient deleted successfully!');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'An error occurred while deleting the patient: ' . $e->getMessage());
+                $errorMessage = 'An error occurred while deleting the patient: ' . $e->getMessage();
+
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $errorMessage
+                    ], 400);
+                }
+
+                $this->addFlash('error', $errorMessage);
             }
+        } else {
+            $errorMessage = 'Invalid CSRF token';
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $errorMessage
+                ], 400);
+            }
+
+            $this->addFlash('error', $errorMessage);
         }
 
         return $this->redirectToRoute('admin_patients');
