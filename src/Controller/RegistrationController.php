@@ -36,7 +36,6 @@ class RegistrationController extends AbstractController
                 $doctor->setPhone($form->get('phone')->getData());
                 $doctor->setSpecialty($form->get('specialty')->getData());
                 $doctor->setBio($form->get('bio')->getData() ?? '');
-                $doctor->setRating(0.0);
                 $em->persist($doctor);
             }
 

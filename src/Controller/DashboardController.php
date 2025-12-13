@@ -393,7 +393,6 @@ class DashboardController extends AbstractController
         $demo->specialty = 'General Medicine';
         $demo->phone = 'Not set';
         $demo->bio = 'Complete your profile to appear in searches';
-        $demo->rating = null;
         return $demo;
     }
 

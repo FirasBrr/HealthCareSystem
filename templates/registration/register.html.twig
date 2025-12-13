@@ -258,12 +258,29 @@
             margin-top: 10px;
             border: 2px dashed var(--primary);
             transition: all 0.3s ease;
+            display: none;
+        }
+
+        .dynamic-fields-container.active {
+            display: block;
         }
 
         .dynamic-fields-container h6 {
             color: var(--primary);
             margin-bottom: 15px;
             font-weight: 600;
+        }
+
+        .form-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-error ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
         }
 
         @media (max-width: 768px) {
@@ -306,12 +323,18 @@
                                         <div class="form-group-custom">
                                             {{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'form-label-custom'}}) }}
                                             {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control form-control-custom'}}) }}
+                                            <div class="form-error">
+                                                {{ form_errors(registrationForm.firstName) }}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group-custom">
                                             {{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'form-label-custom'}}) }}
                                             {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control form-control-custom'}}) }}
+                                            <div class="form-error">
+                                                {{ form_errors(registrationForm.lastName) }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -319,32 +342,38 @@
                                 <div class="form-group-custom">
                                     {{ form_label(registrationForm.email, 'Email Address', {'label_attr': {'class': 'form-label-custom'}}) }}
                                     {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control form-control-custom'}}) }}
+                                    <div class="form-error">
+                                        {{ form_errors(registrationForm.email) }}
+                                    </div>
                                 </div>
 
                                 <div class="form-group-custom">
                                     {{ form_label(registrationForm.phone, 'Phone Number', {'label_attr': {'class': 'form-label-custom'}}) }}
                                     {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control form-control-custom', 'placeholder': 'Enter your phone number'}}) }}
+                                    <div class="form-error">
+                                        {{ form_errors(registrationForm.phone) }}
+                                    </div>
                                 </div>
 
                                 <div class="form-group-custom">
-                                    <label class="form-label-custom">Account Type</label>
+                                    {{ form_label(registrationForm.roles, 'Account Type', {'label_attr': {'class': 'form-label-custom'}}) }}
+
                                     <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="role_patient" name="registration_form[roles]" value="ROLE_PATIENT" class="radio-input" required>
-                                            <label for="role_patient" class="radio-label role-patient">
-                                                <span class="radio-icon"></span>
-                                                <i class="fas fa-user-injured role-icon"></i>
-                                                Patient
-                                            </label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="role_doctor" name="registration_form[roles]" value="ROLE_DOCTOR" class="radio-input" required>
-                                            <label for="role_doctor" class="radio-label role-doctor">
-                                                <span class="radio-icon"></span>
-                                                <i class="fas fa-user-md role-icon"></i>
-                                                Doctor
-                                            </label>
-                                        </div>
+                                        {% for child in registrationForm.roles %}
+                                            <div class="radio-option">
+                                                {{ form_widget(child, {
+                                                    'attr': {'class': 'radio-input'}
+                                                }) }}
+                                                <label for="{{ child.vars.id }}" class="radio-label {{ child.vars.value == 'ROLE_PATIENT' ? 'role-patient' : 'role-doctor' }}">
+                                                    <span class="radio-icon"></span>
+                                                    <i class="fas {{ child.vars.value == 'ROLE_PATIENT' ? 'fa-user-injured' : 'fa-user-md' }} role-icon"></i>
+                                                    {{ child.vars.label }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-error">
+                                        {{ form_errors(registrationForm.roles) }}
                                     </div>
 
                                     <!-- Role Descriptions -->
@@ -358,15 +387,46 @@
                                     </div>
                                 </div>
 
-                                <!-- Dynamic Fields Container -->
-                                <div id="role-specific-fields" class="dynamic-fields-container">
-                                    <h6><i class="fas fa-info-circle me-2"></i>Select an account type to see additional required fields</h6>
-                                    <p class="text-muted mb-0">Choose between Patient or Doctor above to continue with registration.</p>
+                                <!-- Patient Fields Container -->
+                                <div id="patient-fields" class="dynamic-fields-container">
+                                    <h6><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
+                                    <div class="form-group-custom">
+                                        {{ form_label(registrationForm.address, 'Address', {'label_attr': {'class': 'form-label-custom'}}) }}
+                                        {{ form_widget(registrationForm.address, {'attr': {'class': 'form-control form-control-custom', 'rows': '3', 'placeholder': 'Enter your complete address for appointment reminders and correspondence'}}) }}
+                                        <small class="text-muted">We'll use this for appointment reminders and important correspondence.</small>
+                                        <div class="form-error">
+                                            {{ form_errors(registrationForm.address) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Doctor Fields Container -->
+                                <div id="doctor-fields" class="dynamic-fields-container">
+                                    <h6><i class="fas fa-user-md me-2"></i>Professional Information</h6>
+                                    <div class="form-group-custom">
+                                        {{ form_label(registrationForm.specialty, 'Medical Specialty', {'label_attr': {'class': 'form-label-custom'}}) }}
+                                        {{ form_widget(registrationForm.specialty, {'attr': {'class': 'form-control form-control-custom', 'placeholder': 'e.g., Cardiology, Pediatrics, Dermatology, etc.'}}) }}
+                                        <small class="text-muted">Your primary medical specialty area.</small>
+                                        <div class="form-error">
+                                            {{ form_errors(registrationForm.specialty) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group-custom">
+                                        {{ form_label(registrationForm.bio, 'Professional Bio', {'label_attr': {'class': 'form-label-custom'}}) }}
+                                        {{ form_widget(registrationForm.bio, {'attr': {'class': 'form-control form-control-custom', 'rows': '4', 'placeholder': 'Tell patients about your experience, qualifications, and approach to care...'}}) }}
+                                        <small class="text-muted">This will be visible to patients when they book appointments.</small>
+                                        <div class="form-error">
+                                            {{ form_errors(registrationForm.bio) }}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group-custom">
                                     {{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'form-label-custom'}}) }}
                                     {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control form-control-custom'}}) }}
+                                    <div class="form-error">
+                                        {{ form_errors(registrationForm.plainPassword) }}
+                                    </div>
                                 </div>
 
                                 <button type="submit" class="btn btn-register">
@@ -439,41 +499,60 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const roleRadios = document.querySelectorAll('input[name="registration_form[roles]"]');
-            const dynamicFieldsContainer = document.getElementById('role-specific-fields');
+            const roleRadios = document.querySelectorAll('input[name^="registration_form[roles]"]');
+            const patientFields = document.getElementById('patient-fields');
+            const doctorFields = document.getElementById('doctor-fields');
+            const roleDescriptions = document.querySelectorAll('.role-description');
 
-            // Function to update dynamic fields based on role selection
+            // Function to update field visibility based on role selection
             function updateRoleSpecificFields() {
-                const selectedRole = document.querySelector('input[name="registration_form[roles]"]:checked')?.value;
+                const selectedRole = document.querySelector('input[name^="registration_form[roles]"]:checked')?.value;
+
+                // Hide all role-specific fields first
+                patientFields.classList.remove('active');
+                doctorFields.classList.remove('active');
+
+                // Update role descriptions
+                roleDescriptions.forEach(desc => {
+                    desc.style.opacity = '0.6';
+                    desc.style.borderLeftColor = '#e3ebf6';
+                });
 
                 if (selectedRole === 'ROLE_PATIENT') {
-                    dynamicFieldsContainer.innerHTML = `
-                        <h6><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
-                        <div class="form-group-custom">
-                            <label class="form-label-custom">Address</label>
-                            <textarea name="address" class="form-control form-control-custom" placeholder="Enter your complete address for appointment reminders and correspondence" rows="3" required></textarea>
-                            <small class="text-muted">We'll use this for appointment reminders and important correspondence.</small>
-                        </div>
-                    `;
+                    patientFields.classList.add('active');
+                    roleDescriptions[0].style.opacity = '1';
+                    roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
+
+                    // Update field requirements
+                    const addressField = document.querySelector('#registration_form_address');
+                    const specialtyField = document.querySelector('#registration_form_specialty');
+
+                    if (addressField) {
+                        addressField.required = true;
+                        addressField.disabled = false;
+                    }
+                    if (specialtyField) {
+                        specialtyField.required = false;
+                        specialtyField.disabled = true;
+                    }
+
                 } else if (selectedRole === 'ROLE_DOCTOR') {
-                    dynamicFieldsContainer.innerHTML = `
-                        <h6><i class="fas fa-user-md me-2"></i>Professional Information</h6>
-                        <div class="form-group-custom">
-                            <label class="form-label-custom">Medical Specialty</label>
-                            <input type="text" name="specialty" class="form-control form-control-custom" placeholder="e.g., Cardiology, Pediatrics, Dermatology, etc." required>
-                            <small class="text-muted">Your primary medical specialty area.</small>
-                        </div>
-                        <div class="form-group-custom">
-                            <label class="form-label-custom">Professional Bio</label>
-                            <textarea name="bio" class="form-control form-control-custom" placeholder="Tell patients about your experience, qualifications, and approach to care..." rows="4"></textarea>
-                            <small class="text-muted">This will be visible to patients when they book appointments.</small>
-                        </div>
-                    `;
-                } else {
-                    dynamicFieldsContainer.innerHTML = `
-                        <h6><i class="fas fa-info-circle me-2"></i>Select an account type to see additional required fields</h6>
-                        <p class="text-muted mb-0">Choose between Patient or Doctor above to continue with registration.</p>
-                    `;
+                    doctorFields.classList.add('active');
+                    roleDescriptions[1].style.opacity = '1';
+                    roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
+
+                    // Update field requirements
+                    const addressField = document.querySelector('#registration_form_address');
+                    const specialtyField = document.querySelector('#registration_form_specialty');
+
+                    if (addressField) {
+                        addressField.required = false;
+                        addressField.disabled = true;
+                    }
+                    if (specialtyField) {
+                        specialtyField.required = true;
+                        specialtyField.disabled = false;
+                    }
                 }
             }
 
@@ -481,6 +560,9 @@
             roleRadios.forEach(radio => {
                 radio.addEventListener('change', updateRoleSpecificFields);
             });
+
+            // Initialize fields based on any pre-selected role
+            updateRoleSpecificFields();
 
             // Password strength indicator
             const passwordInput = document.querySelector('#registration_form_plainPassword');
@@ -514,29 +596,34 @@
                 });
             }
 
-            // Show role descriptions based on selection
-            function updateRoleDescriptions() {
-                const roleDescriptions = document.querySelectorAll('.role-description');
-                const selectedRole = document.querySelector('input[name="registration_form[roles]"]:checked')?.value;
+            // Handle form validation errors on page load
+            function checkForErrors() {
+                // Check if there are any validation errors
+                const formErrors = document.querySelectorAll('.form-error');
+                let hasVisibleErrors = false;
 
-                roleDescriptions.forEach(desc => {
-                    desc.style.opacity = '0.6';
-                    desc.style.borderLeftColor = '#e3ebf6';
+                formErrors.forEach(errorDiv => {
+                    const errors = errorDiv.querySelectorAll('ul li');
+                    if (errors.length > 0) {
+                        hasVisibleErrors = true;
+                        // Make sure the correct role-specific fields are shown
+                        const role = document.querySelector('input[name^="registration_form[roles]"]:checked')?.value;
+                        if (role === 'ROLE_PATIENT') {
+                            patientFields.classList.add('active');
+                        } else if (role === 'ROLE_DOCTOR') {
+                            doctorFields.classList.add('active');
+                        }
+                    }
                 });
 
-                if (selectedRole === 'ROLE_PATIENT') {
-                    roleDescriptions[0].style.opacity = '1';
-                    roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
-                } else if (selectedRole === 'ROLE_DOCTOR') {
-                    roleDescriptions[1].style.opacity = '1';
-                    roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
+                // If there are errors but no role is selected, show the form as is
+                if (hasVisibleErrors) {
+                    console.log('Form has validation errors');
                 }
             }
 
-            // Add event listeners for role descriptions
-            roleRadios.forEach(radio => {
-                radio.addEventListener('change', updateRoleDescriptions);
-            });
+            // Check for errors on page load
+            checkForErrors();
         });
     </script>
 {% endblock %}

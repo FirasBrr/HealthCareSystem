@@ -65,11 +65,7 @@ class DoctorType extends AbstractType
                 'label' => 'Professional Bio',
                 'attr' => ['class' => 'form-control', 'rows' => 5],
             ])
-            ->add('rating', NumberType::class, [
-                'required' => false,
-                'label' => 'Initial Rating',
-                'attr' => ['class' => 'form-control form-control-lg', 'step' => '0.1', 'min' => '0', 'max' => '5'],
-            ]);
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -162,22 +162,7 @@
                     </div>
                     {{ form_errors(form.specialty) }}
                 </div>
-                <div class="col-md-4">
-                    <div class="form-floating">
-                        {{ form_widget(form.rating, {'attr': {
-                            'class': 'form-control form-control-lg',
-                            'placeholder': 'Rating',
-                            'id': 'rating'
-                        }}) }}
-                        {{ form_label(form.rating, null, {
-                            'label_attr': {'class': 'form-label'}
-                        }) }}
-                        <div class="input-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    {{ form_errors(form.rating) }}
-                </div>
+
                 <div class="col-12">
                     <div class="form-floating">
                         {{ form_widget(form.bio, {'attr': {

@@ -26,9 +26,6 @@ class Doctor
     #[ORM\Column(type: Types::TEXT)]
     private ?string $bio = null;
 
-    #[ORM\Column]
-    private ?float $rating = null;
-
     #[ORM\OneToOne(inversedBy: 'doctor', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
@@ -73,7 +70,6 @@ class Doctor
         return $this->client ? $this->client->getFullName() : 'Unknown Doctor';
     }
 
-    // REQUIRED GETTERS
     public function getSpecialty(): ?string
     {
         return $this->specialty;
@@ -107,21 +103,11 @@ class Doctor
         return $this;
     }
 
-    public function getRating(): ?float
-    {
-        return $this->rating;
-    }
-
-    public function setRating(?float $rating): static
-    {
-        $this->rating = $rating;
-        return $this;
-    }
-
     public function getAppointments(): Collection
     {
         return $this->appointments;
     }
+
     public function getPrescriptions(): Collection
     {
         return $this->prescriptions;
@@ -139,7 +125,6 @@ class Doctor
     public function removePrescription(Prescription $prescription): static
     {
         if ($this->prescriptions->removeElement($prescription)) {
-            // set the owning side to null (unless already changed)
             if ($prescription->getDoctor() === $this) {
                 $prescription->setDoctor(null);
             }
