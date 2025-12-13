@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MedicalApp - Patient Dashboard{% endblock %}
+{% block title %}MedicalApp - My Appointments{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -267,107 +267,30 @@
             font-weight: 600;
         }
 
-        /* Stats Cards - Modern Design */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
+        /* Page Header */
+        .page-header {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 1.5rem;
+            margin-bottom: 2rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-
-        .stat-card.confirmed::before { background: var(--success); }
-        .stat-card.pending::before { background: var(--warning); }
-        .stat-card.total::before { background: var(--primary); }
-        .stat-card.cancelled::before { background: var(--danger); }
-
-        .stat-content {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-card.confirmed .stat-icon {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .stat-card.pending .stat-icon {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
-
-        .stat-card.total .stat-icon {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .stat-card.cancelled .stat-icon {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .stat-numbers h3 {
-            font-size: 2rem;
+        .page-title {
+            font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
             color: var(--dark);
-        }
-
-        .stat-numbers p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
             margin: 0;
         }
 
-        .stat-trend {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 500;
+        .page-subtitle {
+            color: var(--gray-600);
+            margin: 0.5rem 0 0 0;
         }
 
-        .stat-trend.positive { color: var(--success); }
-        .stat-trend.negative { color: var(--danger); }
-
-        /* Appointments Section */
-        .dashboard-section {
+        /* Filter Section */
+        .filter-section {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 1.5rem;
@@ -376,47 +299,122 @@
             border: 1px solid var(--gray-200);
         }
 
-        .section-header {
+        .filter-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
 
-        .section-header h3 {
-            font-size: 1.25rem;
+        .filter-header h4 {
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--dark);
             margin: 0;
         }
 
-        .section-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-primary-action {
+        .filter-reset {
             padding: 0.5rem 1rem;
-            background: var(--gradient-primary);
-            color: white;
+            background: var(--gray-100);
+            color: var(--gray-700);
             border: none;
             border-radius: var(--border-radius-sm);
             font-size: 0.85rem;
             font-weight: 500;
             transition: var(--transition);
+            cursor: pointer;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .btn-primary-action:hover {
+        .filter-reset:hover {
+            background: var(--gray-200);
+            text-decoration: none;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            background: white;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-summary-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .stat-summary-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
-            color: white;
+            box-shadow: var(--shadow);
         }
 
-        /* Appointment Cards */
+        .stat-summary-item.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .stat-summary-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-summary-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        /* Appointments List */
+        .appointments-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
         .appointment-list {
             display: flex;
             flex-direction: column;
@@ -441,11 +439,12 @@
         .appointment-item.pending { border-left-color: var(--warning); }
         .appointment-item.confirmed { border-left-color: var(--success); }
         .appointment-item.cancelled { border-left-color: var(--danger); }
+        .appointment-item.completed { border-left-color: var(--secondary); }
 
         .appointment-time {
-            min-width: 100px;
+            min-width: 120px;
             text-align: center;
-            padding: 0.5rem;
+            padding: 0.75rem;
             background: white;
             border-radius: 8px;
             margin-right: 1rem;
@@ -519,6 +518,11 @@
             color: var(--danger);
         }
 
+        .status-completed {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
         .appointment-actions {
             display: flex;
             gap: 0.5rem;
@@ -549,80 +553,19 @@
             box-shadow: 0 4px 12px rgba(230, 55, 87, 0.3);
         }
 
-        /* Upcoming Section */
-        .upcoming-appointments {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 1rem;
+        .btn-disabled {
+            background: var(--gray-300);
+            color: var(--gray-600);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: not-allowed;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .upcoming-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .upcoming-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem;
-            background: var(--gray-100);
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-
-        .upcoming-item:hover {
-            background: var(--gray-200);
-        }
-
-        .upcoming-time {
-            min-width: 70px;
-            text-align: center;
-            padding: 0.5rem;
-            background: white;
-            border-radius: 6px;
-            margin-right: 0.75rem;
-        }
-
-        .upcoming-time .time {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--dark);
-            display: block;
-        }
-
-        .upcoming-time .date {
-            font-size: 0.75rem;
-            color: var(--gray-600);
-        }
-
-        .upcoming-doctor {
-            flex: 1;
-        }
-
-        .upcoming-doctor h6 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.125rem;
-            color: var(--dark);
-        }
-
-        .upcoming-doctor p {
-            font-size: 0.8rem;
-            color: var(--gray-600);
-            margin: 0;
+            opacity: 0.7;
         }
 
         /* Empty State */
@@ -714,23 +657,8 @@
                 max-width: 100%;
                 padding: 1rem;
             }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
+            .filter-grid {
                 grid-template-columns: 1fr;
-            }
-            .top-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
             }
             .appointment-item {
                 flex-direction: column;
@@ -744,6 +672,27 @@
             .appointment-actions {
                 width: 100%;
                 justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-summary {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -770,13 +719,13 @@
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
-                    <a href="{{ path('app_dashboard') }}" class="nav-item active">
+                    <a href="{{ path('app_dashboard') }}" class="nav-item">
                         <div class="nav-icon">
                             <i class="fas fa-home"></i>
                         </div>
                         Dashboard
                     </a>
-                    <a href="{{ path('patient_appointments') }}" class="nav-item">
+                    <a href="{{ path('patient_appointments') }}" class="nav-item active">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
@@ -814,7 +763,7 @@
             <div class="top-header">
                 <div class="header-left">
                     <h1>Welcome, {{ app.user.firstName }}</h1>
-                    <p>Manage your appointments and medical care</p>
+                    <p>Manage all your medical appointments</p>
                 </div>
                 <div class="header-right">
                     <div class="date-badge">
@@ -839,167 +788,122 @@
                 </div>
             {% endfor %}
 
-            <!-- Stats Cards -->
-            <!-- Stats Cards - DYNAMIC VERSION -->
-            <div class="stats-grid">
-                <div class="stat-card confirmed">
-                    <div class="stat-content">
-                        <div>
-                            <div class="stat-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-numbers">
-                                <h3>{{ appointments|filter(a => a.status == 'Confirmed' and a.startDateTime > "now")|length }}</h3>
-                                <p>Upcoming Confirmed</p>
-                            </div>
-                        </div>
 
-                    </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <h4><i class="fas fa-filter me-2 text-primary"></i>Filter Appointments</h4>
+                    <button class="filter-reset" onclick="resetFilters()">
+                        <i class="fas fa-redo me-1"></i>Reset Filters
+                    </button>
                 </div>
 
-                <div class="stat-card pending">
-                    <div class="stat-content">
-                        <div>
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-numbers">
-                                <h3>{{ appointments|filter(a => a.status == 'Pending' and a.startDateTime > "now")|length }}</h3>
-                                <p>Upcoming Pending</p>
-                            </div>
-                        </div>
-
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select id="statusFilter" class="filter-select" onchange="filterAppointments()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="stat-card total">
-                    <div class="stat-content">
-                        <div>
-                            <div class="stat-icon">
-                                <i class="fas fa-stethoscope"></i>
-                            </div>
-                            <div class="stat-numbers">
-                                <h3>{{ appointments|filter(a => a.startDateTime > "now")|length }}</h3>
-                                <p>Upcoming Total</p>
-                            </div>
-                        </div>
-
+                    <div class="filter-group">
+                        <label class="filter-label">Time Period</label>
+                        <select id="timeFilter" class="filter-select" onchange="filterAppointments()">
+                            <option value="all">All Time</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="past">Past</option>
+                            <option value="today">Today</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="stat-card cancelled">
-                    <div class="stat-content">
-                        <div>
-                            <div class="stat-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div class="stat-numbers">
-                                <h3>{{ appointments|filter(a => a.status == 'Cancelled')|length }}</h3>
-                                <p>Cancelled Total</p>
-                            </div>
-                        </div>
-
-
+                    <div class="filter-group">
+                        <label class="filter-label">Sort By</label>
+                        <select id="sortFilter" class="filter-select" onchange="filterAppointments()">
+                            <option value="date_desc">Date (Newest First)</option>
+                            <option value="date_asc">Date (Oldest First)</option>
+                            <option value="status">Status</option>
+                            <option value="doctor">Doctor Name</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <!-- Two Column Layout -->
-            <div class="row">
-                <!-- Today's Appointments Column -->
-                <div class="col-lg-8">
-                    <div class="dashboard-section">
-                        <div class="section-header">
-                            <h3><i class="fas fa-calendar-day me-2 text-primary"></i>Today's Appointments</h3>
-                            <div class="section-actions">
-                                <a href="{{ path('patient_doctors') }}" class="btn-primary-action">
-                                    <i class="fas fa-search me-1"></i>Find Doctors
-                                </a>
-                            </div>
-                        </div>
 
-                        {% set todayAppointments = appointments|filter(a => a.startDateTime|date('Y-m-d') == "now"|date('Y-m-d') and a.startDateTime > "now") %}
 
-                        {% if todayAppointments|length > 0 %}
-                            <div class="appointment-list">
-                                {% for appointment in todayAppointments %}
-                                    <div class="appointment-item {{ appointment.status|lower }}">
-                                        <div class="appointment-time">
-                                            <span class="time">{{ appointment.startDateTime|date('h:i A') }}</span>
-                                            <span class="date">Today</span>
+
+            <!-- Appointments List -->
+            <div class="appointments-section">
+                <div id="appointmentsContainer">
+                    {% if appointments|length > 0 %}
+                        <div class="appointment-list">
+                            {% for appointment in appointments %}
+                                <div class="appointment-item {{ appointment.status|lower }}"
+                                     data-status="{{ appointment.status|lower }}"
+                                     data-date="{{ appointment.startDateTime|date('Y-m-d') }}"
+                                     data-time="{{ appointment.startDateTime|date('H:i:s') }}"
+                                     data-doctor="{{ appointment.doctor.client.lastName|lower }}">
+                                    <div class="appointment-time">
+                                        <span class="time">{{ appointment.startDateTime|date('h:i A') }}</span>
+                                        <span class="date">{{ appointment.startDateTime|date('M j, Y') }}</span>
+                                    </div>
+                                    <div class="doctor-info">
+                                        <div class="doctor-avatar-small">
+                                            {{ appointment.doctor.client.firstName|first|upper }}{{ appointment.doctor.client.lastName|first|upper }}
                                         </div>
-                                        <div class="doctor-info">
-                                            <div class="doctor-avatar-small">
-                                                {{ appointment.doctor.client.firstName|first|upper }}{{ appointment.doctor.client.lastName|first|upper }}
-                                            </div>
-                                            <div class="doctor-details">
-                                                <h6>Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</h6>
-                                                <p>
-                                                    <i class="fas fa-stethoscope me-1"></i>{{ appointment.doctor.specialty ?? 'General Medicine' }}
-                                                    <br>
-                                                    <i class="fas fa-phone me-1"></i>{{ appointment.doctor.phone ?? 'No phone' }}
-                                                </p>
-                                            </div>
+                                        <div class="doctor-details">
+                                            <h6>Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</h6>
+                                            <p>
+                                                <i class="fas fa-stethoscope me-1"></i>{{ appointment.doctor.specialty ?? 'General Medicine' }}
+                                                <br>
+                                                <i class="fas fa-phone me-1"></i>{{ appointment.doctor.phone ?? 'No phone' }}
+                                            </p>
                                         </div>
-                                        <span class="appointment-status status-{{ appointment.status|lower }}">
-                                            {{ appointment.status }}
-                                        </span>
-                                        <div class="appointment-actions">
-                                            {% if appointment.status == 'Pending' or appointment.status == 'Confirmed' %}
+                                    </div>
+                                    <span class="appointment-status status-{{ appointment.status|lower }}">
+                                        {{ appointment.status }}
+                                    </span>
+                                    <div class="appointment-actions">
+                                        {% if appointment.status == 'Pending' or appointment.status == 'Confirmed' %}
+                                            {% set now = "now"|date_modify("0 minute") %}
+                                            {% set appointmentStart = appointment.startDateTime|date_modify("0 minute") %}
+
+                                            {% if appointmentStart > now %}
                                                 <button class="btn-action btn-cancel" onclick="cancelAppointment({{ appointment.id }})" title="Cancel Appointment">
                                                     <i class="fas fa-times"></i> Cancel
                                                 </button>
+                                            {% else %}
+                                                <span class="btn-disabled" title="Cannot cancel past appointments">
+                                                    <i class="fas fa-clock me-1"></i> Past
+                                                </span>
                                             {% endif %}
-                                        </div>
+                                        {% elseif appointment.status == 'Completed' %}
+                                            <span class="btn-disabled" title="Appointment completed">
+                                                <i class="fas fa-check me-1"></i> Completed
+                                            </span>
+                                        {% endif %}
                                     </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-check"></i>
-                                <h5>No appointments today</h5>
-                                <p>You don't have any appointments scheduled for today.</p>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Upcoming Appointments -->
-                </div>
-
-                <!-- Right Column -->
-                <div class="col-lg-4">
-                    <!-- Quick Stats -->
-
-                    <!-- Profile Summary -->
-                    <div class="upcoming-appointments">
-                        <h4 class="section-title">
-                            <i class="fas fa-user me-2 text-primary"></i>Profile Summary
-                        </h4>
-
-                        <div class="text-center mb-3">
-                            <div class="doctor-avatar-small" style="width: 60px; height: 60px; font-size: 1.25rem; margin: 0 auto 1rem;">
-                                {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
-                            </div>
-                            <h6>{{ app.user.firstName }} {{ app.user.lastName }}</h6>
-                            <p class="text-muted mb-0">Patient</p>
-                        </div>
-
-                        <div class="upcoming-list">
-                            <div class="upcoming-item" style="background: transparent; justify-content: center; border: 1px solid var(--gray-200);">
-                                <div class="text-center">
-                                    <div class="stat-number" style="font-size: 1.75rem; margin-bottom: 0.25rem;">
-                                        {{ appointments|length }}
-                                    </div>
-                                    <div class="stat-label">Total Appointments</div>
                                 </div>
-                            </div>
+                            {% endfor %}
                         </div>
-
-                        <div class="mt-3">
-                            <a href="{{ path('patient_appointments') }}" class="btn-primary-action w-100">
-                                <i class="fas fa-calendar-alt me-1"></i>View All Appointments
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-plus"></i>
+                            <h5>No appointments found</h5>
+                            <p>You haven't booked any appointments yet.</p>
+                            <a href="{{ path('patient_doctors') }}" class="btn-primary-action mt-3">
+                                <i class="fas fa-search me-1"></i>Find Doctors
                             </a>
                         </div>
-                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="empty-state" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h5>Loading appointments...</h5>
                 </div>
             </div>
         </main>
@@ -1009,6 +913,174 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        // Store all appointments data
+        let allAppointments = [];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store all appointment items
+            const appointmentItems = document.querySelectorAll('.appointment-item');
+            allAppointments = Array.from(appointmentItems).map(item => ({
+                element: item,
+                status: item.dataset.status,
+                date: item.dataset.date,
+                time: item.dataset.time,
+                doctor: item.dataset.doctor,
+                timestamp: new Date(item.dataset.date + ' ' + item.dataset.time).getTime()
+            }));
+
+            // Initialize tooltips
+            const tooltips = document.querySelectorAll('[title]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
+
+            // Notification button click
+            const notificationBtn = document.querySelector('.notification-btn');
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', function() {
+                    showToast('Notifications feature coming soon!', 'info');
+                });
+            }
+        });
+
+        function filterAppointments() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+
+            const container = document.getElementById('appointmentsContainer');
+            const loading = document.getElementById('loadingIndicator');
+
+            // Show loading
+            container.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                // Filter appointments
+                const filteredAppointments = allAppointments.filter(appointment => {
+                    // Status filter
+                    if (statusFilter !== 'all' && appointment.status !== statusFilter) {
+                        return false;
+                    }
+
+                    // Time period filter
+                    const now = new Date();
+                    const appointmentDate = new Date(appointment.timestamp);
+
+                    if (timeFilter === 'upcoming' && appointmentDate < now) {
+                        return false;
+                    }
+
+                    if (timeFilter === 'past' && appointmentDate >= now) {
+                        return false;
+                    }
+
+                    if (timeFilter === 'today') {
+                        const today = new Date();
+                        if (appointmentDate.toDateString() !== today.toDateString()) {
+                            return false;
+                        }
+                    }
+
+                    if (timeFilter === 'week') {
+                        const weekFromNow = new Date();
+                        weekFromNow.setDate(weekFromNow.getDate() + 7);
+                        if (appointmentDate > weekFromNow || appointmentDate < now) {
+                            return false;
+                        }
+                    }
+
+                    if (timeFilter === 'month') {
+                        const monthFromNow = new Date();
+                        monthFromNow.setMonth(monthFromNow.getMonth() + 1);
+                        if (appointmentDate > monthFromNow || appointmentDate < now) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+                // Sort appointments
+                filteredAppointments.sort((a, b) => {
+                    switch (sortFilter) {
+                        case 'date_asc':
+                            return a.timestamp - b.timestamp;
+                        case 'date_desc':
+                            return b.timestamp - a.timestamp;
+                        case 'status':
+                            return a.status.localeCompare(b.status);
+                        case 'doctor':
+                            return a.doctor.localeCompare(b.doctor);
+                        default:
+                            return b.timestamp - a.timestamp;
+                    }
+                });
+
+                // Update UI
+                container.innerHTML = '';
+
+                if (filteredAppointments.length > 0) {
+                    const appointmentList = document.createElement('div');
+                    appointmentList.className = 'appointment-list';
+
+                    filteredAppointments.forEach(appointment => {
+                        appointmentList.appendChild(appointment.element.cloneNode(true));
+                    });
+
+                    container.appendChild(appointmentList);
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times"></i>
+                            <h5>No appointments found</h5>
+                            <p>Try adjusting your filters to see more results.</p>
+                            <button class="btn-primary-action mt-3" onclick="resetFilters()">
+                                <i class="fas fa-redo me-1"></i>Reset Filters
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // Hide loading and show results
+                loading.style.display = 'none';
+                container.style.display = 'block';
+
+                // Reinitialize tooltips for new elements
+                const newTooltips = container.querySelectorAll('[title]');
+                newTooltips.forEach(tooltip => {
+                    new bootstrap.Tooltip(tooltip);
+                });
+
+            }, 300); // Small delay for better UX
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('timeFilter').value = 'all';
+            document.getElementById('sortFilter').value = 'date_desc';
+            filterAppointments();
+        }
+
+        function setStatusFilter(status) {
+            document.getElementById('statusFilter').value = status;
+            filterAppointments();
+
+            // Update active state in stats summary
+            document.querySelectorAll('.stat-summary-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if (status !== 'all') {
+                const activeItem = document.querySelector(`.stat-summary-item[onclick*="${status}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
+            }
+        }
+
         function cancelAppointment(appointmentId) {
             if (confirm('Are you sure you want to cancel this appointment? This action cannot be undone.')) {
                 fetch('/patient/appointment/' + appointmentId + '/cancel', {
@@ -1059,32 +1131,5 @@
                 }
             }, 3000);
         }
-
-        // Add hover effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add animation to stats cards on load
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-
-            // Initialize tooltips
-            const tooltips = document.querySelectorAll('[title]');
-            tooltips.forEach(tooltip => {
-                new bootstrap.Tooltip(tooltip);
-            });
-
-            // Notification button click
-            const notificationBtn = document.querySelector('.notification-btn');
-            if (notificationBtn) {
-                notificationBtn.addEventListener('click', function() {
-                    // In a real app, this would show notifications
-                    showToast('Notifications feature coming soon!', 'info');
-                });
-            }
-        });
     </script>
 {% endblock %}

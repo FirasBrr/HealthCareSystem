@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Appointment;
+use App\Repository\AppointmentRepository;
 use App\Repository\DoctorRepository;
 use App\Repository\AvailabilityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,40 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_PATIENT')]
 class PatientAppointmentController extends AbstractController
 {
+    #[Route('/appointments', name: 'patient_appointments')]
+    public function appointments(AppointmentRepository $appointmentRepo): Response
+    {
+        $patient = $this->getUser()->getPatient();
+
+        // Get all appointments for this patient
+        $appointments = $appointmentRepo->findBy([
+            'patient' => $patient
+        ], ['startDateTime' => 'DESC']);
+
+        return $this->render('patient/appointments.html.twig', [
+            'appointments' => $appointments,
+        ]);
+    }
+    #[Route('/prescriptions', name: 'patient_prescriptions')]
+    public function prescriptions(AppointmentRepository $appointmentRepo): Response
+    {
+        $patient = $this->getUser()->getPatient();
+
+        // Get all appointments with prescriptions for this patient
+        $appointments = $appointmentRepo->createQueryBuilder('a')
+            ->leftJoin('a.prescription', 'p')
+            ->where('a.patient = :patient')
+            ->andWhere('p.id IS NOT NULL')
+            ->setParameter('patient', $patient)
+            ->orderBy('a.startDateTime', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('patient/prescriptions.html.twig', [
+            'appointments' => $appointments,
+        ]);
+    }
+
     #[Route('/doctors', name: 'patient_doctors')]
     public function findDoctors(DoctorRepository $doctorRepo): Response
     {
@@ -36,14 +71,42 @@ class PatientAppointmentController extends AbstractController
             throw $this->createNotFoundException('Doctor not found');
         }
 
+        // Get today's date
+        $today = new \DateTimeImmutable();
+
+        // Get all availabilities for this doctor that are marked as available
         $availabilities = $availabilityRepo->findBy([
             'doctor' => $doctor,
             'isAvailable' => true
         ], ['date' => 'ASC', 'startTime' => 'ASC']);
 
+        // Filter availabilities to show only future slots
+        $futureAvailabilities = [];
+        foreach ($availabilities as $availability) {
+            if ($availability->getDate()) {
+                // For specific date availabilities
+                $availabilityDate = $availability->getDate();
+                $startTime = $availability->getStartTime();
+
+                // Create full datetime for this availability
+                $availabilityDateTime = new \DateTimeImmutable(
+                    $availabilityDate->format('Y-m-d') . ' ' . $startTime->format('H:i:s')
+                );
+
+                // Check if this availability is in the future (including today's future times)
+                if ($availabilityDateTime > $today) {
+                    $futureAvailabilities[] = $availability;
+                }
+            } else {
+                // For recurring availabilities (day of week)
+                // They are always in the future since they're recurring
+                $futureAvailabilities[] = $availability;
+            }
+        }
+
         return $this->render('patient/doctor_availability.html.twig', [
             'doctor' => $doctor,
-            'availabilities' => $availabilities,
+            'availabilities' => $futureAvailabilities,
         ]);
     }
 
@@ -79,10 +142,18 @@ class PatientAppointmentController extends AbstractController
             $endDateTime = $startDateTime->modify('+1 hour');
         }
 
+        // Additional check: ensure the appointment time is in the future
+        if ($startDateTime <= new \DateTimeImmutable()) {
+            return $this->json(['success' => false, 'message' => 'Cannot book appointments in the past']);
+        }
+
         $appointment->setStartDateTime($startDateTime);
         $appointment->setEndDateTime($endDateTime);
         $appointment->setStatus('Pending');
         $appointment->setReference(uniqid('APT_'));
+
+        // Mark availability as taken
+        $availability->setIsAvailable(false);
 
         $em->persist($appointment);
         $em->flush();
@@ -95,10 +166,24 @@ class PatientAppointmentController extends AbstractController
     }
 
     #[Route('/appointment/{id}/cancel', name: 'patient_appointment_cancel', methods: ['POST'])]
-    public function cancelAppointment(Appointment $appointment, EntityManagerInterface $em): JsonResponse
+    public function cancelAppointment(Appointment $appointment, EntityManagerInterface $em, AvailabilityRepository $availabilityRepo): JsonResponse
     {
         if ($appointment->getPatient() !== $this->getUser()->getPatient()) {
             return $this->json(['success' => false, 'message' => 'Access denied']);
+        }
+
+        // Mark the availability slot as available again
+        $startDateTime = $appointment->getStartDateTime();
+
+        // Find the availability that matches this appointment
+        $availability = $availabilityRepo->findOneBy([
+            'doctor' => $appointment->getDoctor(),
+            'date' => $startDateTime,
+            'startTime' => $startDateTime->format('H:i:s')
+        ]);
+
+        if ($availability) {
+            $availability->setIsAvailable(true);
         }
 
         $appointment->setStatus('Cancelled');
@@ -121,10 +206,18 @@ class PatientAppointmentController extends AbstractController
 
         $daysToAdd = $targetDay >= $currentDay ? $targetDay - $currentDay : 7 - ($currentDay - $targetDay);
 
-        return $today->modify("+{$daysToAdd} days")->setTime(
+        $nextDate = $today->modify("+{$daysToAdd} days")->setTime(
             (int)$availability->getStartTime()->format('H'),
             (int)$availability->getStartTime()->format('i'),
             0
         );
+
+        // If it's today but the time has passed, move to next week
+        if ($nextDate <= $today && $daysToAdd === 0) {
+            $nextDate = $nextDate->modify('+7 days');
+        }
+
+        return $nextDate;
     }
+
 }

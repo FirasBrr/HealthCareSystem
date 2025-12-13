@@ -5,121 +5,757 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .doctors-section {
-            background: #f5f7fb;
+        :root {
+            --primary: #2c7be5;
+            --primary-light: #e3ebf8;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --success-light: #e6f9f0;
+            --warning: #f6c343;
+            --warning-light: #fef8e6;
+            --danger: #e63757;
+            --danger-light: #fce9ec;
+            --info: #39afd1;
+            --info-light: #eaf5f9;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --body-bg: #f5f7fb;
+            --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
+            --gradient-warning: linear-gradient(135deg, #f6c343 0%, #f4b223 100%);
+            --gradient-danger: linear-gradient(135deg, #e63757 0%, #d92545 100%);
+            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.75rem;
+            --border-radius-sm: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Main Dashboard Layout */
+        .dashboard-wrapper {
+            display: flex;
             min-height: 100vh;
-            padding: 30px 0;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .patient-avatar-large {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .patient-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .patient-info small {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: white;
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100% - 280px);
+        }
+
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gray-100);
+            border: none;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            margin: 0.5rem 0 0 0;
+        }
+
+        /* Back Button */
+        .btn-back {
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: var(--gray-200);
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        /* Doctor Cards */
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .doctor-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-            transition: transform 0.3s ease;
-            border-left: 4px solid #2c7be5;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
         .doctor-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .doctor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .doctor-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .doctor-avatar {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+            border-radius: 12px;
+            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .doctor-info {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
         }
 
         .specialty-badge {
-            background: rgba(44, 123, 229, 0.1);
-            color: #2c7be5;
-            padding: 4px 12px;
-            border-radius: 20px;
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .doctor-contact {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Rating */
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .rating-stars {
-            color: #f6c343;
+            color: var(--warning);
+        }
+
+        .rating-score {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .rating-count {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        /* Doctor Bio */
+        .doctor-bio {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Action Button */
+        .btn-view-availability {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-view-availability:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .empty-state h4 {
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                max-width: calc(100% - 250px);
+            }
+            .doctors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
+            .doctors-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doctor-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .doctor-info {
+                text-align: center;
+            }
+            .doctor-contact {
+                justify-content: center;
+            }
+            .rating {
+                justify-content: center;
+            }
         }
     </style>
+    <!-- Add Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
-    <section class="doctors-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1 class="display-6 fw-bold">Find Doctors</h1>
-                        <a href="{{ path('app_dashboard') }}" class="btn btn-light">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                        </a>
-                    </div>
-                    <p class="text-muted mb-5">Browse our medical professionals and book appointments</p>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="patient-avatar-large">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </div>
+                <div class="patient-info">
+                    <h6>{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                    <small>Patient</small>
                 </div>
             </div>
 
-            <div class="row">
-                {% if doctors|length > 0 %}
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="{{ path('app_dashboard') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        Dashboard
+                    </a>
+                    <a href="{{ path('patient_appointments') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        Appointments
+                    </a>
+                    <a href="{{ path('patient_prescriptions') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-file-prescription"></i>
+                        </div>
+                        Prescriptions
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Health</div>
+                    <a href="{{ path('patient_doctors') }}" class="nav-item active">
+                        <div class="nav-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        Find Doctors
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ path('app_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h1>Welcome, {{ app.user.firstName }}</h1>
+                    <p>Find and book appointments with medical professionals</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('warning') %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title">Find Doctors</h1>
+                        <p class="page-subtitle">Browse our medical professionals and book appointments</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Doctors Grid -->
+            {% if doctors|length > 0 %}
+                <div class="doctors-grid">
                     {% for doctor in doctors %}
-                        <div class="col-lg-6">
-                            <div class="doctor-card">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <div class="doctor-avatar">
-                                            {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
-                                        </div>
+                        <div class="doctor-card">
+                            <div class="doctor-header">
+                                <div class="doctor-avatar">
+                                    {{ doctor.client.firstName|first|upper }}{{ doctor.client.lastName|first|upper }}
+                                </div>
+                                <div class="doctor-info">
+                                    <h3 class="doctor-name">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h3>
+                                    <span class="specialty-badge">{{ doctor.specialty ?? 'General Medicine' }}</span>
+
+                                    <div class="doctor-contact">
+                                        <i class="fas fa-phone"></i>
+                                        <span>{{ doctor.phone ?? 'Contact not available' }}</span>
                                     </div>
-                                    <div class="col">
-                                        <h5 class="mb-1">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h5>
-                                        <div class="mb-2">
-                                            <span class="specialty-badge">{{ doctor.specialty ?? 'General Medicine' }}</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <small class="text-muted">
-                                                <i class="fas fa-phone me-1"></i>{{ doctor.phone ?? 'Contact not available' }}
-                                            </small>
-                                        </div>
-                                        {% if doctor.rating %}
-                                            <div class="rating-stars mb-2">
+
+                                    {% if doctor.rating %}
+                                        <div class="rating">
+                                            <div class="rating-stars">
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star"></i>
                                                 <i class="fas fa-star-half-alt"></i>
-                                                <small class="text-muted ms-1">{{ doctor.rating }}/5</small>
                                             </div>
-                                        {% endif %}
-                                        <p class="text-muted small mb-0">{{ doctor.bio ?? 'No bio available' }}</p>
-                                    </div>
-                                    <div class="col-auto">
-                                        <a href="{{ path('patient_doctor_availability', {'id': doctor.id}) }}" class="btn btn-primary">
-                                            <i class="fas fa-calendar-plus me-2"></i>View Availability
-                                        </a>
-                                    </div>
+                                            <span class="rating-score">{{ doctor.rating }}</span>
+                                            <span class="rating-count">/5</span>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
+
+                            <p class="doctor-bio">{{ doctor.bio ?? 'No bio available' }}</p>
+
+                            <a href="{{ path('patient_doctor_availability', {'id': doctor.id}) }}" class="btn-view-availability">
+                                <i class="fas fa-calendar-plus me-2"></i>View Availability & Book
+                            </a>
                         </div>
                     {% endfor %}
-                {% else %}
-                    <div class="col-12">
-                        <div class="text-center py-5">
-                            <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
-                            <h4>No doctors available</h4>
-                            <p class="text-muted">There are currently no doctors in the system.</p>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </section>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-md"></i>
+                    <h4>No doctors available</h4>
+                    <p>There are currently no doctors in the system.</p>
+                    <a href="{{ path('app_dashboard') }}" class="btn-back">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Add hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to doctor cards on load
+            const doctorCards = document.querySelectorAll('.doctor-card');
+            doctorCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Initialize tooltips
+            const tooltips = document.querySelectorAll('[title]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
+
+            // Notification button click
+            const notificationBtn = document.querySelector('.notification-btn');
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', function() {
+                    // In a real app, this would show notifications
+                    showToast('Notifications feature coming soon!', 'info');
+                });
+            }
+        });
+
+        // Toast notification function (reused from dashboard)
+        function showToast(message, type = 'success') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+            `;
+
+            // Add to page
+            document.body.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+    </script>
 {% endblock %}

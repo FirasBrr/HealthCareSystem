@@ -817,10 +817,7 @@
                     <div class="date-badge">
                         <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
                     </div>
-                    <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">{{ stats.pending|default(0) }}</span>
-                    </button>
+
                 </div>
             </div>
 
@@ -935,8 +932,7 @@
                                 <div class="form-group">
                                     <label class="form-label small">Search Patient</label>
                                     <div class="input-group">
-                                        <input type="text" name="search" class="form-control" placeholder="Name or phone..." value="{{ currentFilters.search }}">
-                                        <button type="submit" class="btn btn-primary">
+                                        <input type="text" name="search" class="form-control" placeholder="Name or phone..." value="{{ currentFilters.search }}">                                        <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>

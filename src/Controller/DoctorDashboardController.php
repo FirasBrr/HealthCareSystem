@@ -267,9 +267,10 @@ class DoctorDashboardController extends AbstractController
                 ->setParameter('date', $dateObj->format('Y-m-d'));
         }
 
-        // Apply search filter
+        // Apply search filter - FIXED VERSION
         if ($search) {
-            $qb->andWhere('(c.firstName LIKE :search OR c.lastName LIKE :search OR p.phone LIKE :search)')
+            // Search in full name (first + last) OR phone
+            $qb->andWhere('(CONCAT(c.firstName, \' \', c.lastName) LIKE :search OR p.phone LIKE :search)')
                 ->setParameter('search', '%' . $search . '%');
         }
 
