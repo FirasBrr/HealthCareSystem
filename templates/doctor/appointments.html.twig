@@ -1,10 +1,12 @@
+{# templates/doctor/appointments/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}MedicalApp - Doctor Dashboard{% endblock %}
+{% block title %}MedicalApp - My Appointments{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        /* Reuse your doctor dashboard CSS variables */
         :root {
             --primary: #2c7be5;
             --primary-light: #e3ebf8;
@@ -36,11 +38,6 @@
             --card-bg: #ffffff;
             --body-bg: #f5f7fb;
             --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
-            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
-            --gradient-warning: linear-gradient(135deg, #f6c343 0%, #f4b223 100%);
-            --gradient-danger: linear-gradient(135deg, #e63757 0%, #d92545 100%);
-            --gradient-prescription: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
             --border-radius: 0.75rem;
@@ -53,13 +50,12 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Main Dashboard Layout */
+        /* Sidebar Navigation - Same as doctor dashboard */
         .dashboard-wrapper {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar Navigation */
         .sidebar {
             width: 280px;
             background: var(--sidebar-bg);
@@ -271,106 +267,7 @@
             font-weight: 600;
         }
 
-        /* Stats Cards - Modern Design */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-
-        .stat-card.today::before { background: var(--primary); }
-        .stat-card.confirmed::before { background: var(--success); }
-        .stat-card.prescriptions::before { background: var(--prescription); }
-        .stat-card.total::before { background: var(--info); }
-
-        .stat-content {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-card.today .stat-icon {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .stat-card.confirmed .stat-icon {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .stat-card.prescriptions .stat-icon {
-            background: var(--prescription-light);
-            color: var(--prescription);
-        }
-
-        .stat-card.total .stat-icon {
-            background: var(--info-light);
-            color: var(--info);
-        }
-
-        .stat-numbers h3 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: var(--dark);
-        }
-
-        .stat-numbers p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-
-        .stat-trend {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .stat-trend.positive { color: var(--success); }
-        .stat-trend.negative { color: var(--danger); }
-
-        /* Appointments Section */
+        /* Dashboard Section */
         .dashboard-section {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -399,19 +296,161 @@
             gap: 0.5rem;
         }
 
-        .btn-view-all {
-            padding: 0.5rem 1rem;
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: none;
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
             border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.total::before { background: var(--primary); }
+        .stat-card.pending::before { background: var(--warning); }
+        .stat-card.confirmed::before { background: var(--success); }
+        .stat-card.completed::before { background: var(--info); }
+        .stat-card.cancelled::before { background: var(--danger); }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-card.total .stat-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.pending .stat-icon {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .stat-card.confirmed .stat-icon {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+
+
+        .stat-card.cancelled .stat-icon {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .stat-numbers h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .stat-numbers p {
+            color: var(--gray-600);
             font-size: 0.85rem;
-            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Filters */
+        .filter-card {
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-control, .form-select {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--gray-300);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
             transition: var(--transition);
         }
 
-        .btn-view-all:hover {
-            background: var(--gray-200);
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.1);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
         }
 
         /* Appointment Cards */
@@ -568,7 +607,17 @@
             transform: translateY(-2px);
         }
 
-        /* Disabled Button */
+        .btn-complete {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #2a9ec1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(57, 175, 209, 0.3);
+        }
+
         .btn-disabled {
             background: var(--gray-300);
             color: var(--gray-600);
@@ -584,7 +633,6 @@
             opacity: 0.7;
         }
 
-        /* Prescribed Badge */
         .prescribed-badge {
             background: var(--success-light);
             color: var(--success);
@@ -602,49 +650,7 @@
             font-size: 1rem;
         }
 
-        /* Toast notifications */
-        .toast-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius-sm);
-            background: white;
-            box-shadow: var(--shadow-lg);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            animation: slideIn 0.3s ease;
-            border-left: 4px solid;
-        }
-
-        .toast-success {
-            border-left-color: var(--success);
-            color: var(--success);
-        }
-
-        .toast-warning {
-            border-left-color: var(--warning);
-            color: var(--warning);
-        }
-
-        .toast-danger {
-            border-left-color: var(--danger);
-            color: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Empty States */
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -657,34 +663,17 @@
             color: var(--gray-400);
         }
 
+        .empty-state h5 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
         /* Flash Messages */
         .alert {
             border-radius: var(--border-radius-sm);
             border: none;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             margin-bottom: 1.5rem;
-        }
-
-        /* Quick Stats */
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .quick-stat {
-            background: var(--gray-100);
-            padding: 1rem;
-            border-radius: var(--border-radius-sm);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .quick-stat i {
-            font-size: 1.5rem;
-            color: var(--primary);
         }
 
         /* Responsive Design */
@@ -715,6 +704,9 @@
             }
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .filter-form {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -762,20 +754,20 @@
                 </div>
                 <div class="doctor-info">
                     <h6>Dr. {{ app.user.firstName }} {{ app.user.lastName }}</h6>
-                    <small>{{ doctor.specialty ?? 'Medical Professional' }}</small>
+                    <small>{{ app.user.doctor.specialty ?? 'Medical Professional' }}</small>
                 </div>
             </div>
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
-                    <a href="{{ path('doctor_dashboard') }}" class="nav-item active">
+                    <a href="{{ path('doctor_dashboard') }}" class="nav-item">
                         <div class="nav-icon">
                             <i class="fas fa-home"></i>
                         </div>
                         Dashboard
                     </a>
-                    <a href="{{ path('doctor_appointments') }}" class="nav-item">
+                    <a href="{{ path('doctor_appointments') }}" class="nav-item active">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
@@ -786,9 +778,6 @@
                             <i class="fas fa-file-prescription"></i>
                         </div>
                         Prescriptions
-                        {% if stats.prescriptions|default(0) > 0 %}
-                            <span class="notification-badge" style="margin-left: auto;">{{ stats.prescriptions|default(0) }}</span>
-                        {% endif %}
                     </a>
                 </div>
 
@@ -821,8 +810,8 @@
             <!-- Top Header -->
             <div class="top-header">
                 <div class="header-left">
-                    <h1>Good morning, Dr. {{ app.user.firstName }}</h1>
-                    <p>Here's your daily overview and schedule</p>
+                    <h1>My Appointments</h1>
+                    <p>Manage and view all your scheduled appointments</p>
                 </div>
                 <div class="header-right">
                     <div class="date-badge">
@@ -830,7 +819,7 @@
                     </div>
                     <button class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">{{ stats.pending|default(0) }}</span>
                     </button>
                 </div>
             </div>
@@ -850,21 +839,32 @@
                 </div>
             {% endfor %}
 
-            <!-- Stats Cards -->
+            <!-- Stats Overview -->
             <div class="stats-grid">
-                <div class="stat-card today">
+                <div class="stat-card total">
                     <div class="stat-content">
                         <div>
                             <div class="stat-icon">
-                                <i class="fas fa-calendar-day"></i>
+                                <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="stat-numbers">
-                                <h3>{{ stats.today|default(0) }}</h3>
-                                <p>Today's Appointments</p>
+                                <h3>{{ stats.total|default(0) }}</h3>
+                                <p>Total Appointments</p>
                             </div>
                         </div>
-                        <div class="stat-trend positive">
-                            <i class="fas fa-arrow-up"></i> 12%
+                    </div>
+                </div>
+
+                <div class="stat-card pending">
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-numbers">
+                                <h3>{{ stats.pending|default(0) }}</h3>
+                                <p>Pending</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -880,42 +880,21 @@
                                 <p>Confirmed</p>
                             </div>
                         </div>
-                        <div class="stat-trend positive">
-                            <i class="fas fa-arrow-up"></i> 8%
-                        </div>
                     </div>
                 </div>
 
-                <div class="stat-card prescriptions">
-                    <div class="stat-content">
-                        <div>
-                            <div class="stat-icon">
-                                <i class="fas fa-file-prescription"></i>
-                            </div>
-                            <div class="stat-numbers">
-                                <h3>{{ stats.prescriptions|default(0) }}</h3>
-                                <p>Prescriptions</p>
-                            </div>
-                        </div>
-                        <div class="stat-trend positive">
-                            <i class="fas fa-arrow-up"></i> 15%
-                        </div>
-                    </div>
-                </div>
 
-                <div class="stat-card total">
+
+                <div class="stat-card cancelled">
                     <div class="stat-content">
                         <div>
                             <div class="stat-icon">
-                                <i class="fas fa-calendar-alt"></i>
+                                <i class="fas fa-ban"></i>
                             </div>
                             <div class="stat-numbers">
-                                <h3>{{ stats.total|default(0) }}</h3>
-                                <p>Total Appointments</p>
+                                <h3>{{ stats.cancelled|default(0) }}</h3>
+                                <p>Cancelled</p>
                             </div>
-                        </div>
-                        <div class="stat-trend positive">
-                            <i class="fas fa-arrow-up"></i> 24%
                         </div>
                     </div>
                 </div>
@@ -923,21 +902,51 @@
 
             <!-- Two Column Layout -->
             <div class="row">
-                <!-- Today's Appointments Column -->
+                <!-- Main Appointments Column -->
                 <div class="col-lg-8">
                     <div class="dashboard-section">
                         <div class="section-header">
-                            <h3><i class="fas fa-calendar-day me-2 text-primary"></i>Today's Appointments</h3>
+                            <h3><i class="fas fa-calendar-alt me-2 text-primary"></i>All Appointments</h3>
                             <div class="section-actions">
-                                <a href="{{ path('doctor_appointments') }}" class="btn-view-all">
-                                    View All <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
+                                <button class="btn btn-outline-primary btn-sm" onclick="resetFilters()">
+                                    <i class="fas fa-redo me-1"></i> Reset Filters
+                                </button>
                             </div>
                         </div>
 
-                        {% if todayAppointments|length > 0 %}
+                        <!-- Filters -->
+                        <div class="filter-card">
+                            <form method="get" class="filter-form" id="filterForm">
+                                <div class="form-group">
+                                    <label class="form-label small">Status</label>
+                                    <select name="status" class="form-select" onchange="this.form.submit()">
+                                        <option value="all" {{ currentFilters.status == 'all' or not currentFilters.status ? 'selected' : '' }}>All Status</option>
+                                        <option value="Pending" {{ currentFilters.status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="Confirmed" {{ currentFilters.status == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                        <option value="Cancelled" {{ currentFilters.status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label small">Date</label>
+                                    <input type="date" name="date" class="form-control" value="{{ currentFilters.date }}" onchange="this.form.submit()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label small">Search Patient</label>
+                                    <div class="input-group">
+                                        <input type="text" name="search" class="form-control" placeholder="Name or phone..." value="{{ currentFilters.search }}">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        {% if appointments|length > 0 %}
                             <div class="appointment-list">
-                                {% for appointment in todayAppointments %}
+                                {% for appointment in appointments %}
                                     <div class="appointment-item {{ appointment.status|lower }}">
                                         <div class="appointment-time">
                                             <span class="time">{{ appointment.startDateTime|date('h:i A') }}</span>
@@ -948,7 +957,7 @@
                                                 {{ appointment.patient.client.firstName|first|upper }}{{ appointment.patient.client.lastName|first|upper }}
                                             </div>
                                             <div class="patient-details">
-                                                <h6>{{ appointment.patient.client.firstName ?? 'Unknown' }} {{ appointment.patient.client.lastName ?? 'Patient' }}</h6>
+                                                <h6>{{ appointment.patient.client.firstName }} {{ appointment.patient.client.lastName }}</h6>
                                                 <p><i class="fas fa-phone me-1"></i>{{ appointment.patient.phone ?? 'No phone' }}</p>
                                             </div>
                                         </div>
@@ -964,24 +973,35 @@
                                                     <i class="fas fa-times"></i> Cancel
                                                 </button>
 
-                                            {% elseif appointment.status == 'Confirmed' and not appointment.prescription %}
+                                            {% elseif appointment.status == 'Confirmed' %}
                                                 {% set now = "now"|date_modify("0 minute") %}
                                                 {% set appointmentEnd = appointment.endDateTime|date_modify("0 minute") %}
 
-                                                {% if appointmentEnd <= now %}
+                                                {% if appointmentEnd <= now and not appointment.prescription %}
+
                                                     <a href="{{ path('doctor_prescription_upload', {'id': appointment.id}) }}" class="btn-action btn-prescribe" title="Upload Prescription">
                                                         <i class="fas fa-file-prescription"></i> Prescribe
                                                     </a>
+                                                {% elseif appointmentEnd <= now and appointment.prescription %}
+                                                    <span class="prescribed-badge" title="Prescription uploaded">
+                                                        <i class="fas fa-file-medical me-1"></i> Prescribed
+                                                    </span>
                                                 {% else %}
-                                                    <span class="btn-action btn-disabled" title="Prescription available after {{ appointment.endDateTime|date('h:i A') }}">
-                                                        <i class="fas fa-clock me-1"></i> After {{ appointment.endDateTime|date('h:i A') }}
+                                                    <span class="btn-action btn-disabled" title="Appointment not yet ended">
+                                                        <i class="fas fa-clock me-1"></i> Ongoing
                                                     </span>
                                                 {% endif %}
 
-                                            {% elseif appointment.status == 'Confirmed' and appointment.prescription %}
-                                                <span class="prescribed-badge" title="Prescription uploaded on {{ appointment.prescription.uploadedAt|date('M j, Y') }}">
-                                                    <i class="fas fa-file-medical me-1"></i> Prescribed
-                                                </span>
+                                            {% elseif appointment.status == 'Completed' %}
+                                                {% if appointment.prescription %}
+                                                    <span class="prescribed-badge" title="Prescription uploaded">
+                                                        <i class="fas fa-file-medical me-1"></i> Prescribed
+                                                    </span>
+                                                {% else %}
+                                                    <a href="{{ path('doctor_prescription_upload', {'id': appointment.id}) }}" class="btn-action btn-prescribe" title="Upload Prescription">
+                                                        <i class="fas fa-file-prescription"></i> Prescribe
+                                                    </a>
+                                                {% endif %}
 
                                             {% elseif appointment.status == 'Cancelled' %}
 
@@ -993,25 +1013,27 @@
                         {% else %}
                             <div class="empty-state">
                                 <i class="fas fa-calendar-times"></i>
-                                <h5>No appointments today</h5>
-                                <p>You're all caught up! Enjoy your day.</p>
+                                <h5>No appointments found</h5>
+                                <p class="text-muted mb-4">Try adjusting your filters or check back later.</p>
+                                <button class="btn btn-primary" onclick="resetFilters()">
+                                    <i class="fas fa-redo me-1"></i> Reset Filters
+                                </button>
                             </div>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Quick Actions & Upcoming Column -->
+                <!-- Upcoming Appointments Column -->
                 <div class="col-lg-4">
-                    <!-- Upcoming Appointments -->
                     <div class="dashboard-section">
                         <div class="section-header">
-                            <h3><i class="fas fa-calendar-check me-2 text-success"></i>Upcoming</h3>
+                            <h3><i class="fas fa-calendar-check me-2 text-success"></i>Upcoming Appointments</h3>
                         </div>
 
                         {% if upcomingAppointments|length > 0 %}
                             <div class="appointment-list">
-                                {% for appointment in upcomingAppointments|slice(0, 3) %}
-                                    <div class="appointment-item {{ appointment.status|lower }}">
+                                {% for appointment in upcomingAppointments %}
+                                    <div class="appointment-item confirmed">
                                         <div class="appointment-time">
                                             <span class="time">{{ appointment.startDateTime|date('h:i A') }}</span>
                                             <span class="date">{{ appointment.startDateTime|date('M j') }}</span>
@@ -1021,31 +1043,18 @@
                                                 {{ appointment.patient.client.firstName|first|upper }}{{ appointment.patient.client.lastName|first|upper }}
                                             </div>
                                             <div class="patient-details">
-                                                <h6>{{ appointment.patient.client.firstName ?? 'Unknown' }}</h6>
+                                                <h6>{{ appointment.patient.client.firstName }}</h6>
+                                                <small class="text-muted">{{ appointment.startDateTime|date('D') }}</small>
                                             </div>
-                                        </div>
-                                        <div class="appointment-actions">
-                                            {% if appointment.status == 'Pending' %}
-                                                <button class="btn-action btn-confirm btn-sm" onclick="confirmAppointment({{ appointment.id }})" title="Confirm">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
                             </div>
-                            {% if upcomingAppointments|length > 3 %}
-                                <div class="text-center mt-3">
-                                    <a href="{{ path('doctor_appointments') }}" class="btn-view-all">
-                                        View {{ upcomingAppointments|length - 3 }} more <i class="fas fa-arrow-right ms-1"></i>
-                                    </a>
-                                </div>
-                            {% endif %}
                         {% else %}
                             <div class="empty-state">
                                 <i class="fas fa-calendar-plus"></i>
                                 <h5>No upcoming appointments</h5>
-                                <p>Check back later for new requests.</p>
+                                <p class="text-muted">Check back later for new bookings.</p>
                             </div>
                         {% endif %}
                     </div>
@@ -1055,33 +1064,27 @@
                         <div class="section-header">
                             <h3><i class="fas fa-chart-bar me-2 text-info"></i>Quick Stats</h3>
                         </div>
-                        <div class="quick-stats">
-                            <div class="quick-stat">
-                                <i class="fas fa-user-md"></i>
-                                <div>
-                                    <h6 class="mb-1">{{ doctor.rating ?? '4.8' }}</h6>
-                                    <small class="text-muted">Rating</small>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-content">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <div class="stat-numbers">
+                                        <h6 class="mb-1">{{ app.user.doctor.rating ?? '4.8' }}</h6>
+                                        <small class="text-muted">Rating</small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="quick-stat">
-                                <i class="fas fa-users"></i>
-                                <div>
-                                    <h6 class="mb-1">{{ stats.total|default(0) }}</h6>
-                                    <small class="text-muted">Total Visits</small>
-                                </div>
-                            </div>
-                            <div class="quick-stat">
-                                <i class="fas fa-clock"></i>
-                                <div>
-                                    <h6 class="mb-1">{{ stats.pending|default(0) }}</h6>
-                                    <small class="text-muted">Pending</small>
-                                </div>
-                            </div>
-                            <div class="quick-stat">
-                                <i class="fas fa-prescription-bottle"></i>
-                                <div>
-                                    <h6 class="mb-1">{{ stats.prescriptions|default(0) }}</h6>
-                                    <small class="text-muted">Prescriptions</small>
+                            <div class="stat-card">
+                                <div class="stat-content">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-numbers">
+                                        <h6 class="mb-1">{{ stats.total|default(0) }}</h6>
+                                        <small class="text-muted">Total Patients</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1108,9 +1111,7 @@
                     .then(data => {
                         if (data.success) {
                             showToast('Appointment confirmed!', 'success');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1500);
+                            setTimeout(() => location.reload(), 1500);
                         } else {
                             showToast('Error: ' + data.message, 'danger');
                         }
@@ -1135,9 +1136,7 @@
                     .then(data => {
                         if (data.success) {
                             showToast('Appointment cancelled!', 'warning');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1500);
+                            setTimeout(() => location.reload(), 1500);
                         } else {
                             showToast('Error: ' + data.message, 'danger');
                         }
@@ -1147,6 +1146,35 @@
                         showToast('Error cancelling appointment', 'danger');
                     });
             }
+        }
+
+        function completeAppointment(appointmentId) {
+            if (confirm('Mark this appointment as completed?')) {
+                fetch('{{ path('doctor_appointment_complete', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', appointmentId), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Appointment marked as completed!', 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showToast('Error: ' + data.message, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Error completing appointment', 'danger');
+                    });
+            }
+        }
+
+        function resetFilters() {
+            window.location.href = '{{ path('doctor_appointments') }}';
         }
 
         // Toast notification function
@@ -1173,17 +1201,49 @@
             }, 3000);
         }
 
-        // Add hover effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add animation to stats cards on load
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
+        // Add CSS for toast notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            .toast-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius-sm);
+                background: white;
+                box-shadow: var(--shadow-lg);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid;
+            }
+            .toast-success {
+                border-left-color: var(--success);
+                color: var(--success);
+            }
+            .toast-warning {
+                border-left-color: var(--warning);
+                color: var(--warning);
+            }
+            .toast-danger {
+                border-left-color: var(--danger);
+                color: var(--danger);
+            }
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
 
+        document.addEventListener('DOMContentLoaded', function() {
             // Initialize tooltips
             const tooltips = document.querySelectorAll('[title]');
             tooltips.forEach(tooltip => {

@@ -122,6 +122,30 @@ class Doctor
     {
         return $this->appointments;
     }
+    public function getPrescriptions(): Collection
+    {
+        return $this->prescriptions;
+    }
+
+    public function addPrescription(Prescription $prescription): static
+    {
+        if (!$this->prescriptions->contains($prescription)) {
+            $this->prescriptions->add($prescription);
+            $prescription->setDoctor($this);
+        }
+        return $this;
+    }
+
+    public function removePrescription(Prescription $prescription): static
+    {
+        if ($this->prescriptions->removeElement($prescription)) {
+            // set the owning side to null (unless already changed)
+            if ($prescription->getDoctor() === $this) {
+                $prescription->setDoctor(null);
+            }
+        }
+        return $this;
+    }
 
     public function addAppointment(Appointment $appointment): static
     {

@@ -1,453 +1,906 @@
 {# templates/admin/doctors/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Manage Doctors • Admin{% endblock %}
+{% block title %}MedicalApp - Doctors Management{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
         :root {
             --primary: #2c7be5;
+            --primary-light: #e3ebf8;
             --primary-dark: #1a68d1;
             --secondary: #6e84a3;
             --success: #00d97e;
+            --success-light: #e6f9f0;
             --warning: #f6c343;
+            --warning-light: #fef8e6;
             --danger: #e63757;
+            --danger-light: #fce9ec;
+            --info: #39afd1;
+            --info-light: #eaf5f9;
             --light: #f9fbfd;
             --dark: #12263f;
-            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --admin-primary: #4361ee;
+            --admin-primary-light: #edf2ff;
+            --admin-primary-dark: #3a56d4;
+            --card-bg: #ffffff;
+            --body-bg: #f5f7fb;
+            --sidebar-bg: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
+            --gradient-warning: linear-gradient(135deg, #f6c343 0%, #f4b223 100%);
+            --gradient-danger: linear-gradient(135deg, #e63757 0%, #d92545 100%);
+            --gradient-admin: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.75rem;
+            --border-radius-sm: 0.5rem;
+            --transition: all 0.3s ease;
         }
 
-        .dashboard-section {
-            background: #f5f7fb;
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Main Dashboard Layout */
+        .dashboard-wrapper {
+            display: flex;
             min-height: 100vh;
-            padding: 30px 0;
         }
 
-        .doctors-header {
-            background: var(--gradient);
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--gradient-admin);
             color: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
-            position: relative;
-            overflow: hidden;
         }
 
-        .doctors-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .doctor-card {
-            background: white;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            border: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .doctor-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-        }
-
-        .doctor-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            font-weight: bold;
             color: white;
-            background: var(--gradient);
+            font-size: 1.25rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
-        .specialty-badge {
-            background: rgba(44, 123, 229, 0.1);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 20px;
+        .admin-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .admin-info small {
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
             font-weight: 500;
         }
 
-        .rating-badge {
-            background: rgba(246, 195, 67, 0.1);
-            color: #b58c2a;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+        .nav-item:hover {
+            background: var(--admin-primary-light);
+            color: var(--admin-primary-dark);
+            transform: translateX(5px);
         }
 
-        .action-btn {
+        .nav-item.active {
+            background: var(--gradient-admin);
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: white;
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
+            text-decoration: none;
             font-weight: 500;
-            padding: 8px 16px;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100% - 280px);
+        }
+
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--gradient-admin);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.total::before { background: var(--primary); }
+        .stat-card.active::before { background: var(--success); }
+        .stat-card.specialties::before { background: var(--info); }
+        .stat-card.rating::before { background: var(--warning); }
+
+        .stat-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.total .stat-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.active .stat-icon {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .stat-card.specialties .stat-icon {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .stat-card.rating .stat-icon {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .stat-numbers h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .stat-numbers p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .page-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-title p {
+            color: var(--gray-600);
+            margin: 0.5rem 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stats-counter {
+            background: var(--admin-primary-light);
+            color: var(--admin-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-add {
-            background: white;
-            color: var(--primary);
+            background: var(--gradient-admin);
+            color: white;
             border: none;
-            box-shadow: 0 4px 15px rgba(44, 123, 229, 0.2);
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-add:hover {
-            background: var(--primary);
-            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.3);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
         }
 
-        .empty-state {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 30px;
-            text-align: center;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        /* Doctors Grid */
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .empty-icon {
-            font-size: 5rem;
-            color: #e2e8f0;
-            margin-bottom: 20px;
+        .doctor-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--admin-primary-light);
+        }
+
+        .doctor-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .doctor-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .doctor-info {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .specialty-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.5rem;
         }
 
         .contact-info {
-            color: var(--secondary);
-            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .contact-item i {
+            width: 16px;
+            color: var(--gray-500);
+        }
+
+        .rating-badge {
+            background: var(--warning-light);
+            color: var(--warning);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .doctor-footer {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .btn-action {
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .btn-edit {
+            background: var(--admin-primary-light);
+            color: var(--admin-primary);
+            border: 1px solid var(--admin-primary-light);
+        }
+
+        .btn-edit:hover {
+            background: var(--admin-primary);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn-delete {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid var(--danger-light);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 55, 87, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Alert Messages */
+        .alert {
+            border-radius: var(--border-radius-sm);
+            border: none;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
         }
 
         /* Modal Styles */
         .modal-content {
-            border-radius: 20px;
+            border-radius: var(--border-radius);
             border: none;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-header {
-            background: var(--gradient);
+            background: var(--gradient-admin);
             color: white;
-            border-radius: 20px 20px 0 0;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
             border: none;
-            padding: 25px 30px;
+            padding: 1.5rem;
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 1.5rem;
         }
 
-        .form-control {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
+        .form-control, .form-select {
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
         }
 
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.25);
+        .form-control:focus, .form-select:focus {
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
         .form-label {
             font-weight: 600;
             color: var(--dark);
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .btn-submit {
-            background: var(--gradient);
-            border: none;
+            background: var(--gradient-admin);
             color: white;
-            padding: 12px 30px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.3);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
         }
 
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .btn-loading .loading-spinner {
-            display: inline-block;
-        }
-
+        /* Toast Notification */
         .alert-toast {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 9999;
             min-width: 300px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-lg);
         }
 
-        .form-errors {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--danger);
-        }
-
-        .form-errors ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .form-errors li {
-            color: var(--danger);
-            font-size: 0.9rem;
-        }
-        .btn-back {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            margin-right: 20px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow:
-                    0 4px 15px rgba(0, 0, 0, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            font-size: 0.95rem;
-        }
-
-        .btn-back::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent
-            );
-            transition: left 0.6s ease;
-        }
-
-        .btn-back:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
-            color: white;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow:
-                    0 8px 25px rgba(0, 0, 0, 0.15),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-                    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-
-        .btn-back:hover::before {
-            left: 100%;
-        }
-
-        .btn-back:active {
-            transform: translateY(0) scale(1);
-            box-shadow:
-                    0 2px 10px rgba(0, 0, 0, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-back i {
-            font-size: 0.9rem;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-back:hover i {
-            transform: translateX(-3px);
-        }
-
-        /* Optional: Add a subtle pulse animation for attention */
-        @keyframes subtlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .btn-back:focus {
-            animation: subtlePulse 2s infinite;
-            outline: 2px solid rgba(255, 255, 255, 0.5);
-            outline-offset: 2px;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .btn-back {
-                padding: 10px 18px;
-                font-size: 0.9rem;
-                margin-right: 15px;
-                margin-bottom: 10px;
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                max-width: calc(100% - 250px);
+            }
+            .doctors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             }
         }
+
+        @media (max-width: 992px) {
+            .dashboard-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .doctors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .page-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .doctors-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .doctor-card {
+            animation: fadeIn 0.3s ease forwards;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
-    <section class="dashboard-section">
-        <div class="container">
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-avatar">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </div>
+                <div class="admin-info">
+                    <h6>{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                    <small>Administrator</small>
+                </div>
+            </div>
 
-            <!-- Page Header -->
-            <div class="doctors-header">
-                <div class="header-content">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <a href="{{ path('app_dashboard') }}" class="btn-back">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                            </a>
-                            <h1 class="display-6 fw-bold mb-3">Manage Doctors</h1>
-                            <p class="mb-0 opacity-90">View and manage all registered medical professionals</p>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <a href="{{ path('app_dashboard') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
                         </div>
-                        <div class="col-md-4 text-md-end">
-                            <div class="d-inline-block  bg-opacity-20 px-4 py-2 rounded-pill mb-3">
-                                <i class="fas fa-user-md me-2"></i>{{ doctors|length }} Doctors
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-add" data-action="new">
-                                    <i class="fas fa-plus me-2"></i>Add New Doctor
-                                </button>
-                            </div>
+                        Overview
+                    </a>
+                    <a href="{{ path('admin_appointments') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
+                        Appointments
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="{{ path('admin_doctors') }}" class="nav-item active">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        Doctors
+                    </a>
+                    <a href="{{ path('admin_patients') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-procedures"></i>
+                        </div>
+                        Patients
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ path('app_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h1>Doctors Management</h1>
+                    <p>View and manage all registered medical professionals</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
                     </div>
                 </div>
             </div>
 
 
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>Doctors Directory</h2>
+                    <p>Manage medical staff and their information</p>
+                </div>
+                <div class="page-actions">
+                    <div class="stats-counter">
+                        <i class="fas fa-user-md me-2"></i>{{ doctors|length }} Doctors
+                    </div>
+                    <button type="button" class="btn-add" data-action="new">
+                        <i class="fas fa-plus me-2"></i>Add New Doctor
+                    </button>
+                </div>
+            </div>
+
             <!-- Flash Messages -->
             {% for message in app.flashes('success') %}
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
 
             <!-- Doctors Grid -->
-            <div class="row g-4" id="doctors-container">
+            <div class="doctors-grid" id="doctors-container">
                 {% for doctor in doctors %}
-                    <div class="col-lg-4 col-md-6" id="doctor-{{ doctor.id }}">
-                        <div class="doctor-card">
-                            <div class="d-flex align-items-start mb-4">
-                                <!-- Avatar -->
-                                <div class="flex-shrink-0 me-4">
-                                    <div class="doctor-avatar">
-                                        {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
-                                    </div>
-                                </div>
-
-                                <!-- Doctor Info -->
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-2 fw-bold text-dark">
-                                        Dr. {{ doctor.client.getFullName }}
-                                    </h5>
-                                    <div class="mb-3">
-                                        <span class="specialty-badge">
-                                            {{ doctor.specialty|default('General Medicine') }}
-                                        </span>
-                                    </div>
-
-                                    <div class="d-flex flex-column gap-2 small contact-info">
-                                        <div>
-                                            <i class="fas fa-envelope me-2"></i>{{ doctor.client.email }}
-                                        </div>
-                                        <div>
-                                            <i class="fas fa-phone me-2"></i>{{ doctor.phone|default('Not provided') }}
-                                        </div>
-                                    </div>
-
-                                    <!-- Rating -->
-                                    <div class="mt-3">
-                                        <span class="rating-badge">
-                                            <i class="fas fa-star me-1 text-warning"></i>Rating: {{ doctor.rating|default('4.8') }}/5
-                                        </span>
-                                    </div>
-                                </div>
+                    <div class="doctor-card" id="doctor-{{ doctor.id }}">
+                        <div class="doctor-header">
+                            <div class="doctor-avatar">
+                                {{ doctor.client.firstName|first|upper }}{{ doctor.client.lastName|first|upper }}
                             </div>
-
-                            <!-- Actions -->
-                            <div class="mt-4 pt-3 border-top">
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-outline-primary action-btn flex-fill edit-doctor"
-                                            data-id="{{ doctor.id }}">
-                                        <i class="fas fa-edit me-1"></i>Edit
-                                    </button>
-                                    <form method="post" action="{{ path('admin_doctors_delete', {id: doctor.id}) }}"
-                                          class="d-inline delete-form flex-fill">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
-                                        <button type="button" class="btn btn-outline-danger action-btn w-100 delete-doctor"
-                                                data-id="{{ doctor.id }}" data-name="{{ doctor.client.getFullName }}">
-                                            <i class="fas fa-trash me-1"></i>Delete
-                                        </button>
-                                    </form>
-                                </div>
+                            <div class="doctor-info">
+                                <h4 class="doctor-name">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h4>
+                                {% if doctor.specialty %}
+                                    <span class="specialty-badge">{{ doctor.specialty }}</span>
+                                {% endif %}
                             </div>
+                        </div>
+
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ doctor.client.email }}</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ doctor.phone|default('Phone not provided') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="rating-badge">
+                                <i class="fas fa-star"></i>
+                                Rating: {{ doctor.rating|default('4.8') }}/5
+                            </span>
+                        </div>
+
+                        <div class="doctor-footer">
+                            <button type="button" class="btn-action btn-edit edit-doctor"
+                                    data-id="{{ doctor.id }}">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </button>
+                            <form method="post" action="{{ path('admin_doctors_delete', {id: doctor.id}) }}"
+                                  class="delete-form d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
+                                <button type="button" class="btn-action btn-delete delete-doctor"
+                                        data-id="{{ doctor.id }}"
+                                        data-name="{{ doctor.client.firstName }} {{ doctor.client.lastName }}">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </form>
                         </div>
                     </div>
                 {% else %}
                     <!-- Empty State -->
-                    <div class="col-12">
-                        <div class="empty-state">
-                            <i class="fas fa-user-md empty-icon"></i>
-                            <h3 class="text-muted mb-3">No doctors registered yet</h3>
-                            <p class="text-muted mb-4">Start by adding your first doctor to the platform.</p>
-                            <button type="button" class="btn btn-primary btn-lg" data-action="new">
-                                <i class="fas fa-plus me-2"></i>Add First Doctor
-                            </button>
-                        </div>
+                    <div class="empty-state">
+                        <i class="fas fa-user-md empty-icon"></i>
+                        <h5>No doctors registered yet</h5>
+                        <p>Start by adding your first doctor to the platform.</p>
+                        <button type="button" class="btn-add" data-action="new">
+                            <i class="fas fa-plus me-2"></i>Add First Doctor
+                        </button>
                     </div>
                 {% endfor %}
             </div>
-
-        </div>
-    </section>
+        </main>
+    </div>
 
     <!-- Doctor Modal -->
     <div class="modal fade" id="doctorModal" tabindex="-1" aria-labelledby="doctorModalLabel" aria-hidden="true">
@@ -479,6 +932,7 @@
                 const toast = document.createElement('div');
                 toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show alert-toast`;
                 toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
@@ -526,7 +980,7 @@
                     console.error('Error loading form:', error);
                     modalBody.innerHTML = `
                         <div class="alert alert-danger">
-                            <h6>Error Loading Form</h6>
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Error Loading Form</h6>
                             <p class="mb-0">There was an error loading the form. Please try again.</p>
                         </div>
                     `;
@@ -544,6 +998,8 @@
                 // Show loading state
                 submitBtn.classList.add('btn-loading');
                 submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2"></div> Processing...';
 
                 try {
                     const response = await fetch(form.action, {
@@ -582,20 +1038,23 @@
                 } finally {
                     submitBtn.classList.remove('btn-loading');
                     submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
                 }
             }
 
             // Add new doctor
             document.querySelectorAll('[data-action="new"]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');             });
+                    loadForm('{{ path('admin_doctors_new') }}?ajax=1', 'Add New Doctor');
+                });
             });
 
             // Edit doctor
             document.querySelectorAll('.edit-doctor').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const doctorId = btn.getAttribute('data-id');
-                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');                });
+                    loadForm(`/admin/doctors/${doctorId}/edit?ajax=1`, 'Edit Doctor');
+                });
             });
 
             // Delete doctor
@@ -635,10 +1094,18 @@
                         }
 
                         // Update doctor count
-                        const doctorCount = document.querySelector('.doctors-header .rounded-pill');
-                        if (doctorCount) {
-                            const currentCount = parseInt(doctorCount.textContent) || 0;
-                            doctorCount.innerHTML = `<i class="fas fa-user-md me-2"></i>${currentCount - 1} Doctors`;
+                        const statsCounter = document.querySelector('.stats-counter');
+                        if (statsCounter) {
+                            const currentText = statsCounter.textContent.trim();
+                            const currentCount = parseInt(currentText) || 0;
+                            statsCounter.innerHTML = `<i class="fas fa-user-md me-2"></i>${currentCount - 1} Doctors`;
+                        }
+
+                        // Update total stats card
+                        const totalStat = document.querySelector('.stat-card.total h3');
+                        if (totalStat) {
+                            const currentTotal = parseInt(totalStat.textContent) || 0;
+                            totalStat.textContent = currentTotal - 1;
                         }
                     } else {
                         showToast(data.message, 'error');
@@ -649,17 +1116,16 @@
                 }
             }
 
-            // Add subtle animation to cards when they come into view
+            // Add animation to doctor cards
             const doctorCards = document.querySelectorAll('.doctor-card');
             doctorCards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
+                card.style.animationDelay = `${index * 0.05}s`;
+            });
 
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
+            // Add animation to stats cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
             });
         });
     </script>

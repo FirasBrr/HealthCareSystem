@@ -1,0 +1,1086 @@
+{# templates/doctor/patients/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}MedicalApp - My Patients{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Reuse your doctor dashboard CSS variables */
+        :root {
+            --primary: #2c7be5;
+            --primary-light: #e3ebf8;
+            --primary-dark: #1a68d1;
+            --secondary: #6e84a3;
+            --success: #00d97e;
+            --success-light: #e6f9f0;
+            --warning: #f6c343;
+            --warning-light: #fef8e6;
+            --danger: #e63757;
+            --danger-light: #fce9ec;
+            --info: #39afd1;
+            --info-light: #eaf5f9;
+            --light: #f9fbfd;
+            --dark: #12263f;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --prescription: #9b59b6;
+            --prescription-light: #f3e8f7;
+            --prescription-dark: #8e44ad;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --body-bg: #f5f7fb;
+            --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.75rem;
+            --border-radius-sm: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Sidebar Navigation - Same as doctor dashboard */
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .doctor-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .doctor-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .doctor-info small {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: white;
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100% - 280px);
+        }
+
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gray-100);
+            border: none;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.total::before { background: var(--primary); }
+        .stat-card.appointments::before { background: var(--success); }
+        .stat-card.active::before { background: var(--info); }
+        .stat-card.prescriptions::before { background: var(--prescription); }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-card.total .stat-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.appointments .stat-icon {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .stat-card.active .stat-icon {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .stat-card.prescriptions .stat-icon {
+            background: var(--prescription-light);
+            color: var(--prescription);
+        }
+
+        .stat-numbers h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .stat-numbers p {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        /* Filters */
+        .filter-card {
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-control, .form-select {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--gray-300);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.1);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Patient Cards */
+        .patient-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .patient-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+        }
+
+        .patient-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .patient-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .patient-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .patient-info p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .contact-info {
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-item i {
+            width: 20px;
+            color: var(--gray-600);
+        }
+
+        .patient-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-view-appointments {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-view-appointments:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .btn-view-prescriptions {
+            background: var(--prescription);
+            color: white;
+        }
+
+        .btn-view-prescriptions:hover {
+            background: var(--prescription-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .empty-state h5 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Flash Messages */
+        .alert {
+            border-radius: var(--border-radius-sm);
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                max-width: calc(100% - 250px);
+            }
+            .patient-cards {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
+            .patient-cards {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .patient-card {
+                padding: 1rem;
+            }
+            .patient-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <!-- Add Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="doctor-avatar">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </div>
+                <div class="doctor-info">
+                    <h6>Dr. {{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                    <small>{{ app.user.doctor.specialty ?? 'Medical Professional' }}</small>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="{{ path('doctor_dashboard') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        Dashboard
+                    </a>
+                    <a href="{{ path('doctor_appointments') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        Appointments
+                    </a>
+                    <a href="{{ path('doctor_prescriptions') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-file-prescription"></i>
+                        </div>
+                        Prescriptions
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Schedule</div>
+                    <a href="{{ path('doctor_availability') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        Availability
+                    </a>
+                    <a href="{{ path('doctor_patients') }}" class="nav-item active">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        My Patients
+                        {% if stats.total|default(0) > 0 %}
+                            <span class="notification-badge" style="margin-left: auto;">{{ stats.total }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ path('app_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h1>My Patients</h1>
+                    <p>View and manage all your patients</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">{{ stats.active_patients|default(0) }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('warning') %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-numbers">
+                                <h3>{{ stats.total|default(0) }}</h3>
+                                <p>Total Patients</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card appointments">
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-numbers">
+                                <h3>{{ stats.total_appointments|default(0) }}</h3>
+                                <p>Total Appointments</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card active">
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="stat-numbers">
+                                <h3>{{ stats.active_patients|default(0) }}</h3>
+                                <p>Active (30 days)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card prescriptions">
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-icon">
+                                <i class="fas fa-file-prescription"></i>
+                            </div>
+                            <div class="stat-numbers">
+                                <h3>{{ stats.prescription_count|default(0) }}</h3>
+                                <p>Prescriptions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Section -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-friends me-2 text-primary"></i>All Patients</h3>
+                    <div class="section-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="resetFilters()">
+                            <i class="fas fa-redo me-1"></i> Reset Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-card">
+                    <form method="get" class="filter-form" id="filterForm">
+                        <div class="form-group">
+                            <label class="form-label small">Search Patients</label>
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Name, phone or email..." value="{{ currentFilters.search }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label small">Sort By</label>
+                            <select name="sort" class="form-select" onchange="this.form.submit()">
+                                <option value="name" {{ currentFilters.sort == 'name' ? 'selected' : '' }}>Name (A-Z)</option>
+                                <option value="last_appointment" {{ currentFilters.sort == 'last_appointment' ? 'selected' : '' }}>Last Appointment</option>
+                                <option value="total_appointments" {{ currentFilters.sort == 'total_appointments' ? 'selected' : '' }}>Total Appointments</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label small">Order</label>
+                            <select name="order" class="form-select" onchange="this.form.submit()">
+                                <option value="asc" {{ currentFilters.order == 'asc' ? 'selected' : '' }}>Ascending</option>
+                                <option value="desc" {{ currentFilters.order == 'desc' ? 'selected' : '' }}>Descending</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                {% if patients|length > 0 %}
+                    <div class="patient-cards">
+                        {% for patientData in patients %}
+                            {% set patient = patientData.patient %}
+                            {% set client = patientData.client %}
+                            {% set patientStats = patientData.stats %}
+
+                            <div class="patient-card">
+                                <div class="patient-header">
+                                    <div class="patient-avatar">
+                                        {{ client.firstName|first|upper }}{{ client.lastName|first|upper }}
+                                    </div>
+                                    <div class="patient-info">
+                                        <h4>{{ client.firstName }} {{ client.lastName }}</h4>
+                                        <p>Patient since {{ client.createdAt|date('M Y') }}</p>                                    </div>
+                                </div>
+
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>{{ client.email }}</span>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone"></i>
+                                        <span>{{ patient.phone ?? 'No phone' }}</span>
+                                    </div>
+                                    {% if patient.address %}
+                                        <div class="contact-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ patient.address|slice(0, 30) }}{{ patient.address|length > 30 ? '...' : '' }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="patient-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ patientStats.total_appointments }}</span>
+                                        <span class="stat-label">Appointments</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ patientStats.confirmed_count }}</span>
+                                        <span class="stat-label">Confirmed</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ patientStats.prescription_count }}</span>
+                                        <span class="stat-label">Prescriptions</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">
+                                            {% if patientStats.last_appointment %}
+                                                {{ patientStats.last_appointment|date('M j') }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </span>
+                                        <span class="stat-label">Last Visit</span>
+                                    </div>
+                                </div>
+
+                                <div class="patient-actions">
+                                    <a href="{{ path('doctor_appointments') }}?search={{ client.firstName ~ ' ' ~ client.lastName }}"
+                                       class="btn-action btn-view-appointments"
+                                       title="View All Appointments">
+                                        <i class="fas fa-calendar-alt"></i> Appointments
+                                    </a>
+                                    <a href="{{ path('doctor_prescriptions') }}"
+                                       class="btn-action btn-view-prescriptions"
+                                       title="View Prescriptions">
+                                        <i class="fas fa-file-prescription"></i> Prescriptions
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-friends"></i>
+                        <h5>No Patients Found</h5>
+                        <p class="text-muted mb-4">You haven't had any appointments with patients yet.</p>
+                        <a href="{{ path('doctor_dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-1"></i> Return to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function resetFilters() {
+            window.location.href = '{{ path('doctor_patients') }}';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltips = document.querySelectorAll('[title]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
+
+            // Notification button click
+            const notificationBtn = document.querySelector('.notification-btn');
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', function() {
+                    // In a real app, this would show notifications
+                    showToast('Notifications feature coming soon!', 'info');
+                });
+            }
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+            `;
+
+            // Add to page
+            document.body.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+
+        // Add CSS for toast notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            .toast-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius-sm);
+                background: white;
+                box-shadow: var(--shadow-lg);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid;
+            }
+            .toast-success {
+                border-left-color: var(--success);
+                color: var(--success);
+            }
+            .toast-warning {
+                border-left-color: var(--warning);
+                color: var(--warning);
+            }
+            .toast-danger {
+                border-left-color: var(--danger);
+                color: var(--danger);
+            }
+            .toast-info {
+                border-left-color: var(--info);
+                color: var(--info);
+            }
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+{% endblock %}

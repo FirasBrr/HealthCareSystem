@@ -5,135 +5,364 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        /* Reuse your doctor dashboard CSS variables */
         :root {
             --primary: #2c7be5;
+            --primary-light: #e3ebf8;
             --primary-dark: #1a68d1;
             --secondary: #6e84a3;
             --success: #00d97e;
+            --success-light: #e6f9f0;
             --warning: #f6c343;
+            --warning-light: #fef8e6;
             --danger: #e63757;
+            --danger-light: #fce9ec;
+            --info: #39afd1;
+            --info-light: #eaf5f9;
             --light: #f9fbfd;
             --dark: #12263f;
-            --gradient: linear-gradient(135deg, #2c7be5 0%, #6e84a3 100%);
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --prescription: #9b59b6;
+            --prescription-light: #f3e8f7;
+            --prescription-dark: #8e44ad;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --body-bg: #f5f7fb;
+            --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
+            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --border-radius: 0.75rem;
+            --border-radius-sm: 0.5rem;
+            --transition: all 0.3s ease;
         }
 
-        .availability-section {
-            background: #f5f7fb;
-            min-height: 100vh;
-            padding: 30px 0;
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        .welcome-card {
-            background: var(--gradient);
-            color: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(44, 123, 229, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
-        }
-
-        .welcome-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .header-actions {
+        /* Sidebar Navigation - Same as doctor dashboard */
+        .dashboard-wrapper {
             display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: flex-end;
+            min-height: 100vh;
         }
 
-        .btn-logout {
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .doctor-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .doctor-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .doctor-info small {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+
+        .nav-item:hover .nav-icon {
+            background: white;
+        }
+
+        .nav-item.active .nav-icon {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            color: var(--danger);
             text-decoration: none;
-            transition: all 0.3s ease;
             font-weight: 500;
-            white-space: nowrap;
+            transition: var(--transition);
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            transform: translateY(-1px);
+        .logout-btn:hover {
+            background: var(--danger-light);
         }
 
-        .calendar-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-            border: none;
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100% - 280px);
         }
 
-        .section-title {
-            font-size: 1.5rem;
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gray-100);
+            border: none;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-primary {
             background: var(--primary);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            color: white;
         }
 
         .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 123, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
         }
 
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #00b86c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 126, 0.3);
+        }
+
+        /* Calendar Styles - Updated to match design */
         .fc {
-            font-family: inherit;
+            font-family: 'Inter', sans-serif;
         }
 
         .fc .fc-toolbar {
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 1rem;
         }
 
         .fc .fc-toolbar-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.25rem;
+            font-weight: 600;
             color: var(--dark);
         }
 
         .fc .fc-button {
-            background: white;
-            border: 1px solid #e6e6e6;
-            color: var(--dark);
+            background: var(--card-bg);
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
             font-weight: 500;
-            border-radius: 8px;
-            padding: 8px 16px;
-            transition: all 0.3s ease;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
         }
 
         .fc .fc-button:hover {
-            background: var(--light);
+            background: var(--gray-100);
             border-color: var(--primary);
             color: var(--primary);
         }
@@ -147,7 +376,7 @@
 
         .fc .fc-daygrid-day-number,
         .fc .fc-col-header-cell-cushion {
-            color: var(--dark);
+            color: var(--gray-700);
             text-decoration: none;
             font-weight: 500;
         }
@@ -155,22 +384,23 @@
         .fc .fc-event {
             border-radius: 6px;
             border: none;
-            padding: 2px 4px;
-            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
+            border-left: 3px solid;
         }
 
         .fc .fc-event.availability-slot {
-            background: rgba(0, 217, 126, 0.15);
+            background: var(--success-light);
             color: var(--success);
-            border-left: 3px solid var(--success);
+            border-left-color: var(--success);
         }
 
         .fc .fc-event.blocked-slot {
-            background: rgba(230, 55, 87, 0.15);
+            background: var(--danger-light);
             color: var(--danger);
-            border-left: 3px solid var(--danger);
+            border-left-color: var(--danger);
         }
 
         .fc .fc-timegrid-slot {
@@ -178,51 +408,123 @@
         }
 
         .fc .fc-day-today {
-            background: rgba(44, 123, 229, 0.05) !important;
+            background: var(--primary-light) !important;
         }
 
         .fc .fc-highlight {
-            background: rgba(44, 123, 229, 0.1);
+            background: var(--primary-light);
         }
 
-        .actions-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .quick-actions h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
         }
 
         .action-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
             text-decoration: none;
-            color: var(--dark);
+            color: var(--gray-700);
+            background: var(--gray-100);
             cursor: pointer;
         }
 
         .action-item:hover {
-            background: var(--light);
+            background: var(--primary-light);
+            color: var(--primary);
             transform: translateX(5px);
             text-decoration: none;
-            color: var(--dark);
         }
 
         .action-icon {
             width: 40px;
             height: 40px;
-            background: var(--gradient);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            margin-right: 15px;
+            margin-right: 1rem;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            transition: var(--transition);
         }
 
+        .action-item:hover .action-icon {
+            background: white;
+            color: var(--primary);
+        }
+
+        .action-details h6 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: inherit;
+        }
+
+        .action-details small {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        /* Legend */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 1rem;
+            border-left: 3px solid;
+        }
+
+        .legend-available {
+            background: var(--success-light);
+            border-left-color: var(--success);
+        }
+
+        .legend-blocked {
+            background: var(--danger-light);
+            border-left-color: var(--danger);
+        }
+
+        .legend-text h6 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .legend-text p {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -240,8 +542,8 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2c7be5;
+            border: 4px solid var(--gray-300);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -251,50 +553,133 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
-            .welcome-card {
-                padding: 20px;
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
             }
-
-            .calendar-card {
-                padding: 15px;
+            .main-content {
+                margin-left: 250px;
+                max-width: calc(100% - 250px);
             }
+        }
 
+        @media (max-width: 992px) {
+            .dashboard-wrapper {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 1rem;
+            }
             .fc .fc-toolbar {
                 flex-direction: column;
                 align-items: flex-start;
             }
+        }
 
-            .fc .fc-toolbar-chunk {
-                margin-bottom: 10px;
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
+    <!-- Add Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
-    <!-- Availability Management Section -->
-    <section class="availability-section">
-        <div class="container">
-            <!-- Welcome Card -->
-            <div class="welcome-card">
-                <div class="welcome-content">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h1 class="display-6 fw-bold mb-3">Availability Management</h1>
-                            <p class="mb-0 opacity-90">Click and drag on the calendar to add available time, or use the form for detailed settings</p>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="doctor-avatar">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </div>
+                <div class="doctor-info">
+                    <h6>Dr. {{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                    <small>{{ app.user.doctor.specialty ?? 'Medical Professional' }}</small>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="{{ path('doctor_dashboard') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
                         </div>
-                        <div class="col-md-4 text-md-end">
-                            <div class="header-actions">
-                                <div class="d-inline-block bg-opacity-20 px-4 py-2 rounded-pill me-2">
-                                    <i class="fas fa-user-md me-2"></i>Doctor
-                                </div>
-                                <a href="{{ path('app_logout') }}" class="btn-logout">
-                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
-                                </a>
-                            </div>
+                        Dashboard
+                    </a>
+                    <a href="{{ path('doctor_appointments') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
+                        Appointments
+                    </a>
+                    <a href="{{ path('doctor_prescriptions') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-file-prescription"></i>
+                        </div>
+                        Prescriptions
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Schedule</div>
+                    <a href="{{ path('doctor_availability') }}" class="nav-item active">
+                        <div class="nav-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        Availability
+                    </a>
+                    <a href="{{ path('doctor_patients') }}" class="nav-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        My Patients
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ path('app_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h1>Availability Management</h1>
+                    <p>Click and drag on the calendar to add available time slots</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
                     </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
                 </div>
             </div>
 
@@ -306,59 +691,94 @@
                 </div>
             {% endfor %}
 
+            {% for message in app.flashes('warning') %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
             <div class="row">
                 <!-- Calendar Section -->
                 <div class="col-lg-9">
-                    <div class="calendar-card">
-                        <h3 class="section-title">
-                            <i class="fas fa-calendar-alt me-2"></i>Your Schedule
-                        </h3>
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-calendar-alt me-2 text-primary"></i>Your Schedule</h3>
+
+                        </div>
                         <div id="calendar"></div>
                     </div>
                 </div>
 
                 <!-- Quick Actions Sidebar -->
                 <div class="col-lg-3">
-                    <div class="actions-card">
-                        <h5 class="mb-4">Quick Actions</h5>
+                    <div class="quick-actions">
+                        <h5><i class="fas fa-bolt me-2 text-warning"></i>Quick Actions</h5>
 
                         <a href="{{ path('doctor_availability_new') }}" class="action-item">
                             <div class="action-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
-                            <div>
-                                <h6 class="mb-1">Add Time Slot</h6>
-                                <small class="text-muted">Create availability with details</small>
+                            <div class="action-details">
+                                <h6>Add Time Slot</h6>
+                                <small>Create detailed availability</small>
+                            </div>
+                        </a>
+
+
+
+                        <a href="{{ path('doctor_availability') }}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div class="action-details">
+                                <h6>Refresh Calendar</h6>
+                                <small>Reload schedule</small>
                             </div>
                         </a>
                     </div>
 
-                    <!-- Legend Card -->
-                    <div class="actions-card mt-4">
-                        <h5 class="mb-4">Schedule Legend</h5>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="availability-indicator me-3" style="width: 15px; height: 15px; background: rgba(0, 217, 126, 0.15); border-left: 3px solid var(--success); border-radius: 3px;"></div>
-                            <div>
-                                <small class="fw-bold">Available</small>
-                                <br>
-                                <small class="text-muted">Open for appointments</small>
+                    <!-- Legend -->
+                    <div class="quick-actions">
+                        <h5><i class="fas fa-info-circle me-2 text-info"></i>Schedule Legend</h5>
+
+                        <div class="legend-item">
+                            <div class="legend-color legend-available"></div>
+                            <div class="legend-text">
+                                <h6>Available</h6>
+                                <p>Open for appointments</p>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="availability-indicator me-3" style="width: 15px; height: 15px; background: rgba(230, 55, 87, 0.15); border-left: 3px solid var(--danger); border-radius: 3px;"></div>
-                            <div>
-                                <small class="fw-bold">Blocked</small>
-                                <br>
-                                <small class="text-muted">Not available</small>
+
+                        <div class="legend-item">
+                            <div class="legend-color legend-blocked"></div>
+                            <div class="legend-text">
+                                <h6>Blocked</h6>
+                                <p>Not available</p>
                             </div>
                         </div>
                     </div>
 
-
+                    <!-- Instructions -->
+                    <div class="quick-actions">
+                        <h5><i class="fas fa-lightbulb me-2 text-warning"></i>How to Use</h5>
+                        <div class="legend-text mb-3">
+                            <h6>Click & Drag</h6>
+                            <p>Click and drag on calendar to create new available slots</p>
+                        </div>
+                        <div class="legend-text mb-3">
+                            <h6>Edit Slots</h6>
+                            <p>Click on any slot to edit or delete it</p>
+                        </div>
+                        <div class="legend-text">
+                            <h6>Recurring</h6>
+                            <p>Use the form for recurring weekly availability</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </main>
+    </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -391,15 +811,12 @@
                 weekends: true,
 
                 eventClick: function(info) {
-                    // FIX: Use the correct Symfony route instead of hardcoded URL
                     window.location.href = '{{ path('doctor_availability_edit', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', info.event.id);
                 },
 
                 select: function(info) {
-                    // Show loading
                     loadingOverlay.style.display = 'flex';
 
-                    // Send AJAX request to save to database (always available when clicking)
                     fetch('{{ path('doctor_availability_quick_add') }}', {
                         method: 'POST',
                         headers: {
@@ -422,7 +839,6 @@
                             loadingOverlay.style.display = 'none';
 
                             if (data.success) {
-                                // Add the event to calendar
                                 calendar.addEvent({
                                     id: data.id,
                                     title: data.title,
@@ -432,16 +848,15 @@
                                     extendedProps: data.extendedProps
                                 });
 
-                                // Show success message
-                                showFlashMessage('Available time slot created successfully!', 'success');
+                                showToast('Available time slot created successfully!', 'success');
                             } else {
-                                alert('Error creating availability slot');
+                                showToast('Error creating availability slot', 'danger');
                             }
                         })
                         .catch(error => {
                             loadingOverlay.style.display = 'none';
                             console.error('Error:', error);
-                            alert('Error creating availability slot. Please try again.');
+                            showToast('Error creating availability slot. Please try again.', 'danger');
                         })
                         .finally(() => {
                             calendar.unselect();
@@ -461,30 +876,92 @@
 
             calendar.render();
 
-            // Flash message function
-            function showFlashMessage(message, type) {
-                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            // Toast notification function
+            function showToast(message, type = 'success') {
+                // Remove existing toasts
+                document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
 
-                const flashHtml = `
-                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                        <i class="fas ${icon} me-2"></i>${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast-notification toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                    ${message}
                 `;
 
-                // Insert after welcome card
-                const welcomeCard = document.querySelector('.welcome-card');
-                welcomeCard.insertAdjacentHTML('afterend', flashHtml);
+                // Add to page
+                document.body.appendChild(toast);
 
-                // Auto remove after 5 seconds
+                // Remove after 3 seconds
                 setTimeout(() => {
-                    const alert = document.querySelector('.alert');
-                    if (alert) {
-                        alert.remove();
+                    if (toast.parentNode) {
+                        toast.remove();
                     }
-                }, 5000);
+                }, 3000);
             }
+
+            // Copy week schedule function
+            function copyWeekSchedule() {
+                if (confirm('Copy this week\'s schedule to next week?')) {
+                    fetch('{{ path('doctor_availability_copy_week') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                showToast('Week schedule copied successfully!', 'success');
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                showToast('Error copying schedule', 'danger');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showToast('Error copying schedule', 'danger');
+                        });
+                }
+            }
+
+            // Add CSS for toast notifications
+            const style = document.createElement('style');
+            style.textContent = `
+                .toast-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    border-radius: var(--border-radius-sm);
+                    background: white;
+                    box-shadow: var(--shadow-lg);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    animation: slideIn 0.3s ease;
+                    border-left: 4px solid;
+                }
+                .toast-success {
+                    border-left-color: var(--success);
+                    color: var(--success);
+                }
+                .toast-danger {
+                    border-left-color: var(--danger);
+                    color: var(--danger);
+                }
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 {% endblock %}
