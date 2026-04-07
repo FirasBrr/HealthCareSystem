@@ -24,8 +24,10 @@ RUN chown -R www-data:www-data /var/www/html
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 RUN printf '<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
     Require all granted\n\
-</Directory>\n' >> /etc/apache2/apache2.conf
+</Directory>\n' > /etc/apache2/conf-available/symfony.conf \
+    && a2enconf symfony
 
 EXPOSE 80
