@@ -16,17 +16,22 @@ COPY . .
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Allow Symfony to install without DB at build time
+# Use prod environment
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+ENV SYMFONY_DOTENV_VARS=0
 
-# Install dependencies WITHOUT scripts (IMPORTANT FIX)
+# Install dependencies WITHOUT scripts (avoid DB errors)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Clear & warm up cache for prod
+RUN php bin/console cache:clear --env=prod || true
+RUN php bin/console cache:warmup --env=prod || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Set Apache to /public
+# Set Apache document root to /public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
