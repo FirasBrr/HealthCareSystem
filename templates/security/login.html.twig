@@ -171,6 +171,46 @@
             text-decoration: underline;
         }
 
+        /* Demo notice styles */
+        .demo-notice {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-notice::before {
+            content: '🚀';
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            font-size: 60px;
+            opacity: 0.1;
+        }
+
+        .demo-notice h6 {
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .demo-notice p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .demo-notice code {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .login-section {
                 padding: 40px 0;
@@ -199,6 +239,16 @@
                             <div class="col-lg-6">
                                 <h1 class="login-title">Welcome Back</h1>
                                 <p class="login-subtitle">Sign in to your MedicalApp account</p>
+
+                                <!-- DEMO NOTICE - ADDED HERE -->
+                                <div class="demo-notice">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Live Demo Access</h6>
+                                    <p class="mb-1"><strong>Admin Account:</strong></p>
+                                    <p class="mb-1"><i class="fas fa-envelope me-2"></i>Email: <code>admin@demo.com</code></p>
+                                    <p><i class="fas fa-lock me-2"></i>Password: <code>demo123</code></p>
+                                    <hr class="my-2" style="border-color: rgba(255,255,255,0.3);">
+                                    <p class="mb-0 small"><i class="fas fa-star me-1"></i> Use this account to explore all admin features</p>
+                                </div>
 
                                 {% if error %}
                                     <div class="alert alert-danger alert-custom">
