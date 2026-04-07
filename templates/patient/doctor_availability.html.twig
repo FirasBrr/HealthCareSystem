@@ -5,91 +5,76 @@
 {% block body %}
     <section class="doctors-section">
         <div class="container">
-            <div class="row mb-4">
+            <div class="row mb-3 mb-md-4">
                 <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <a href="{{ path('patient_doctors') }}" class="btn btn-light mb-3">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Doctors
-                            </a>
-                            <h1 class="display-6 fw-bold">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h1>
-                            <p class="text-muted">{{ doctor.specialty ?? 'General Medicine' }}</p>
-                        </div>
-                    </div>
+                    <a href="{{ path('patient_doctors') }}" class="btn btn-light mb-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Doctors
+                    </a>
+                    <h1 class="doctor-name">Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h1>
+                    <p class="doctor-specialty">{{ doctor.specialty ?? 'General Medicine' }}</p>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Available Time Slots</h5>
+                            <h5><i class="fas fa-calendar-alt me-2"></i>Available Time Slots</h5>
                         </div>
                         <div class="card-body">
                             {% if availabilities|length > 0 %}
-                                <div class="row">
+                                <div class="row g-3">
                                     {% for availability in availabilities %}
-                                        <div class="col-md-6 mb-3">
-                                            <div class="availability-slot p-3 border rounded">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h6 class="mb-1">
-                                                            {% if availability.isRecurring %}
-                                                                Every {{ availability.dayOfWeek }}
-                                                            {% else %}
-                                                                {{ availability.date ? availability.date|date('M j, Y') : 'Specific date' }}
-                                                            {% endif %}
-                                                        </h6>
-                                                        <small class="text-muted">
-                                                            {{ availability.startTime|date('h:i A') }} - {{ availability.endTime|date('h:i A') }}
-                                                        </small>
-                                                    </div>
-                                                    <button class="btn btn-primary btn-sm" onclick="bookAppointment({{ doctor.id }}, {{ availability.id }})">
-                                                        <i class="fas fa-bookmark me-1"></i>Book
-                                                    </button>
+                                        <div class="col-12 col-md-6">
+                                            <div class="availability-slot">
+                                                <div class="slot-info">
+                                                    <h6>
+                                                        {% if availability.isRecurring %}
+                                                            Every {{ availability.dayOfWeek }}
+                                                        {% else %}
+                                                            {{ availability.date ? availability.date|date('M j, Y') : 'Specific date' }}
+                                                        {% endif %}
+                                                    </h6>
+                                                    <small>{{ availability.startTime|date('h:i A') }} - {{ availability.endTime|date('h:i A') }}</small>
                                                 </div>
+                                                <button class="btn-book" onclick="bookAppointment({{ doctor.id }}, {{ availability.id }})">
+                                                    <i class="fas fa-bookmark me-1"></i>Book
+                                                </button>
                                             </div>
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <div class="text-center py-4">
-                                    <i class="fas fa-calendar-times fa-2x text-muted mb-3"></i>
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar-times"></i>
                                     <h5>No available slots</h5>
-                                    <p class="text-muted">This doctor doesn't have any available time slots at the moment.</p>
+                                    <p>This doctor doesn't have any available time slots at the moment.</p>
                                 </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4 mt-4 mt-lg-0">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Doctor Information</h5>
+                            <h5><i class="fas fa-info-circle me-2"></i>Doctor Information</h5>
                         </div>
-                        <div class="card-body">
-                            <div class="text-center mb-4">
-                                <div class="doctor-avatar mx-auto mb-3">
-                                    {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
-                                </div>
-                                <h5>Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h5>
-                                <p class="text-muted">{{ doctor.specialty ?? 'General Medicine' }}</p>
+                        <div class="card-body text-center text-md-start">
+                            <div class="doctor-avatar mx-auto mx-md-0 mb-3">
+                                {{ doctor.client.firstName|first }}{{ doctor.client.lastName|first }}
                             </div>
-
-                            <div class="mb-3">
+                            <h5>Dr. {{ doctor.client.firstName }} {{ doctor.client.lastName }}</h5>
+                            <p class="text-muted">{{ doctor.specialty ?? 'General Medicine' }}</p>
+                            <hr>
+                            <div class="info-item">
                                 <strong><i class="fas fa-phone me-2"></i>Phone:</strong>
-                                <br>
-                                <span class="text-muted">{{ doctor.phone ?? 'Not provided' }}</span>
+                                <span>{{ doctor.phone ?? 'Not provided' }}</span>
                             </div>
-
-                            <div class="mb-3">
+                            <div class="info-item mt-2">
                                 <strong><i class="fas fa-graduation-cap me-2"></i>Bio:</strong>
-                                <br>
-                                <span class="text-muted">{{ doctor.bio ?? 'No bio available' }}</span>
+                                <p class="text-muted mt-1">{{ doctor.bio ?? 'No bio available' }}</p>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -98,44 +83,91 @@
     </section>
 {% endblock %}
 
-{% block javascripts %}
+{% block stylesheets %}
     {{ parent() }}
-    <script>
-        function bookAppointment(doctorId, availabilityId) {
-            if (confirm('Book this appointment?')) {
-                fetch('{{ path('patient_appointment_book') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        doctorId: doctorId,
-                        availabilityId: availabilityId
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Appointment booked successfully!');
-                            window.location.href = '{{ path('app_dashboard') }}';
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error booking appointment');
-                    });
-            }
-        }
-    </script>
-
     <style>
         .doctors-section {
             background: #f5f7fb;
             min-height: 100vh;
-            padding: 30px 0;
+            padding: 20px 0;
+        }
+
+        .doctor-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .doctor-specialty {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.25rem;
+        }
+
+        .card-header h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .availability-slot {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 0.8rem;
+            border-left: 4px solid #00d97e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .slot-info h6 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--dark);
+        }
+
+        .slot-info small {
+            font-size: 0.7rem;
+            color: var(--secondary);
+        }
+
+        .btn-book {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         .doctor-avatar {
@@ -151,9 +183,90 @@
             font-weight: bold;
         }
 
-        .availability-slot {
-            background: white;
-            border-left: 4px solid #00d97e !important;
+        .info-item strong {
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+
+        .info-item span, .info-item p {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            color: #dee2e6;
+        }
+
+        .empty-state h5 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .doctors-section {
+                padding: 30px 0;
+            }
+            .doctor-name {
+                font-size: 1.75rem;
+            }
+            .availability-slot {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .doctors-section {
+                padding: 15px 0;
+            }
+            .doctor-name {
+                font-size: 1.25rem;
+            }
+            .doctor-specialty {
+                font-size: 0.8rem;
+            }
+            .availability-slot {
+                flex-direction: column;
+                text-align: center;
+            }
+            .btn-book {
+                width: 100%;
+            }
+            .card-body {
+                padding: 1rem;
+            }
         }
     </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function bookAppointment(doctorId, availabilityId) {
+            if (confirm('Book this appointment?')) {
+                fetch('{{ path('patient_appointment_book') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify({ doctorId: doctorId, availabilityId: availabilityId })
+                }).then(r => r.json()).then(data => {
+                    if (data.success) {
+                        alert('Appointment booked successfully!');
+                        window.location.href = '{{ path('app_dashboard') }}';
+                    } else alert('Error: ' + data.message);
+                }).catch(() => alert('Error booking appointment'));
+            }
+        }
+    </script>
 {% endblock %}

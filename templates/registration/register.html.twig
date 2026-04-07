@@ -18,7 +18,7 @@
         .register-section {
             background: var(--gradient);
             color: white;
-            padding: 80px 0;
+            padding: 60px 0;
             position: relative;
             overflow: hidden;
             min-height: 100vh;
@@ -34,19 +34,20 @@
             right: 0;
             bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><path fill="white" d="M500,250c138,0,250,112,250,250S638,750,500,750S250,638,250,500S362,250,500,250z"/></svg>') repeat;
+            background-size: 150px;
         }
 
         .register-card {
             background: white;
             border-radius: 20px;
-            padding: 50px 40px;
+            padding: 30px 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             position: relative;
             z-index: 2;
         }
 
         .register-title {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 0.5rem;
@@ -56,45 +57,49 @@
         .register-subtitle {
             color: var(--secondary);
             text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
         .form-group-custom {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .form-label-custom {
             color: var(--dark);
             font-weight: 600;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .form-control-custom {
             border: 2px solid #e3ebf6;
             border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 1rem;
+            padding: 10px 14px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             background: #f9fbfd;
+            width: 100%;
         }
 
         .form-control-custom:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
             background: white;
+            outline: none;
         }
 
-        /* Custom Radio Button Styles */
+        /* Radio Group - Mobile Friendly */
         .radio-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 10px;
+            flex-direction: column;
         }
 
         .radio-option {
-            flex: 1;
             position: relative;
+            width: 100%;
         }
 
         .radio-input {
@@ -106,7 +111,7 @@
         .radio-label {
             display: flex;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             background: var(--light);
             border: 2px solid #e3ebf6;
             border-radius: 12px;
@@ -114,6 +119,7 @@
             transition: all 0.3s ease;
             font-weight: 500;
             color: var(--dark);
+            width: 100%;
         }
 
         .radio-label:hover {
@@ -136,6 +142,7 @@
             margin-right: 12px;
             position: relative;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .radio-input:checked + .radio-label .radio-icon {
@@ -157,23 +164,16 @@
 
         .role-icon {
             margin-right: 8px;
-            font-size: 1.1rem;
-        }
-
-        .role-patient .role-icon {
-            color: var(--success);
-        }
-
-        .role-doctor .role-icon {
-            color: var(--primary);
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .btn-register {
             background: var(--primary);
             color: white !important;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: 12px 24px;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 12px;
             width: 100%;
@@ -190,8 +190,9 @@
 
         .login-link {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             color: var(--secondary);
+            font-size: 0.9rem;
         }
 
         .login-link a {
@@ -223,19 +224,21 @@
         }
 
         .benefits-list li {
-            padding: 0.5rem 0;
+            padding: 0.4rem 0;
             color: var(--secondary);
+            font-size: 0.85rem;
         }
 
         .benefits-list li i {
             color: var(--success);
             margin-right: 0.5rem;
+            width: 20px;
         }
 
         .role-description {
             background: var(--light);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             margin-top: 10px;
             border-left: 4px solid var(--primary);
         }
@@ -243,18 +246,19 @@
         .role-description h6 {
             color: var(--dark);
             margin-bottom: 5px;
+            font-size: 0.9rem;
         }
 
         .role-description p {
             color: var(--secondary);
             margin-bottom: 0;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .dynamic-fields-container {
             background: var(--light);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-top: 10px;
             border: 2px dashed var(--primary);
             transition: all 0.3s ease;
@@ -267,13 +271,14 @@
 
         .dynamic-fields-container h6 {
             color: var(--primary);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .form-error {
             color: #dc3545;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             margin-top: 0.25rem;
         }
 
@@ -283,22 +288,97 @@
             margin-bottom: 0;
         }
 
-        @media (max-width: 768px) {
+        small.text-muted {
+            font-size: 0.7rem;
+        }
+
+        /* Password strength */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .progress {
+            height: 4px;
+            margin-bottom: 0.25rem;
+        }
+
+        /* ============================================ */
+        /* RESPONSIVE STYLES */
+        /* ============================================ */
+
+        /* Tablet and up */
+        @media (min-width: 768px) {
             .register-section {
-                padding: 40px 0;
+                padding: 80px 0;
             }
 
             .register-card {
-                padding: 30px 20px;
+                padding: 50px 40px;
             }
 
             .register-title {
                 font-size: 2rem;
             }
 
+            .register-subtitle {
+                font-size: 1rem;
+            }
+
             .radio-group {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: row;
+            }
+
+            .radio-group {
+                flex-direction: row;
+                gap: 15px;
+            }
+
+            .radio-label {
+                padding: 20px;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 992px) {
+            .register-title {
+                font-size: 2.5rem;
+            }
+
+            .register-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .register-card {
+                padding: 50px 40px;
+            }
+        }
+
+        /* Small mobile */
+        @media (max-width: 480px) {
+            .register-section {
+                padding: 40px 0;
+            }
+
+            .register-card {
+                padding: 20px 15px;
+            }
+
+            .register-title {
+                font-size: 1.5rem;
+            }
+
+            .form-label-custom {
+                font-size: 0.85rem;
+            }
+
+            .form-control-custom {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .btn-register {
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -309,17 +389,18 @@
     <section class="register-section">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-10">
+                <div class="col-12 col-lg-10">
                     <div class="register-card">
-                        <div class="row align-items-center">
+                        <div class="row">
                             <!-- Registration Form -->
-                            <div class="col-lg-6">
+                            <div class="col-12 col-lg-6">
                                 <h1 class="register-title">Create Your Account</h1>
                                 <p class="register-subtitle">Join thousands managing their health with MedicalApp</p>
 
                                 {{ form_start(registrationForm) }}
+
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group-custom">
                                             {{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'form-label-custom'}}) }}
                                             {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control form-control-custom'}}) }}
@@ -328,7 +409,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-md-6">
                                         <div class="form-group-custom">
                                             {{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'form-label-custom'}}) }}
                                             {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control form-control-custom'}}) }}
@@ -392,8 +473,8 @@
                                     <h6><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
                                     <div class="form-group-custom">
                                         {{ form_label(registrationForm.address, 'Address', {'label_attr': {'class': 'form-label-custom'}}) }}
-                                        {{ form_widget(registrationForm.address, {'attr': {'class': 'form-control form-control-custom', 'rows': '3', 'placeholder': 'Enter your complete address for appointment reminders and correspondence'}}) }}
-                                        <small class="text-muted">We'll use this for appointment reminders and important correspondence.</small>
+                                        {{ form_widget(registrationForm.address, {'attr': {'class': 'form-control form-control-custom', 'rows': '3', 'placeholder': 'Enter your complete address'}}) }}
+                                        <small class="text-muted">We'll use this for appointment reminders.</small>
                                         <div class="form-error">
                                             {{ form_errors(registrationForm.address) }}
                                         </div>
@@ -405,16 +486,14 @@
                                     <h6><i class="fas fa-user-md me-2"></i>Professional Information</h6>
                                     <div class="form-group-custom">
                                         {{ form_label(registrationForm.specialty, 'Medical Specialty', {'label_attr': {'class': 'form-label-custom'}}) }}
-                                        {{ form_widget(registrationForm.specialty, {'attr': {'class': 'form-control form-control-custom', 'placeholder': 'e.g., Cardiology, Pediatrics, Dermatology, etc.'}}) }}
-                                        <small class="text-muted">Your primary medical specialty area.</small>
+                                        {{ form_widget(registrationForm.specialty, {'attr': {'class': 'form-control form-control-custom', 'placeholder': 'e.g., Cardiology, Pediatrics'}}) }}
                                         <div class="form-error">
                                             {{ form_errors(registrationForm.specialty) }}
                                         </div>
                                     </div>
                                     <div class="form-group-custom">
                                         {{ form_label(registrationForm.bio, 'Professional Bio', {'label_attr': {'class': 'form-label-custom'}}) }}
-                                        {{ form_widget(registrationForm.bio, {'attr': {'class': 'form-control form-control-custom', 'rows': '4', 'placeholder': 'Tell patients about your experience, qualifications, and approach to care...'}}) }}
-                                        <small class="text-muted">This will be visible to patients when they book appointments.</small>
+                                        {{ form_widget(registrationForm.bio, {'attr': {'class': 'form-control form-control-custom', 'rows': '4', 'placeholder': 'Tell patients about your experience...'}}) }}
                                         <div class="form-error">
                                             {{ form_errors(registrationForm.bio) }}
                                         </div>
@@ -439,12 +518,12 @@
                                 </div>
                             </div>
 
-                            <!-- Benefits Sidebar -->
-                            <div class="col-lg-5 offset-lg-1 mt-5 mt-lg-0">
+                            <!-- Benefits Sidebar - Hidden on mobile, visible on tablet+ -->
+                            <div class="d-none d-lg-block col-lg-5 offset-lg-1 mt-5 mt-lg-0">
                                 <div class="feature-icon-small">
                                     <i class="fas fa-heartbeat"></i>
                                 </div>
-                                <h4 style="color: var(--dark); margin-bottom: 1.5rem;">Why Join MedicalApp?</h4>
+                                <h4 style="color: var(--dark); margin-bottom: 1rem; font-size: 1.3rem;">Why Join MedicalApp?</h4>
 
                                 <ul class="benefits-list">
                                     <li><i class="fas fa-check-circle"></i> Book appointments 24/7</li>
@@ -457,33 +536,11 @@
 
                                 <div class="mt-4 p-3" style="background: var(--light); border-radius: 12px;">
                                     <div class="d-flex align-items-center">
-                                        <i class="fas fa-shield-alt text-success me-3" style="font-size: 1.5rem;"></i>
+                                        <i class="fas fa-shield-alt text-success me-3" style="font-size: 1.3rem;"></i>
                                         <div>
-                                            <h6 class="mb-1" style="color: var(--dark);">Secure & Private</h6>
-                                            <p class="mb-0 small" style="color: var(--secondary);">Your health data is encrypted and protected</p>
+                                            <h6 class="mb-1" style="color: var(--dark); font-size: 0.9rem;">Secure & Private</h6>
+                                            <p class="mb-0 small" style="color: var(--secondary); font-size: 0.75rem;">Your health data is encrypted</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Role Requirements Info -->
-                                <div class="mt-4 p-3" style="background: var(--light); border-radius: 12px;">
-                                    <h6 style="color: var(--dark); margin-bottom: 15px;">
-                                        <i class="fas fa-clipboard-list me-2"></i>What You'll Need
-                                    </h6>
-                                    <div class="mb-3">
-                                        <strong class="text-primary">For Patients:</strong>
-                                        <ul class="benefits-list mt-2">
-                                            <li><i class="fas fa-phone text-primary"></i> Phone number</li>
-                                            <li><i class="fas fa-home text-primary"></i> Address</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <strong class="text-primary">For Doctors:</strong>
-                                        <ul class="benefits-list mt-2">
-                                            <li><i class="fas fa-phone text-primary"></i> Phone number</li>
-                                            <li><i class="fas fa-stethoscope text-primary"></i> Medical specialty</li>
-                                            <li><i class="fas fa-file-alt text-primary"></i> Professional bio</li>
-                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -504,15 +561,12 @@
             const doctorFields = document.getElementById('doctor-fields');
             const roleDescriptions = document.querySelectorAll('.role-description');
 
-            // Function to update field visibility based on role selection
             function updateRoleSpecificFields() {
                 const selectedRole = document.querySelector('input[name^="registration_form[roles]"]:checked')?.value;
 
-                // Hide all role-specific fields first
                 patientFields.classList.remove('active');
                 doctorFields.classList.remove('active');
 
-                // Update role descriptions
                 roleDescriptions.forEach(desc => {
                     desc.style.opacity = '0.6';
                     desc.style.borderLeftColor = '#e3ebf6';
@@ -520,48 +574,23 @@
 
                 if (selectedRole === 'ROLE_PATIENT') {
                     patientFields.classList.add('active');
-                    roleDescriptions[0].style.opacity = '1';
-                    roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
-
-                    // Update field requirements
-                    const addressField = document.querySelector('#registration_form_address');
-                    const specialtyField = document.querySelector('#registration_form_specialty');
-
-                    if (addressField) {
-                        addressField.required = true;
-                        addressField.disabled = false;
+                    if(roleDescriptions[0]) {
+                        roleDescriptions[0].style.opacity = '1';
+                        roleDescriptions[0].style.borderLeftColor = 'var(--primary)';
                     }
-                    if (specialtyField) {
-                        specialtyField.required = false;
-                        specialtyField.disabled = true;
-                    }
-
                 } else if (selectedRole === 'ROLE_DOCTOR') {
                     doctorFields.classList.add('active');
-                    roleDescriptions[1].style.opacity = '1';
-                    roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
-
-                    // Update field requirements
-                    const addressField = document.querySelector('#registration_form_address');
-                    const specialtyField = document.querySelector('#registration_form_specialty');
-
-                    if (addressField) {
-                        addressField.required = false;
-                        addressField.disabled = true;
-                    }
-                    if (specialtyField) {
-                        specialtyField.required = true;
-                        specialtyField.disabled = false;
+                    if(roleDescriptions[1]) {
+                        roleDescriptions[1].style.opacity = '1';
+                        roleDescriptions[1].style.borderLeftColor = 'var(--primary)';
                     }
                 }
             }
 
-            // Add event listeners for radio buttons
             roleRadios.forEach(radio => {
                 radio.addEventListener('change', updateRoleSpecificFields);
             });
 
-            // Initialize fields based on any pre-selected role
             updateRoleSpecificFields();
 
             // Password strength indicator
@@ -569,8 +598,6 @@
             if (passwordInput) {
                 passwordInput.addEventListener('input', function() {
                     const password = this.value;
-                    const strengthIndicator = document.createElement('div');
-                    strengthIndicator.className = 'password-strength mt-2';
 
                     let strength = 0;
                     if (password.length >= 8) strength++;
@@ -580,50 +607,23 @@
 
                     const strengthText = ['Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'][strength];
                     const strengthColors = ['#dc3545', '#ffc107', '#fd7e14', '#20c997', '#198754'];
+                    const strengthWidth = [25, 50, 75, 100, 100][strength];
 
-                    strengthIndicator.innerHTML = `
-                        <div class="progress" style="height: 5px;">
-                            <div class="progress-bar" style="width: ${strength * 25}%; background-color: ${strengthColors[strength]};"></div>
+                    let indicator = this.parentNode.querySelector('.password-strength');
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'password-strength mt-2';
+                        this.parentNode.appendChild(indicator);
+                    }
+
+                    indicator.innerHTML = `
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar" style="width: ${strengthWidth}%; background-color: ${strengthColors[strength]};"></div>
                         </div>
                         <small style="color: ${strengthColors[strength]};">${strengthText}</small>
                     `;
-
-                    const existingIndicator = this.parentNode.querySelector('.password-strength');
-                    if (existingIndicator) {
-                        existingIndicator.remove();
-                    }
-                    this.parentNode.appendChild(strengthIndicator);
                 });
             }
-
-            // Handle form validation errors on page load
-            function checkForErrors() {
-                // Check if there are any validation errors
-                const formErrors = document.querySelectorAll('.form-error');
-                let hasVisibleErrors = false;
-
-                formErrors.forEach(errorDiv => {
-                    const errors = errorDiv.querySelectorAll('ul li');
-                    if (errors.length > 0) {
-                        hasVisibleErrors = true;
-                        // Make sure the correct role-specific fields are shown
-                        const role = document.querySelector('input[name^="registration_form[roles]"]:checked')?.value;
-                        if (role === 'ROLE_PATIENT') {
-                            patientFields.classList.add('active');
-                        } else if (role === 'ROLE_DOCTOR') {
-                            doctorFields.classList.add('active');
-                        }
-                    }
-                });
-
-                // If there are errors but no role is selected, show the form as is
-                if (hasVisibleErrors) {
-                    console.log('Form has validation errors');
-                }
-            }
-
-            // Check for errors on page load
-            checkForErrors();
         });
     </script>
 {% endblock %}

@@ -50,7 +50,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Sidebar Navigation - Same as doctor dashboard */
+        /* Sidebar Navigation */
         .dashboard-wrapper {
             display: flex;
             min-height: 100vh;
@@ -95,11 +95,12 @@
         .doctor-info h6 {
             margin-bottom: 0.25rem;
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .doctor-info small {
             color: var(--gray-600);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .sidebar-nav {
@@ -113,7 +114,7 @@
         }
 
         .nav-section-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             color: var(--gray-600);
@@ -124,13 +125,14 @@
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: var(--border-radius-sm);
             color: var(--gray-700);
             text-decoration: none;
             margin-bottom: 0.5rem;
             transition: var(--transition);
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .nav-item:hover {
@@ -146,8 +148,8 @@
         }
 
         .nav-icon {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -175,11 +177,12 @@
         .logout-btn {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: var(--border-radius-sm);
             color: var(--danger);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.9rem;
             transition: var(--transition);
         }
 
@@ -191,7 +194,7 @@
         .main-content {
             flex: 1;
             margin-left: 280px;
-            padding: 2rem;
+            padding: 1.5rem;
             max-width: calc(100% - 280px);
         }
 
@@ -200,78 +203,46 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .header-left h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .header-left p {
             color: var(--gray-600);
             margin: 0;
+            font-size: 0.85rem;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .date-badge {
             background: var(--primary-light);
             color: var(--primary);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 50px;
             font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .notification-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--gray-100);
-            border: none;
-            color: var(--gray-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: var(--transition);
-        }
-
-        .notification-btn:hover {
-            background: var(--gray-200);
-            color: var(--gray-700);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+            font-size: 0.8rem;
         }
 
         /* Dashboard Section */
         .dashboard-section {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 1.5rem;
+            padding: 1rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
@@ -281,57 +252,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .section-header h3 {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--dark);
             margin: 0;
         }
 
-        .section-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-action {
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius-sm);
-            border: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: var(--transition);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #00b86c;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 217, 126, 0.3);
-        }
-
-        /* Calendar Styles - Updated to match design */
+        /* Calendar Styles */
         .fc {
             font-family: 'Inter', sans-serif;
         }
@@ -339,14 +272,14 @@
         .fc .fc-toolbar {
             flex-wrap: wrap;
             gap: 0.5rem;
-            padding: 1rem;
+            padding: 0.75rem;
             background: var(--gray-100);
             border-radius: var(--border-radius-sm);
             margin-bottom: 1rem;
         }
 
         .fc .fc-toolbar-title {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--dark);
         }
@@ -357,7 +290,8 @@
             color: var(--gray-700);
             font-weight: 500;
             border-radius: var(--border-radius-sm);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
             transition: var(--transition);
         }
 
@@ -379,13 +313,14 @@
             color: var(--gray-700);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.8rem;
         }
 
         .fc .fc-event {
             border-radius: 6px;
             border: none;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
             font-weight: 500;
             cursor: pointer;
             border-left: 3px solid;
@@ -404,32 +339,28 @@
         }
 
         .fc .fc-timegrid-slot {
-            height: 2.5em;
+            height: 2em;
         }
 
         .fc .fc-day-today {
             background: var(--primary-light) !important;
         }
 
-        .fc .fc-highlight {
-            background: var(--primary-light);
-        }
-
         /* Quick Actions */
         .quick-actions {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
         }
 
         .quick-actions h5 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--dark);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--gray-200);
         }
@@ -437,9 +368,9 @@
         .action-item {
             display: flex;
             align-items: center;
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: var(--border-radius-sm);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             transition: var(--transition);
             text-decoration: none;
             color: var(--gray-700);
@@ -455,16 +386,15 @@
         }
 
         .action-icon {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1rem;
+            margin-right: 0.75rem;
             background: var(--gray-200);
             color: var(--gray-600);
-            transition: var(--transition);
         }
 
         .action-item:hover .action-icon {
@@ -474,12 +404,13 @@
 
         .action-details h6 {
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
             color: inherit;
         }
 
         .action-details small {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--gray-600);
         }
 
@@ -487,8 +418,8 @@
         .legend-item {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
-            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.6rem;
             background: var(--gray-100);
             border-radius: var(--border-radius-sm);
         }
@@ -497,7 +428,7 @@
             width: 20px;
             height: 20px;
             border-radius: 4px;
-            margin-right: 1rem;
+            margin-right: 0.75rem;
             border-left: 3px solid;
         }
 
@@ -512,16 +443,25 @@
         }
 
         .legend-text h6 {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
             color: var(--dark);
         }
 
         .legend-text p {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--gray-600);
             margin: 0;
+        }
+
+        /* Alert */
+        .alert {
+            border-radius: var(--border-radius-sm);
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         /* Loading Overlay */
@@ -553,21 +493,46 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .sidebar {
-                width: 250px;
+        /* Toast */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-sm);
+            background: white;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid;
+            font-size: 0.85rem;
+        }
+
+        .toast-success {
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast-danger {
+            border-left-color: var(--danger);
+            color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
-            .main-content {
-                margin-left: 250px;
-                max-width: calc(100% - 250px);
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
+        /* Responsive Design */
         @media (max-width: 992px) {
-            .dashboard-wrapper {
-                flex-direction: column;
-            }
             .sidebar {
                 width: 100%;
                 height: auto;
@@ -589,18 +554,49 @@
             .top-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 1rem;
             }
             .header-right {
                 width: 100%;
                 justify-content: space-between;
             }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .fc .fc-toolbar {
+                flex-direction: column;
+                width: 100%;
+            }
+            .fc .fc-toolbar-chunk {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+            .header-left p {
+                font-size: 0.75rem;
+            }
+            .dashboard-section {
+                padding: 0.75rem;
+            }
+            .quick-actions {
+                padding: 0.75rem;
+            }
+            .action-item {
+                padding: 0.6rem;
+            }
+            .action-details h6 {
+                font-size: 0.8rem;
+            }
         }
     </style>
-    <!-- Add Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
@@ -621,21 +617,15 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
                     <a href="{{ path('doctor_dashboard') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-home"></i></div>
                         Dashboard
                     </a>
                     <a href="{{ path('doctor_appointments') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
                         Appointments
                     </a>
                     <a href="{{ path('doctor_prescriptions') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-file-prescription"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-file-prescription"></i></div>
                         Prescriptions
                     </a>
                 </div>
@@ -643,15 +633,11 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Schedule</div>
                     <a href="{{ path('doctor_availability') }}" class="nav-item active">
-                        <div class="nav-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-clock"></i></div>
                         Availability
                     </a>
                     <a href="{{ path('doctor_patients') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-user-friends"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-user-friends"></i></div>
                         My Patients
                     </a>
                 </div>
@@ -670,13 +656,12 @@
             <div class="top-header">
                 <div class="header-left">
                     <h1>Availability Management</h1>
-                    <p>Click and drag on the calendar to add available time slots</p>
+                    <p>Tap and drag on calendar to add available time slots</p>
                 </div>
                 <div class="header-right">
                     <div class="date-badge">
-                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("M j, Y") }}
                     </div>
-
                 </div>
             </div>
 
@@ -697,37 +682,30 @@
 
             <div class="row">
                 <!-- Calendar Section -->
-                <div class="col-lg-9">
+                <div class="col-12 col-lg-9 mb-3 mb-lg-0">
                     <div class="dashboard-section">
                         <div class="section-header">
                             <h3><i class="fas fa-calendar-alt me-2 text-primary"></i>Your Schedule</h3>
-
                         </div>
                         <div id="calendar"></div>
                     </div>
                 </div>
 
                 <!-- Quick Actions Sidebar -->
-                <div class="col-lg-3">
+                <div class="col-12 col-lg-3">
                     <div class="quick-actions">
                         <h5><i class="fas fa-bolt me-2 text-warning"></i>Quick Actions</h5>
 
                         <a href="{{ path('doctor_availability_new') }}" class="action-item">
-                            <div class="action-icon">
-                                <i class="fas fa-plus"></i>
-                            </div>
+                            <div class="action-icon"><i class="fas fa-plus"></i></div>
                             <div class="action-details">
                                 <h6>Add Time Slot</h6>
                                 <small>Create detailed availability</small>
                             </div>
                         </a>
 
-
-
                         <a href="{{ path('doctor_availability') }}" class="action-item">
-                            <div class="action-icon">
-                                <i class="fas fa-sync"></i>
-                            </div>
+                            <div class="action-icon"><i class="fas fa-sync"></i></div>
                             <div class="action-details">
                                 <h6>Refresh Calendar</h6>
                                 <small>Reload schedule</small>
@@ -759,17 +737,17 @@
                     <!-- Instructions -->
                     <div class="quick-actions">
                         <h5><i class="fas fa-lightbulb me-2 text-warning"></i>How to Use</h5>
-                        <div class="legend-text mb-3">
-                            <h6>Click & Drag</h6>
-                            <p>Click and drag on calendar to create new available slots</p>
+                        <div class="legend-text mb-2">
+                            <h6>Tap & Drag</h6>
+                            <p>Tap and drag on calendar to create new slots</p>
                         </div>
-                        <div class="legend-text mb-3">
+                        <div class="legend-text mb-2">
                             <h6>Edit Slots</h6>
-                            <p>Click on any slot to edit or delete it</p>
+                            <p>Tap on any slot to edit or delete</p>
                         </div>
                         <div class="legend-text">
                             <h6>Recurring</h6>
-                            <p>Use the form for recurring weekly availability</p>
+                            <p>Use form for weekly availability</p>
                         </div>
                     </div>
                 </div>
@@ -796,7 +774,7 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'timeGridWeek,dayGridMonth,listWeek'
+                    right: 'timeGridWeek,dayGridMonth'
                 },
                 slotMinTime: '07:00:00',
                 slotMaxTime: '21:00:00',
@@ -806,6 +784,7 @@
                 selectable: true,
                 selectMirror: true,
                 weekends: true,
+                height: 'auto',
 
                 eventClick: function(info) {
                     window.location.href = '{{ path('doctor_availability_edit', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', info.event.id);
@@ -827,14 +806,11 @@
                         })
                     })
                         .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
+                            if (!response.ok) throw new Error('Network response was not ok');
                             return response.json();
                         })
                         .then(data => {
                             loadingOverlay.style.display = 'none';
-
                             if (data.success) {
                                 calendar.addEvent({
                                     id: data.id,
@@ -844,7 +820,6 @@
                                     classNames: [data.className],
                                     extendedProps: data.extendedProps
                                 });
-
                                 showToast('Available time slot created successfully!', 'success');
                             } else {
                                 showToast('Error creating availability slot', 'danger');
@@ -873,92 +848,14 @@
 
             calendar.render();
 
-            // Toast notification function
             function showToast(message, type = 'success') {
-                // Remove existing toasts
                 document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
-
-                // Create toast element
                 const toast = document.createElement('div');
                 toast.className = `toast-notification toast-${type}`;
-                toast.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
-                    ${message}
-                `;
-
-                // Add to page
+                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
                 document.body.appendChild(toast);
-
-                // Remove after 3 seconds
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 3000);
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
             }
-
-            // Copy week schedule function
-            function copyWeekSchedule() {
-                if (confirm('Copy this week\'s schedule to next week?')) {
-                    fetch('{{ path('doctor_availability_copy_week') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                showToast('Week schedule copied successfully!', 'success');
-                                setTimeout(() => location.reload(), 1500);
-                            } else {
-                                showToast('Error copying schedule', 'danger');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showToast('Error copying schedule', 'danger');
-                        });
-                }
-            }
-
-            // Add CSS for toast notifications
-            const style = document.createElement('style');
-            style.textContent = `
-                .toast-notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 1rem 1.5rem;
-                    border-radius: var(--border-radius-sm);
-                    background: white;
-                    box-shadow: var(--shadow-lg);
-                    z-index: 9999;
-                    display: flex;
-                    align-items: center;
-                    animation: slideIn 0.3s ease;
-                    border-left: 4px solid;
-                }
-                .toast-success {
-                    border-left-color: var(--success);
-                    color: var(--success);
-                }
-                .toast-danger {
-                    border-left-color: var(--danger);
-                    color: var(--danger);
-                }
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
         });
     </script>
 {% endblock %}

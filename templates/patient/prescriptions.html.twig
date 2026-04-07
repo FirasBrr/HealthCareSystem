@@ -11,38 +11,19 @@
             --primary-dark: #1a68d1;
             --secondary: #6e84a3;
             --success: #00d97e;
-            --success-light: #e6f9f0;
             --warning: #f6c343;
-            --warning-light: #fef8e6;
             --danger: #e63757;
-            --danger-light: #fce9ec;
-            --info: #39afd1;
-            --info-light: #eaf5f9;
             --light: #f9fbfd;
             --dark: #12263f;
             --gray-100: #f8f9fa;
             --gray-200: #e9ecef;
-            --gray-300: #dee2e6;
-            --gray-400: #ced4da;
-            --gray-500: #adb5bd;
             --gray-600: #6c757d;
-            --gray-700: #495057;
-            --gray-800: #343a40;
-            --gray-900: #212529;
             --prescription: #9b59b6;
             --prescription-light: #f3e8f7;
-            --prescription-dark: #8e44ad;
             --sidebar-bg: #ffffff;
             --card-bg: #ffffff;
             --body-bg: #f5f7fb;
             --gradient-primary: linear-gradient(135deg, #2c7be5 0%, #1a68d1 100%);
-            --gradient-success: linear-gradient(135deg, #00d97e 0%, #00b86c 100%);
-            --gradient-warning: linear-gradient(135deg, #f6c343 0%, #f4b223 100%);
-            --gradient-danger: linear-gradient(135deg, #e63757 0%, #d92545 100%);
-            --gradient-prescription: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
             --border-radius: 0.75rem;
             --border-radius-sm: 0.5rem;
             --transition: all 0.3s ease;
@@ -53,13 +34,12 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Main Dashboard Layout */
         .dashboard-wrapper {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar Navigation */
+        /* Sidebar */
         .sidebar {
             width: 280px;
             background: var(--sidebar-bg);
@@ -71,7 +51,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            box-shadow: var(--shadow);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
             transition: var(--transition);
         }
 
@@ -99,11 +79,12 @@
         .patient-info h6 {
             margin-bottom: 0.25rem;
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .patient-info small {
             color: var(--gray-600);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .sidebar-nav {
@@ -117,7 +98,7 @@
         }
 
         .nav-section-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             color: var(--gray-600);
@@ -128,13 +109,14 @@
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: var(--border-radius-sm);
-            color: var(--gray-700);
+            color: var(--gray-600);
             text-decoration: none;
             margin-bottom: 0.5rem;
             transition: var(--transition);
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .nav-item:hover {
@@ -146,12 +128,11 @@
         .nav-item.active {
             background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
         }
 
         .nav-icon {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -159,15 +140,10 @@
             margin-right: 1rem;
             background: var(--gray-100);
             color: var(--gray-600);
-            transition: var(--transition);
-        }
-
-        .nav-item:hover .nav-icon {
-            background: white;
         }
 
         .nav-item.active .nav-icon {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             color: white;
         }
 
@@ -179,110 +155,69 @@
         .logout-btn {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: var(--border-radius-sm);
             color: var(--danger);
             text-decoration: none;
             font-weight: 500;
-            transition: var(--transition);
+            font-size: 0.9rem;
         }
 
         .logout-btn:hover {
-            background: var(--danger-light);
+            background: #fce9ec;
         }
 
-        /* Main Content Area */
+        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
-            padding: 2rem;
+            padding: 1.5rem;
             max-width: calc(100% - 280px);
         }
 
-        /* Top Header */
         .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .header-left h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .header-left p {
             color: var(--gray-600);
             margin: 0;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            font-size: 0.85rem;
         }
 
         .date-badge {
             background: var(--primary-light);
             color: var(--primary);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 50px;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
-        .notification-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--gray-100);
-            border: none;
-            color: var(--gray-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: var(--transition);
-        }
-
-        .notification-btn:hover {
-            background: var(--gray-200);
-            color: var(--gray-700);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        /* Page Header */
         .page-header {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .page-title {
-            font-size: 1.75rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--dark);
             margin: 0;
@@ -290,130 +225,58 @@
 
         .page-subtitle {
             color: var(--gray-600);
-            margin: 0.5rem 0 0 0;
+            margin: 0.3rem 0 0 0;
+            font-size: 0.85rem;
         }
 
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--prescription);
-        }
-
-        .stat-content {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            background: var(--prescription-light);
-            color: var(--prescription);
-        }
-
-        .stat-numbers h3 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: var(--dark);
-        }
-
-        .stat-numbers p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-
-        /* Prescriptions Section */
         .prescriptions-section {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .section-header h3 {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--dark);
             margin: 0;
         }
 
-        /* Prescription Cards */
         .prescription-list {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .prescription-card {
             background: var(--gray-100);
-            border-radius: var(--border-radius-sm);
-            padding: 1.5rem;
-            transition: var(--transition);
+            border-radius: 10px;
+            padding: 1rem;
             border-left: 4px solid var(--prescription);
-            position: relative;
-        }
-
-        .prescription-card:hover {
-            background: var(--gray-200);
-            transform: translateX(5px);
         }
 
         .prescription-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .doctor-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .doctor-avatar-small {
@@ -426,110 +289,75 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .doctor-details h6 {
             font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--dark);
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
         }
 
         .doctor-details p {
+            font-size: 0.7rem;
             color: var(--gray-600);
-            font-size: 0.85rem;
             margin: 0;
-        }
-
-        .prescription-date {
-            text-align: right;
         }
 
         .prescription-date .date {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--dark);
-            display: block;
         }
 
         .prescription-date .time {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: var(--gray-600);
         }
 
-        /* Prescription Content */
         .prescription-content {
             background: white;
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            padding: 0.8rem;
+            margin-bottom: 0.75rem;
         }
 
         .prescription-title {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .prescription-title i {
+            margin-bottom: 0.5rem;
             color: var(--prescription);
         }
 
-        /* Prescription Notes */
         .prescription-notes {
             background: var(--light);
             border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
+            padding: 0.8rem;
         }
 
         .prescription-notes h6 {
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-bottom: 0.3rem;
         }
 
         .prescription-notes p {
+            font-size: 0.8rem;
             color: var(--gray-600);
-            font-size: 0.9rem;
             margin: 0;
-            line-height: 1.5;
-            white-space: pre-line;
         }
 
-        /* File Preview */
         .file-preview {
-            margin-top: 1rem;
-            padding: 1rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
             background: var(--gray-100);
             border-radius: 8px;
-            border: 1px dashed var(--gray-300);
-        }
-
-        .file-preview h6 {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .file-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid var(--gray-200);
+            gap: 0.75rem;
         }
 
         .file-icon {
@@ -541,154 +369,65 @@
             align-items: center;
             justify-content: center;
             color: var(--prescription);
-            font-size: 1.25rem;
         }
 
         .file-details h6 {
+            font-size: 0.8rem;
             margin: 0;
-            font-size: 0.9rem;
         }
 
         .file-details p {
+            font-size: 0.7rem;
             margin: 0;
-            font-size: 0.8rem;
             color: var(--gray-600);
         }
 
-        /* Prescription Actions */
         .prescription-actions {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
+            flex-wrap: wrap;
         }
 
         .btn-action {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 8px;
-            border: none;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            transition: var(--transition);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .btn-view {
-            background: var(--gradient-prescription);
+            background: var(--prescription);
             color: white;
-        }
-
-        .btn-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
-            color: white;
-            text-decoration: none;
         }
 
         .btn-download {
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
         }
 
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.3);
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-print {
-            background: var(--gray-100);
-            color: var(--gray-700);
-        }
-
-        .btn-print:hover {
-            background: var(--gray-200);
-            transform: translateY(-2px);
-            text-decoration: none;
-        }
-
-        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 2rem;
             color: var(--gray-600);
         }
 
         .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--gray-400);
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            color: #dee2e6;
         }
 
-        /* Toast notifications */
-        .toast-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius-sm);
-            background: white;
-            box-shadow: var(--shadow-lg);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            animation: slideIn 0.3s ease;
-            border-left: 4px solid;
+        .empty-state h5 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
         }
 
-        .toast-success {
-            border-left-color: var(--success);
-            color: var(--success);
-        }
-
-        .toast-warning {
-            border-left-color: var(--warning);
-            color: var(--warning);
-        }
-
-        .toast-danger {
-            border-left-color: var(--danger);
-            color: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Flash Messages */
-        .alert {
-            border-radius: var(--border-radius-sm);
-            border: none;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 1.5rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .sidebar {
-                width: 250px;
-            }
-            .main-content {
-                margin-left: 250px;
-                max-width: calc(100% - 250px);
-            }
-        }
-
+        /* Responsive */
         @media (max-width: 992px) {
-            .dashboard-wrapper {
-                flex-direction: column;
-            }
             .sidebar {
                 width: 100%;
                 height: auto;
@@ -700,39 +439,51 @@
                 max-width: 100%;
                 padding: 1rem;
             }
-            .prescription-header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .prescription-date {
-                text-align: left;
-            }
-            .prescription-actions {
-                flex-wrap: wrap;
-            }
         }
 
         @media (max-width: 768px) {
             .top-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 1rem;
             }
-            .header-right {
+            .prescription-header {
+                flex-direction: column;
+            }
+            .prescription-date {
+                text-align: left;
+            }
+            .file-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            .prescription-actions {
                 width: 100%;
-                justify-content: space-between;
+            }
+            .btn-action {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+            .page-title {
+                font-size: 1.1rem;
+            }
+            .doctor-avatar-small {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
             }
         }
     </style>
-    <!-- Add Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
     <div class="dashboard-wrapper">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="patient-avatar-large">
@@ -743,41 +494,30 @@
                     <small>Patient</small>
                 </div>
             </div>
-
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
                     <a href="{{ path('app_dashboard') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-home"></i></div>
                         Dashboard
                     </a>
                     <a href="{{ path('patient_appointments') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
                         Appointments
                     </a>
                     <a href="{{ path('patient_prescriptions') }}" class="nav-item active">
-                        <div class="nav-icon">
-                            <i class="fas fa-file-prescription"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-file-prescription"></i></div>
                         Prescriptions
                     </a>
                 </div>
-
                 <div class="nav-section">
                     <div class="nav-section-title">Health</div>
                     <a href="{{ path('patient_doctors') }}" class="nav-item">
-                        <div class="nav-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
+                        <div class="nav-icon"><i class="fas fa-search"></i></div>
                         Find Doctors
                     </a>
                 </div>
             </nav>
-
             <div class="sidebar-footer">
                 <a href="{{ path('app_logout') }}" class="logout-btn">
                     <i class="fas fa-sign-out-alt me-2"></i> Logout
@@ -785,9 +525,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Header -->
             <div class="top-header">
                 <div class="header-left">
                     <h1>Welcome, {{ app.user.firstName }}</h1>
@@ -795,48 +533,19 @@
                 </div>
                 <div class="header-right">
                     <div class="date-badge">
-                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("l, F j, Y") }}
+                        <i class="fas fa-calendar-day me-2"></i>{{ "now"|date("M j, Y") }}
                     </div>
-
                 </div>
             </div>
 
-            <!-- Flash Messages -->
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>{{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-
-            {% for message in app.flashes('warning') %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-
-            <!-- Page Header -->
             <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="page-title">My Prescriptions</h1>
-                        <p class="page-subtitle">All your prescribed medications and medical instructions</p>
-                    </div>
-                    <div class="text-muted">
-                        <i class="fas fa-info-circle me-1"></i>
-                        <small>Prescriptions are issued by doctors after appointments</small>
-                    </div>
-                </div>
+                <h1 class="page-title">My Prescriptions</h1>
+                <p class="page-subtitle">All your prescribed medications and medical instructions</p>
             </div>
 
-
-
-            <!-- Prescriptions List -->
             <div class="prescriptions-section">
                 <div class="section-header">
                     <h3><i class="fas fa-prescription-bottle-alt me-2 text-primary"></i>Your Prescriptions</h3>
-                    <span class="text-muted">Most recent first</span>
                 </div>
 
                 {% if appointments|length > 0 %}
@@ -851,24 +560,17 @@
                                         </div>
                                         <div class="doctor-details">
                                             <h6>Dr. {{ appointment.doctor.client.firstName }} {{ appointment.doctor.client.lastName }}</h6>
-                                            <p>
-                                                <i class="fas fa-stethoscope me-1"></i>{{ appointment.doctor.specialty ?? 'General Medicine' }}
-                                            </p>
+                                            <p>{{ appointment.doctor.specialty ?? 'General Medicine' }}</p>
                                         </div>
                                     </div>
                                     <div class="prescription-date">
                                         <span class="date">{{ appointment.startDateTime|date('M j, Y') }}</span>
-                                        <span class="time">Prescribed on {{ prescription.uploadedAt|date('M j, Y') }}</span>
                                     </div>
                                 </div>
 
                                 <div class="prescription-content">
-                                    <h4 class="prescription-title">
-                                        <i class="fas fa-prescription"></i>
-                                        Medical Prescription
-                                    </h4>
+                                    <h4 class="prescription-title"><i class="fas fa-prescription me-2"></i>Medical Prescription</h4>
 
-                                    <!-- Prescription Notes -->
                                     {% if prescription.notes %}
                                         <div class="prescription-notes">
                                             <h6><i class="fas fa-clipboard-list me-1"></i>Doctor's Notes</h6>
@@ -876,41 +578,34 @@
                                         </div>
                                     {% endif %}
 
-                                    <!-- File Preview -->
                                     {% if prescription.fileName %}
                                         <div class="file-preview">
-                                            <h6><i class="fas fa-file-pdf me-1"></i>Prescription File</h6>
                                             <div class="file-info">
-                                                <div class="file-icon">
-                                                    <i class="fas fa-file-pdf"></i>
-                                                </div>
+                                                <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
                                                 <div class="file-details">
                                                     <h6>Prescription_{{ appointment.id }}.pdf</h6>
-                                                    <p>Uploaded: {{ prescription.uploadedAt|date('M j, Y \\a\\t h:i A') }}</p>
+                                                    <p>Uploaded: {{ prescription.uploadedAt|date('M j, Y') }}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     {% else %}
                                         <div class="prescription-notes">
                                             <h6><i class="fas fa-info-circle me-1"></i>No File Attached</h6>
-                                            <p>This prescription doesn't have a file attached. Contact the doctor for more details.</p>
+                                            <p>Contact the doctor for more details.</p>
                                         </div>
                                     {% endif %}
                                 </div>
 
-                                <!-- Prescription Actions -->
                                 <div class="prescription-actions">
                                     {% if prescription.fileName %}
                                         <a href="{{ prescription.getFileUrl() }}" target="_blank" class="btn-action btn-view">
-                                            <i class="fas fa-eye me-1"></i>View Prescription
+                                            <i class="fas fa-eye me-1"></i>View
                                         </a>
                                         <a href="{{ prescription.getFileUrl() }}" download class="btn-action btn-download">
                                             <i class="fas fa-download me-1"></i>Download
                                         </a>
                                     {% else %}
-                                        <a href="#" class="btn-action btn-view disabled" onclick="return false;" style="opacity: 0.6; cursor: not-allowed;">
-                                            <i class="fas fa-eye me-1"></i>No File Available
-                                        </a>
+                                        <span class="btn-action btn-view" style="background:#dee2e6; cursor:not-allowed;">No File</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -920,69 +615,11 @@
                     <div class="empty-state">
                         <i class="fas fa-file-prescription"></i>
                         <h5>No prescriptions yet</h5>
-                        <p>You haven't received any prescriptions from your doctors yet.</p>
-                        <p class="text-muted">Prescriptions are created by doctors after your appointments.</p>
-                        <a href="{{ path('patient_doctors') }}" class="btn-action btn-download mt-3">
-                            <i class="fas fa-search me-1"></i>Book an Appointment
-                        </a>
+                        <p>You haven't received any prescriptions.</p>
+                        <a href="{{ path('patient_doctors') }}" class="btn-action btn-download mt-2">Book an Appointment</a>
                     </div>
                 {% endif %}
             </div>
         </main>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        // Add hover effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add animation to stats cards on load
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-
-            // Initialize tooltips
-            const tooltips = document.querySelectorAll('[title]');
-            tooltips.forEach(tooltip => {
-                new bootstrap.Tooltip(tooltip);
-            });
-
-            // Notification button click
-            const notificationBtn = document.querySelector('.notification-btn');
-            if (notificationBtn) {
-                notificationBtn.addEventListener('click', function() {
-                    showToast('Prescriptions notifications feature coming soon!', 'info');
-                });
-            }
-        });
-
-        // Toast notification function
-        function showToast(message, type = 'success') {
-            // Remove existing toasts
-            document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
-
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.className = `toast-notification toast-${type}`;
-            toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
-                ${message}
-            `;
-
-            // Add to page
-            document.body.appendChild(toast);
-
-            // Remove after 3 seconds
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.remove();
-                }
-            }, 3000);
-        }
-    </script>
 {% endblock %}

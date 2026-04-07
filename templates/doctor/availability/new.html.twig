@@ -8,15 +8,15 @@
         .availability-section {
             background: #f5f7fb;
             min-height: 100vh;
-            padding: 30px 0;
+            padding: 20px 0;
         }
 
         .form-card {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .btn-primary {
@@ -36,28 +36,47 @@
         .btn-light {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-light:hover {
+            background: #e9ecef;
+            text-decoration: none;
         }
 
         .form-label {
             font-weight: 600;
             color: #12263f;
             margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
         .form-control {
             border: 1px solid #e6e6e6;
             border-radius: 8px;
-            padding: 10px 15px;
+            padding: 8px 12px;
             transition: all 0.3s ease;
+            width: 100%;
+            font-size: 0.9rem;
         }
 
         .form-control:focus {
             border-color: #2c7be5;
             box-shadow: 0 0 0 0.2rem rgba(44, 123, 229, 0.25);
+            outline: none;
+        }
+
+        .form-check-input {
+            width: 40px;
+            height: 20px;
+            margin-top: 0;
         }
 
         .form-check-input:checked {
@@ -65,11 +84,84 @@
             border-color: #2c7be5;
         }
 
+        .form-check-label {
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
         .info-card {
             background: #f8f9fa;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h6 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            font-size: 0.8rem;
+            margin-bottom: 0;
+            line-height: 1.4;
+        }
+
+        .form-text {
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .availability-section {
+                padding: 30px 0;
+            }
+            .form-card {
+                padding: 30px;
+            }
+            .info-card {
+                padding: 20px;
+            }
+            .info-card p {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 15px;
+            }
+            .btn-primary, .btn-light {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+            .d-flex.gap-2 .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 12px;
+            }
+            h1.h3 {
+                font-size: 1.2rem;
+            }
+            .info-card h6 {
+                font-size: 0.85rem;
+            }
+            .info-card p {
+                font-size: 0.75rem;
+            }
         }
     </style>
 {% endblock %}
@@ -78,34 +170,34 @@
     <section class="availability-section">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8">
                     <div class="info-card">
                         <h6><i class="fas fa-info-circle text-primary me-2"></i>Quick Tips</h6>
-                        <p class="mb-0 small text-muted">
-                            • Use the calendar to quickly mark available time by clicking and dragging<br>
-                            • Use this form for recurring schedules or to block time (uncheck "Available")<br>
-                            • For one-time availability, leave "Recurring" unchecked and select a date
+                        <p class="mb-0 text-muted">
+                            • For recurring schedules (same day every week), select a day and check "Recurring"<br>
+                            • For one-time availability, leave "Recurring" unchecked and pick a date<br>
+                            • Uncheck "Available" to block time (e.g., for lunch breaks or meetings)
                         </p>
                     </div>
 
                     <div class="form-card">
                         <div class="d-flex align-items-center mb-4">
                             <a href="{{ path('doctor_availability') }}" class="btn btn-light me-3">
-                                <i class="fas fa-arrow-left"></i>
+                                <i class="fas fa-arrow-left"></i> Back
                             </a>
                             <h1 class="h3 mb-0">Add Availability</h1>
                         </div>
 
                         {{ form_start(form) }}
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     {{ form_label(form.dayOfWeek, null, {'label_attr': {'class': 'form-label'}}) }}
                                     {{ form_widget(form.dayOfWeek, {'attr': {'class': 'form-control'}}) }}
                                     <small class="form-text text-muted">For recurring weekly availability</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     {{ form_label(form.date, null, {'label_attr': {'class': 'form-label'}}) }}
                                     {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
@@ -115,13 +207,13 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     {{ form_label(form.startTime, null, {'label_attr': {'class': 'form-label'}}) }}
                                     {{ form_widget(form.startTime, {'attr': {'class': 'form-control'}}) }}
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     {{ form_label(form.endTime, null, {'label_attr': {'class': 'form-label'}}) }}
                                     {{ form_widget(form.endTime, {'attr': {'class': 'form-control'}}) }}
@@ -130,7 +222,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     <div class="form-check form-switch">
                                         {{ form_widget(form.recurring, {'attr': {'class': 'form-check-input'}}) }}
@@ -139,7 +231,7 @@
                                     <small class="form-text text-muted">Repeat weekly on selected day</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <div class="mb-3">
                                     <div class="form-check form-switch">
                                         {{ form_widget(form.isAvailable, {'attr': {'class': 'form-check-input'}}) }}
