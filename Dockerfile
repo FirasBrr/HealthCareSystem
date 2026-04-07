@@ -15,18 +15,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
-RUN composer install --no-dev --optimize-autoloader
-
-RUN php bin/console cache:clear --env=prod || true
-RUN php bin/console cache:warmup --env=prod || true
+# ✅ IMPORTANT: skip scripts to avoid DB crash
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 RUN chown -R www-data:www-data /var/www/html
 
-# ✅ IMPORTANT FIXES
+# Apache config
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 RUN printf '<Directory /var/www/html/public>\n\
     AllowOverride All\n\
+    Require all granted\n\
 </Directory>\n' >> /etc/apache2/apache2.conf
 
 EXPOSE 80
