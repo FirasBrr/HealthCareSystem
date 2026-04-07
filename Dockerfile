@@ -25,8 +25,8 @@ RUN chown -R www-data:www-data /var/www/html
 # ✅ IMPORTANT FIXES
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-RUN echo '<Directory /var/www/html/public>
-    AllowOverride All
-</Directory>' >> /etc/apache2/apache2.conf
+RUN printf '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+</Directory>\n' >> /etc/apache2/apache2.conf
 
 EXPOSE 80
