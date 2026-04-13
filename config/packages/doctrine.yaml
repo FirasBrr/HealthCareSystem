@@ -7,9 +7,10 @@ doctrine:
     profiling_collect_backtrace: '%kernel.debug%'
     use_savepoints: true
 
-    # 🔥 SSL CONFIG (IMPORTANT FOR TiDB)
     options:
-      1014: false  # disable server cert verification (safe for TiDB)
+      1009: null   # disable custom CA
+      1014: false  # allow insecure verification fallback (required for TiDB)
+      1002: "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
 
   orm:
     auto_generate_proxy_classes: true
