@@ -9,7 +9,6 @@ doctrine:
 
     # 🔥 SSL CONFIG (IMPORTANT FOR TiDB)
     options:
-      1009: '%kernel.project_dir%/config/ssl/isrgrootx1.pem'  # CA CERT
       1014: false  # disable server cert verification (safe for TiDB)
 
   orm:
