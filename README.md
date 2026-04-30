@@ -9,7 +9,7 @@
 
 MedicalApp is a comprehensive healthcare management platform that connects patients with doctors. It allows patients to book appointments, view prescriptions, and manage their health records, while doctors can manage their schedules, view appointments, and issue prescriptions.
 
-**🔗 Live Demo:** [https://healthcaresystem.onrender.com](https://healthcaresystem.onrender.com)
+**🔗 Live Demo:** [https://healthcaresystem-1-ndad.onrender.com](https://healthcaresystem-1-ndad.onrender.com)
 
 ### Demo Credentials
 
